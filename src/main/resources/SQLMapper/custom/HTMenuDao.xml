@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTMenuDao">
+    <!--查询角色相关功能菜单列表-->
+    <select id="findMenuListByRoleId" resultType="com.hd.manager.dao.bean.HTMenuBean" >
+        SELECT
+          tm.menu_id         AS menuId,
+          tm.menu_name       AS menuName,
+          tm.menu_type       AS menuType,
+          tm.menu_position   AS menuPosition,
+          tm.menu_icon_url   AS menuIconUrl,
+          tm.url             AS url,
+          tm.order_num       AS orderNum,
+          tm.parent_menu_id  AS parentMenuId
+        FROM
+          tb_role_menu_relation AS trmr
+        LEFT JOIN
+          tb_menu AS tm
+        on
+          tm.menu_id = trmr.menu_id
+        WHERE
+          tm.is_del_flg = 0
+        AND
+          trmr.role_id = #{roleId}
+    </select>
+    <!--删除角色相关所有功能菜单列表-->
+    <delete id="deleteRoleMenuRelationListByRoleId" >
+        DELETE
+        FROM
+          tb_role_menu_relation
+        where
+          role_id = #{roleId}
+    </delete>
+    <!--批量生成角色与功能菜单关联-->
+    <insert id="insertRoleMenuRelationList">
+        INSERT INTO tb_role_menu_relation(
+        role_id, menu_id, create_date, create_user_id, update_date, update_user_id, is_del_flg
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.roleId},
+                #{item.menuId},
+                #{item.createDate},
+                #{item.createUserId},
+                #{item.updateDate},
+                #{item.updateUserId},
+                #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+    <!--查询所有功能菜单列表-->
+    <select id="findAllMenuList" resultType="com.hd.manager.dao.bean.HTMenuBean">
+        SELECT
+          tm.menu_id         AS menuId,
+          tm.menu_name       AS menuName,
+          tm.menu_type       AS menuType,
+          tm.menu_position   AS menuPosition,
+          tm.menu_icon_url   AS menuIconUrl,
+          tm.url             AS url,
+          tm.order_num       AS orderNum,
+          tm.parent_menu_id  AS parentMenuId
+        FROM
+          tb_menu AS tm
+        where
+          tm.is_del_flg = 0
+        order by
+          tm.order_num
+        asc
+    </select>
+</mapper>

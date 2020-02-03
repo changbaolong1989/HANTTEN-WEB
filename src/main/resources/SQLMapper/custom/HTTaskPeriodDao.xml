@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTaskPeriodDao">
+
+    <!--查询工作内容说明列表-->
+    <select id="excSearchTaskPeriodList" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        select
+        temp.*
+        from
+        (<include refid="searchTaskPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--查询所有部门类型-->
+    <select id="excSearchAllDictDepartmentList" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        select
+        department_id AS dictDepartmentId,
+        department_name AS departmentName
+        from
+        tb_dict_department
+    </select>
+    <!--修改工作内容说明信息-->
+    <update id="excUpdateTaskPeriodInfo">
+        UPDATE
+            tb_task_period
+        SET
+            period_desc = #{periodDesc},
+            update_date = #{updateDate},
+            update_user_id = #{updateUserId}
+        WHERE
+            period_id = #{periodId}
+    </update>
+
+    <!--查询工作内容说明列表数据的总条数-->
+    <select id="excSearchTaskPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchTaskPeriodListSql" />) temp
+    </select>
+
+    <sql id="searchTaskPeriodListSql">
+        SELECT
+            ttp.period_id AS periodId,
+            ttp.period_name AS periodName,
+            ttp.dict_department_id AS dictDepartmentId,
+            tdd.department_name AS departmentName,
+            ttp.period_desc AS periodDesc,
+            ttp.update_date AS updateDate
+        FROM
+            tb_task_period ttp
+        LEFT JOIN
+            tb_dict_department tdd
+        ON
+            ttp.dict_department_id = tdd.department_id
+        WHERE
+            ttp.is_del_flg = 0
+        <if test="dictDepartmentId !=null and dictDepartmentId!= ''">
+        AND
+            ttp.dict_department_id = #{dictDepartmentId}
+        </if>
+        ORDER BY
+            ttp.sort
+        ASC
+    </sql>
+
+    <!--查询工作内容详情-->
+    <select id="excSearchTaskPeriodInfo" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        SELECT
+          ttp.period_id      AS periodId,
+          ttp.period_desc    AS periodDesc,
+          ttp.update_date    AS updateDate
+        FROM
+          tb_task_period ttp
+        WHERE
+          ttp.period_id = #{periodId}
+    </select>
+
+    <!--通过咨询类型ID查询任务阶段列表-->
+    <select id="excSearchTaskPeriodListByCounselTypeId" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        SELECT
+            ttp.period_id AS periodId,
+            ttp.parent_period_id AS parentPeriodId,
+            ttp.period_name AS periodName,
+            ttp.contract_type_id AS contractTypeId,
+            ttp.counsel_type_id AS counselTypeId,
+            ttp.dict_department_id AS dictDepartmentId,
+            ttp.period_level AS periodLevel,
+            ttp.period_desc AS periodFesc,
+            ttp.page_content AS pageContent
+        FROM
+            tb_task_period ttp
+        WHERE
+            ttp.counsel_type_id = #{item}
+    </select>
+    <!--根据部门类型ID查询-->
+    <select id="excSearchPeriodIdsByDepartmentId" resultType="java.lang.String">
+        SELECT
+            ttp.period_id
+        FROM
+            tb_task_period ttp
+        WHERE
+            ttp.dict_department_id = #{item}
+    </select>
+
+</mapper>

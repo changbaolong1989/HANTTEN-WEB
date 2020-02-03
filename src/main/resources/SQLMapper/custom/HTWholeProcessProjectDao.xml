@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessProjectDao">
+
+    <!--查询项目阶段列表-->
+    <select id="excSearchProPeriodList" resultType="com.hd.manager.dao.bean.HTProPeriodBean">
+        SELECT
+            tppb.project_period_id					AS projectPeriodId,
+            tppb.project_period_name				AS projectPeriodName,
+            tppb.project_period_parent_id		    AS projectPeriodParentId,
+            tppb.project_period_level				AS projectPeriodLevel,
+            tppb.project_period_url				    AS projectPeriodUrl,
+            tppb.is_click							AS isClick,
+            tppb.sort								AS sort
+        FROM
+            tb_pro_period_base tppb
+
+        ORDER BY tppb.sort ASC
+    </select>
+</mapper>

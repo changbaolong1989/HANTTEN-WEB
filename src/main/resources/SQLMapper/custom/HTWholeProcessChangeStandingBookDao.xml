@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessChangeStandingBookDao">
+
+    <resultMap id="BaseResultMap" type="com.hd.manager.dao.bean.HTWholeProcessChangeStandingBookBean">
+        <result column="project_id" jdbcType="VARCHAR" property="projectId"/>
+        <result column="contract_id" jdbcType="VARCHAR" property="contractId"/>
+        <result column="contract_num" jdbcType="VARCHAR" property="contractNum"/>
+        <result column="treaty_type" jdbcType="VARCHAR" property="treatyType"/>
+        <result column="undertake_type" jdbcType="VARCHAR" property="undertakeType"/>
+        <result column="contract_name" jdbcType="VARCHAR" property="contractName"/>
+        <result column="contract_class" jdbcType="VARCHAR" property="contractClass"/>
+        <result column="with_tax_money" jdbcType="DOUBLE" property="withTaxMoney"/>
+        <result column="sum_declare_amount" jdbcType="DOUBLE" property="sumDeclareAmount"/>
+        <result column="sum_hantten_amount" jdbcType="DOUBLE" property="sumHanttenAmount"/>
+        <result column="per_hantten_amount" jdbcType="VARCHAR" property="perHanttenAmount"/>
+        <result column="confirmed" jdbcType="DOUBLE" property="confirmed"/>
+        <result column="estimated_amount" jdbcType="DOUBLE" property="estimatedAmount"/>
+    </resultMap>
+
+    <select id="searchChangeStandingBook" resultMap="BaseResultMap">
+        SELECT
+        T.contract_id,
+        T1.contract_num,
+        T1.treaty_type,
+        T1.undertake_type,
+        T1.contract_name,
+        T1.contract_class,
+        T1.with_tax_money,
+        T.sum_declare_amount,
+        T.sum_hantten_amount,
+        T.per_hantten_amount,
+        T.confirmed,
+        T.estimated_amount
+        FROM
+        (
+        SELECT
+        T.contract_id AS 'contract_id',
+        SUM( T.declare_amount ) AS 'sum_declare_amount',
+        SUM( T.hantten_amount ) AS 'sum_hantten_amount',
+        CONCAT( ROUND( SUM( T.hantten_amount ) / T1.with_tax_money * 100, 2 ), '%' ) AS 'per_hantten_amount',
+        SUM( IF ( T.sts = 'A', T.declare_amount, 0 ) ) AS 'confirmed',
+        SUM( IF ( T.sts = 'A', 0, T.hantten_amount ) ) AS 'estimated_amount'
+        FROM
+        tb_pro_alter_detail T
+        LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+        WHERE
+        T.project_id = #{projectId}
+        GROUP BY
+        T.contract_id
+        ) T
+        LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+        ORDER BY
+        T1.treaty_type,
+        T1.undertake_type,
+        T1.contract_name
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber} , #{pageSize}
+        </if>
+    </select>
+
+    <select id="countChangeStandingBook" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			(
+			SELECT
+				T.contract_id AS 'contract_id',
+				SUM( T.declare_amount ) AS 'sum_declare_amount',
+				SUM( T.hantten_amount ) AS 'sum_hantten_amount',
+				CONCAT( ROUND( SUM( T.hantten_amount ) / T1.with_tax_money * 100, 2 ), '%' ) AS 'per_hantten_amount',
+				SUM( IF ( T.sts = 'A', T.declare_amount, 0 ) ) AS 'confirmed',
+				SUM( IF ( T.sts = 'A', 0, T.hantten_amount ) ) AS 'estimated_amount'
+			FROM
+				tb_pro_alter_detail T
+				LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+			WHERE
+				T.project_id = #{projectId}
+			GROUP BY
+				T.contract_id
+			) T
+			LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+	</select>
+
+    <select id="searchExportData" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT
+            T1.contract_num,
+        CASE
+        WHEN T1.treaty_type = 1 THEN
+        '工程类合同'
+        WHEN T1.treaty_type = 2 THEN
+        '采购类合同'
+        WHEN T1.treaty_type = 3 THEN
+        '服务类合同'
+        WHEN T1.treaty_type = 4 THEN
+        '土地类合同'
+        WHEN T1.treaty_type = 5 THEN
+        '其他类合同' ELSE '-'
+        END AS treaty_type,
+        CASE
+        WHEN T1.undertake_type = 1 THEN
+        '施工总承包'
+        WHEN T1.undertake_type = 2 THEN
+        '发包人发包专业合同'
+        WHEN T1.undertake_type = 3 THEN
+        '发包人自行发包专业' ELSE ''
+        END AS undertake_type,
+            T1.contract_name,
+            CASE
+                WHEN T1.contract_class = 1 THEN
+                '单价合同'
+                WHEN T1.contract_class = 2 THEN
+                '总价合同'
+                WHEN T1.contract_class = 3 THEN
+                '其他' ELSE ''
+            END AS contract_class,
+            CONCAT(T1.with_tax_money) AS with_tax_money,
+            CONCAT(T.sum_declare_amount) AS sum_declare_amount,
+            CONCAT(T.sum_hantten_amount) AS sum_hantten_amount,
+            CONCAT(T.per_hantten_amount) AS per_hantten_amount,
+            CONCAT(T.confirmed) AS confirmed,
+            CONCAT(T.estimated_amount) AS estimated_amount
+        FROM
+            (
+            SELECT
+                T.contract_id AS 'contract_id',
+                SUM( T.declare_amount ) AS 'sum_declare_amount',
+                SUM( T.hantten_amount ) AS 'sum_hantten_amount',
+                CONCAT( ROUND( SUM( T.hantten_amount ) / T1.with_tax_money * 100, 2 ), '%' ) AS 'per_hantten_amount',
+                SUM( IF ( T.sts = 'A', T.declare_amount, 0 ) ) AS 'confirmed',
+                SUM( IF ( T.sts = 'A', 0, T.hantten_amount ) ) AS 'estimated_amount'
+            FROM
+                tb_pro_alter_detail T
+                LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+            WHERE
+                T.project_id = #{projectId}
+
+            GROUP BY
+                T.contract_id
+            ) T
+            LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+        ORDER BY
+            T1.treaty_type,
+            T1.undertake_type
+    </select>
+
+</mapper>

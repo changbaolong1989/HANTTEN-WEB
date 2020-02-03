@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTPublicNoticeDao">
+
+    <!--查询公告列表数据的总条数-->
+    <select id="excSearchPublicNoticeListCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            (<include refid="excSearchPublicNoticeListSql" />) temp
+    </select>
+
+    <!--查询公告列表数据-->
+    <select id="excSearchPublicNoticeList" resultType="com.hd.manager.dao.bean.HTPublicNoticeBean">
+        select
+            temp.*
+        from
+            (<include refid="excSearchPublicNoticeListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--列表sql-->
+    <sql id="excSearchPublicNoticeListSql">
+        select
+             tpn.notice_id      as noticeId
+            ,tpn.notice_name    as noticeName
+            ,tpn.release_date   as releaseDate
+            ,tpn.material_path  as materialPath
+            ,tpn.material_name  as materialName
+            ,tu.user_name       as userName
+        from
+            tb_public_notice tpn
+        left join
+            tb_user tu
+        on
+            tpn.release_people = tu.user_id and tu.is_del_flg = 0
+        where
+            tpn.is_del_flg = 0
+        order by
+            tpn.create_date desc
+    </sql>
+
+    <!--添加公告信息-->
+    <insert id="excInsertPublicNoticeInfo" parameterType="com.hd.common.entity.TbPublicNoticeEntity">
+        insert into tb_public_notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noticeId != null">
+                notice_id,
+            </if>
+            <if test="noticeName != null">
+                notice_name,
+            </if>
+            <if test="releasePeople != null">
+                release_people,
+            </if>
+            <if test="releaseDate != null">
+                release_date,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="materialPath != null">
+                material_path,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{noticeId,jdbcType=VARCHAR},
+            <if test="noticeName != null">
+                #{noticeName,jdbcType=VARCHAR},
+            </if>
+            <if test="releasePeople != null">
+                #{releasePeople,jdbcType=VARCHAR},
+            </if>
+            <if test="releaseDate != null">
+                #{releaseDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialPath != null">
+                #{materialPath,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--查询公告详情数据-->
+    <select id="excSearchPublicNoticeInfo" resultType="com.hd.manager.dao.bean.HTPublicNoticeBean">
+        select
+             notice_id      as noticeId
+            ,notice_name    as noticeName
+            ,material_name  as materialName
+            ,update_date    as updateDate
+        from
+            tb_public_notice
+        where
+            is_del_flg = 0
+        <if test='null != noticeId and "" != noticeId'>
+            and notice_id = #{noticeId}
+        </if>
+    </select>
+
+</mapper>

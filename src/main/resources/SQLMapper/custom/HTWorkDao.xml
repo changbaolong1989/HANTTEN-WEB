@@ -1,0 +1,3321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWorkDao">
+
+    <!--合同经手列表-->
+    <select id="excSearchContractHandleList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchContractHandleListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--合同经手列表总数-->
+    <select id="excSearchContractHandleCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchContractHandleListSql" />) temp
+    </select>
+
+    <!--合同经手sql-->
+    <sql id="excSearchContractHandleListSql">
+        SELECT
+            t.*
+        FROM
+        (
+        <if test="null != contractIdList and contractIdList.size()>0">
+            select
+                tc.project_id           as projectId
+                ,tp.project_num         as projectNum
+                ,tp.project_name         as projectName
+                ,tc.contract_id         as contractId
+                ,tc.contract_num        as contractNum
+                ,tc.project_name        as contractName
+                ,tc.create_date             as contractCreateDate
+                ,tcu.user_name              as contractCreateUserName
+                ,tp.end_date            as endDate
+                ,tu.user_name           as endProjectUserName
+                ,tc.department_id       as departmentId
+                ,tdd.department_name    as departmentName
+                ,tc.create_date         as createDate
+            from
+                tb_contract tc
+            left join
+                tb_project tp
+            on
+                tc.project_id = tp.project_id
+            left join
+                tb_user tu
+            on
+                tp.end_project_user_id = tu.user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join
+                tb_dict_department tdd
+            on
+                tdd.department_id = tc.department_id
+            where
+                tc.is_del_flg = 0
+            and
+                tp.project_sts = 1
+
+                and
+                tc.contract_id in (
+                <foreach collection = "contractIdList" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+
+            UNION
+            </if>
+
+                select
+                    tp.project_id               as projectId
+                    ,tp.project_num             as projectNum
+                    ,tp.project_name            AS projectName
+                    ,tc.contract_id             as contractId
+                    ,tc.contract_num            as contractNum
+                    ,tc.project_name            AS contractName
+                    ,tc.create_date             as contractCreateDate
+                    ,tcu.user_name              as contractCreateUserName
+                    ,tp.end_date                as endDate
+                    ,tu.user_name               as endProjectUserName
+                    ,tc.department_id           as departmentId
+                    ,tdd.department_name        as departmentName
+                    ,tt.create_date             as createDate
+                from
+                    tb_task tt
+                left join tb_contract tc on tc.contract_id = tt.contract_id
+                left join tb_project tp on tp.project_id = tc.project_id
+                left join tb_user tu on tu.user_id = tt.create_user_id
+                left join tb_user tcu on tcu.user_id = tc.create_user_id
+                left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                where
+                    tt.is_del_flg = 0
+                and
+                    tp.project_sts = 1
+                and
+                tt.task_id in (
+                    select
+                        task_id
+                    from
+                        tb_task_user_relation
+                    where
+                        is_del_flg = 0
+                    and
+                        is_main_duty = 0
+                    and
+                        is_done = 1
+                    <if test="null != userId and '' != userId">
+                        and user_id = #{userId}
+                    </if>
+                )
+            <if test="null != contractNum and '' != contractNum">
+                and concat(concat(tp.project_num,'-'),tc.contract_num) like concat(concat('%',#{contractNum}),'%')
+            </if>
+            <if test="null != projectNum and '' != projectNum">
+                and tp.project_num like concat(concat('%',#{projectNum}),'%')
+            </if>
+
+        ) t
+        where
+        1=1
+        <if test = "projectName !=null and projectName!= ''" >
+            and t.projectName LIKE concat(concat('%',#{projectName}),'%')
+        </if>
+        order by
+        t.createDate desc
+    </sql>
+
+    <!--合同已办列表-->
+    <select id="excSearchContractCompletedList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchContractCompletedListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--合同已办列表总数-->
+    <select id="excSearchContractCompletedCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchContractCompletedListSql" />) temp
+    </select>
+
+    <!--合同已办sql-->
+    <sql id="excSearchContractCompletedListSql">
+        SELECT
+            t.*
+        FROM
+        (
+        <if test="null != contractIdList and contractIdList.size()>0">
+         select
+                tc.project_id           as projectId
+                ,tp.project_num         as projectNum
+                ,tp.project_name        as projectName
+                ,tc.contract_id         as contractId
+                ,tc.contract_num        as contractNum
+                ,tc.project_name        as contractName
+                ,tc.create_date         as contractCreateDate
+                ,tu.user_name           as contractCreateUserName
+                ,tc.department_id       as departmentId
+                ,tdd.department_name    as departmentName
+                ,''                     as seniorManagerId
+                ,''                     as seniorManagerName
+        from
+                tb_contract tc
+            left join
+                tb_project tp
+            on
+                tc.project_id = tp.project_id
+            left join
+                tb_user tu
+            on
+                tc.create_user_id = tu.user_id
+            left join
+                tb_dict_department tdd
+            on
+                tdd.department_id = tc.department_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            where
+                tc.is_del_flg = 0
+            AND
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            and
+                tp.project_sts = 0
+
+                and
+                tc.contract_id in (
+                <foreach collection = "contractIdList" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+
+            UNION
+        </if>
+                select
+                    tc.project_id               as projectId
+                    ,tp.project_num             as projectNum
+                    ,tp.project_name            as projectName
+                    ,tc.contract_id             as contractId
+                    ,tc.contract_num            as contractNum
+                    ,tc.project_name            as contractName
+                    ,tc.create_date             as contractCreateDate
+                    ,tu.user_name               as contractCreateUserName
+                    ,tc.department_id           as departmentId
+                    ,tdd.department_name        as departmentName
+                    ,''                         as seniorManagerId
+                    ,''                         as seniorManagerName
+                from
+                 tb_contract tc
+                left join tb_task tt on tc.contract_id = tt.contract_id
+                left join tb_project tp on tp.project_id = tc.project_id
+                left join tb_user tu on tu.user_id = tc.create_user_id
+                left join tb_user tcu on tcu.user_id = tc.create_user_id
+                left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                where
+                    tt.is_del_flg = 0
+                and
+                    tp.project_sts = 0
+                AND
+                (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+                and
+                    tt.task_id in (
+                select
+                    task_id
+                from
+                    tb_task_user_relation
+                where
+                    is_del_flg = 0
+                and
+                    is_main_duty = 0
+                and
+                    is_done = 1
+                <if test="null != userId and '' != userId">
+                    and user_id = #{userId}
+                </if>
+                )
+        ) t
+        WHERE
+        1=1
+        <if test="null != contractNum and '' != contractNum">
+            and concat(concat(t.projectNum,'-'),t.contractNum)  like concat(concat('%',#{contractNum}),'%')
+        </if>
+        <if test="null != projectNum and '' != projectNum">
+            and t.projectNum like concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test = "projectName !=null and projectName!= ''" >
+            and t.projectName LIKE concat(concat('%',#{projectName}),'%')
+        </if>
+        order by
+            t.contractCreateDate desc
+    </sql>
+
+    <!--合同待办列表-->
+    <select id="excSearchContractListInfo" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchContractListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--合同待办列表总数-->
+    <select id="excSearchContractListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchContractListSql" />) temp
+    </select>
+
+    <!--合同sql-->
+    <sql id="excSearchContractListSql">
+        SELECT
+        t.*
+        FROM
+        (
+            select
+                tc.project_id           as projectId
+                ,tp.project_num         as projectNum
+                ,tc.contract_id         as contractId
+                ,tc.contract_num        as contractNum
+                ,tc.delegate_task_id    as delegateTaskId
+                ,tc.delegate_task_key   as delegateTaskKey
+                ,tc.create_date         as createDate
+                ,tu.user_name           as createUserName
+                ,tdcs.contract_sts_name as currentStateName
+                ,tc.department_id       as departmentId
+                ,tdd.department_name    as departmentName
+                ,tu2.user_name          as userName
+                ,'-'                    as tenderTaskName
+                ,''                     as seniorManagerId
+                ,''                     as seniorManagerName
+                ,tc.contract_id         as businessId
+                ,'0'                    as sourceType
+                ,tc.submit_node         as submitNode
+                ,tc.update_date         as updateDate
+                ,tc.contract_id         as checkSign
+        from
+                tb_contract tc
+            left join
+                tb_project tp
+            on
+                tc.project_id = tp.project_id
+            left join
+                tb_user tu
+            on
+                tc.create_user_id = tu.user_id
+            left join
+                tb_dict_contract_sts tdcs
+            on
+                tdcs.contract_sts_id = tc.current_state
+            left join
+                tb_dict_department tdd
+            on
+                tdd.department_id = tc.department_id
+            left join
+                tb_user tu2
+            on
+                tc.apply_user_id = tu2.user_id
+            where
+                tc.is_del_flg = 0
+            <if test="null != htIdList and htIdList.size()>0">
+                and
+                tc.contract_id in (
+                    <foreach collection = "htIdList" item = "item" separator="," >
+                        #{item}
+                    </foreach>
+                )
+            </if>
+              and tp.project_sts = 0
+            <if test="null == htIdList or htIdList.size()==0">
+                and
+                   0=1
+            </if>
+            <if test="null != htIdList and htIdList.size()>0">
+                UNION
+                select
+                    tc.project_id               as projectId
+                    ,tp.project_num             as projectNum
+                    ,tc.contract_id             as contractId
+                    ,tc.contract_num            as contractNum
+                    ,tt.delegate_task_id        as delegateTaskId
+                    ,tt.delegate_task_key       as delegateTaskKey
+                    ,ttpr.create_date           as createDate
+                    ,tu.user_name               as createUserName
+                    ,tdts.task_sts_name         as currentStateName
+                    ,tc.department_id           as departmentId
+                    ,tdd.department_name        as departmentName
+                    ,tu1.user_name              as userName
+                    ,tt.task_name               as tenderTaskName
+                    ,''                         as seniorManagerId
+                    ,''                         as seniorManagerName
+                    ,ttpr.relation_id           as businessId
+                    ,'1-1'                      as sourceType
+                    ,tt.submit_node             as submitNode
+                    ,tt.update_date             as updateDate
+                    ,tt.task_id                 as checkSign
+                from
+                    tb_task_period_relation ttpr
+                left join
+                    tb_task tt
+                on
+                    ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+                left join
+                    tb_contract tc
+                on
+                    tt.contract_id = tc.contract_id
+                left join
+                    tb_project tp
+                on
+                    tc.project_id = tp.project_id
+                left join
+                    tb_user tu
+                on
+                    ttpr.create_user_id = tu.user_id
+                left join
+                    tb_user tu1
+                on
+                    ttpr.apply_user_id = tu1.user_id
+                left join
+                    tb_dict_task_sts tdts
+                on
+                    tdts.task_sts_id = tt.current_state
+                left join
+                    tb_dict_department tdd
+                on
+                    tdd.department_id = tc.department_id
+                where
+                    ttpr.is_del_flg = 0
+                and
+                    tt.is_submit_reedit = '0'
+                and
+                    tt.task_id in (
+                    <foreach collection = "htIdList" item = "item" separator="," >
+                        #{item}
+                    </foreach>
+                    )
+                and tp.project_sts = 0
+                UNION
+                  select
+                    tc.project_id               as projectId
+                    ,tp.project_num             as projectNum
+                    ,tc.contract_id             as contractId
+                    ,tc.contract_num            as contractNum
+                    ,ttpr.delegate_task_id      as delegateTaskId
+                    ,ttpr.delegate_task_key     as delegateTaskKey
+                    ,ttpr.create_date           as createDate
+                    ,tu.user_name               as createUserName
+                    ,concat(ttp.period_name,'-',tdtps.task_period_sts_name)  as currentStateName
+                    ,tc.department_id           as departmentId
+                    ,tdd.department_name        as departmentName
+                    ,''                         as userName
+                    ,tt.task_name               as tenderTaskName
+                    ,''                         as seniorManagerId
+                    ,''                         as seniorManagerName
+                    ,ttpr.relation_id           as businessId
+                    ,'1-2'                      as sourceType
+                    ,ttpr.submit_node           as submitNode
+                    ,ttpr.update_date           as updateDate
+                    ,ttpr.relation_id           as checkSign
+                  from
+                    tb_task_period_relation ttpr
+                  left join tb_task tt on tt.task_id = ttpr.task_id
+                  left join tb_task_period ttp on ttp.period_id = ttpr.period_id
+                  left join tb_contract tc on tc.contract_id = tt.contract_id
+                  left join tb_project tp on tp.project_id = tc.project_id
+                  left join tb_user tu on tu.user_id = ttpr.create_user_id
+                  left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                  left join tb_dict_task_period_sts tdtps on tdtps.task_period_sts_id = ttpr.current_state
+                  where
+                    ttpr.relation_id in (
+                      <foreach collection = "htIdList" item = "item" separator="," >
+                          #{item}
+                      </foreach>
+                    )
+                  and tp.project_sts = 0
+                UNION
+                  select
+                     tc.project_id               as projectId
+                    ,tp.project_num             as projectNum
+                    ,tc.contract_id             as contractId
+                    ,tc.contract_num            as contractNum
+                    ,ttr.delegate_task_id       as delegateTaskId
+                    ,ttr.delegate_task_key      as delegateTaskKey
+                    ,tt.create_date             as createDate
+                    ,tu.user_name               as createUserName
+                    ,tdtrs.task_reedit_sts_name as currentStateName
+                    ,tc.department_id           as departmentId
+                    ,tdd.department_name        as departmentName
+                    ,''                         as userName
+                    ,tt.task_name               as tenderTaskName
+                    ,''                         as seniorManagerId
+                    ,''                         as seniorManagerName
+                    ,ttpr.relation_id           as businessId
+                    ,'1-3'                      as sourceType
+                    ,ttr.submit_node            as submitNode
+                    ,tt.update_date            as updateDate
+                    ,ttr.reedit_id           as checkSign
+                  from
+                    tb_task_reedit ttr
+                  left join tb_task tt on ttr.task_id = tt.task_id
+                  left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+                  left join tb_contract tc on tc.contract_id = tt.contract_id
+                  left join tb_project tp on tp.project_id = tc.project_id
+                  left join tb_dict_task_reedit_sts tdtrs on tdtrs.task_reedit_sts_id = ttr.current_state
+                  left join tb_user tu on tu.user_id = tt.create_user_id
+                  left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                  where
+                    ttr.reedit_id in (
+                      <foreach collection = "htIdList" item = "item" separator="," >
+                          #{item}
+                      </foreach>
+                  )
+                  and tp.project_sts = 0
+                UNION
+                    select
+                        tc.project_id                as projectId
+                        ,tp.project_num              as projectNum
+                        ,tc.contract_id              as contractId
+                        ,tc.contract_num             as contractNum
+                        ,trm.delegate_task_id        as delegateTaskId
+                        ,trm.delegate_task_key       as delegateTaskKey
+                        ,trm.create_date             as createDate
+                        ,tu.user_name                as createUserName
+                        ,tdrms.request_menu_sts_name as currentStateName
+                        ,tc.department_id            as departmentId
+                        ,tdd.department_name         as departmentName
+                        ,tuau.user_name              as userName
+                        ,'-'                         as tenderTaskName
+                        ,trm.senior_manager_id       as seniorManagerId
+                        ,tusm.user_name              as seniorManagerName
+                        ,trm.request_menu_id         as businessId
+                        ,'3'                         as sourceType
+                        ,trm.submit_node             as submitNode
+                        ,trm.update_date             as updateDate
+                        ,trm.request_menu_id           as checkSign
+                    from
+                     tb_request_menu trm
+                    left join tb_contract tc on tc.contract_id = trm.contract_id
+                    left join tb_project tp on tp.project_id = tc.project_id
+                    left join tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+                    left join tb_user tu on tu.user_id = trm.create_user_id
+                    left join tb_user tusm on tusm.user_id = trm.senior_manager_id
+                    left join tb_user tuau on tuau.user_id = trm.apply_user_id
+                    left join tb_dict_department tdd on trm.department_id = tdd.department_id
+                    where
+                    trm.request_menu_id in (
+                    <foreach collection = "htIdList" item = "item" separator="," >
+                        #{item}
+                    </foreach>
+                    )
+                    and tp.project_sts = 0
+                    and trm.verify_state is not null
+                UNION
+                    select
+                        tc.project_id               as projectId
+                        ,tp.project_num             as projectNum
+                        ,tc.contract_id             as contractId
+                        ,tc.contract_num            as contractNum
+                        ,tta.delegate_task_id       as delegateTaskId
+                        ,tta.delegate_task_key      as delegateTaskKey
+                        ,tt.create_date             as createDate
+                        ,tu.user_name               as createUserName
+                        ,tdxts.xm_task_sts_name     as currentStateName
+                        ,tc.department_id           as departmentId
+                        ,tdd.department_name        as departmentName
+                        ,tu2.user_name              as userName
+                        ,tt.task_name               as tenderTaskName
+                        ,''                         as seniorManagerId
+                        ,''                         as seniorManagerName
+                        ,ttpr.relation_id           as businessId
+                        ,'1'                        as sourceType
+                        ,tta.submit_node            as submitNode
+                        ,tta.update_date            as updateDate
+                        ,tta.task_archive_id           as checkSign
+                    from
+                        tb_task_archive tta
+                    left join tb_task tt on tta.task_id = tt.task_id
+                    left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.period_id = '033aec1d-9e6e-11e9-a036-0e411fd5cf70'
+                    left join tb_contract tc on tc.contract_id = tt.contract_id
+                    left join tb_project tp on tp.project_id = tc.project_id
+                    left join tb_dict_xm_task_sts tdxts on tdxts.xm_task_sts_id = tta.current_state
+                    left join tb_user tu on tu.user_id = tt.create_user_id
+                    left join tb_user tu2 on tu2.user_id = tt.apply_user_id
+                    left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                    where
+                        tta.task_archive_id in (
+                            <foreach collection = "htIdList" item = "item" separator="," >
+                                #{item}
+                            </foreach>
+                            )
+                    and tp.project_sts = 0
+            </if>
+                UNION
+                  select
+                    tc.project_id         as projectId,
+                    tp.project_num        as projectNum,
+                    tc.contract_id        as contractId,
+                    tc.contract_num       as contractNum,
+                    tt.delegate_task_id   as delegateTaskId,
+                    tt.delegate_task_key  as delegateTaskKey,
+                    tt.create_date        as createDate,
+                    tu.user_name          as createUserName,
+                    tdts.task_sts_name    as currentStateName,
+                    tc.department_id      as departmentId,
+                    tdd.department_name   as departmentName,
+                    ''                    as userName,
+                    tt.task_name          as tenderTaskName
+                    ,''                   as seniorManagerId
+                    ,''                   as seniorManagerName
+                    ,tt.task_id           as businessId
+                    ,'1'                  as sourceType
+                    ,tt.submit_node       as submitNode
+                    ,tt.update_date       as updateDate
+                    ,''           as checkSign
+                  from
+                    tb_task tt
+                  left join tb_contract tc on tt.contract_id = tc.contract_id
+                  left join tb_project tp on tc.project_id = tp.project_id
+                  left join tb_user tu on tt.create_user_id = tu.user_id
+                  left join tb_dict_task_sts tdts on tdts.task_sts_id = tt.current_state
+                  left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                  where
+                      tt.task_id in (
+                          select
+                              ttur.task_id
+                          from
+                              tb_task_user_relation ttur
+                          left join
+                              tb_task tt2
+                          on
+                              ttur.task_id = tt2.task_id
+                          where
+                              ttur.is_del_flg = '0'
+                          and
+                              ttur.is_main_duty = '0'
+                          and
+                              ttur.user_id = #{userId}
+                      )
+                  and
+                      tt.delegate_task_key = #{delegateTaskKey}
+                  and
+                      tc.department_id = #{departmentId}
+                  and tp.project_sts = 0
+                UNION
+                    select
+                        tc.project_id          as projectId,
+                        tp.project_num         as projectNum,
+                        tc.contract_id         as contractId,
+                        tc.contract_num        as contractNum,
+                        tta.delegate_task_id   as delegateTaskId,
+                        tta.delegate_task_key  as delegateTaskKey,
+                        tt.create_date        as createDate,
+                        tu.user_name           as createUserName,
+                        tdxts.xm_task_sts_name as currentStateName,
+                        tc.department_id      as departmentId,
+                        tdd.department_name   as departmentName,
+                        ''                    as userName,
+                        tt.task_name          as tenderTaskName
+                        ,''                   as seniorManagerId
+                        ,''                   as seniorManagerName
+                        ,tt.task_id           as businessId
+                        ,'1'                  as sourceType
+                        ,tta.submit_node      as submitNode
+                        ,tta.update_date      as updateDate
+                        ,''           as checkSign
+                    from
+                        tb_task_archive tta
+                    left join tb_task tt on tt.task_id = tta.task_id
+                    left join tb_contract tc on tt.contract_id = tc.contract_id
+                    left join tb_project tp on tc.project_id = tp.project_id
+                    left join tb_user tu on tt.create_user_id = tu.user_id
+                    left join tb_dict_xm_task_sts tdxts on tdxts.xm_task_sts_id = tta.current_state
+                    left join tb_dict_department tdd on tdd.department_id = tc.department_id
+                    where
+                        tta.task_id in (
+                            select
+                                ttur.task_id
+                            from
+                                tb_task_user_relation ttur
+                            where
+                                ttur.is_del_flg = 0
+                            and
+                                ttur.is_main_duty = 0
+                            and
+                                ttur.user_id = #{userId}
+                        )
+                    and
+                        tta.delegate_task_key = #{delegateTaskKey}
+                    and tp.project_sts = 0
+        ) t
+        where
+            1=1
+        <if test = "projectNum !=null and projectNum!= ''" >
+            and t.projectNum LIKE concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test = "userName !=null and userName!= ''" >
+            AND t.userName LIKE concat(concat('%',#{userName}),'%')
+        </if>
+        order by
+            t.createDate desc
+    </sql>
+
+    <!--查询待办列表-->
+    <select id="excSearchTenderTaskPendingList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchTenderTaskPendingListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--查询待办列表数据的总条数-->
+    <select id="excSearchTenderTaskPendingCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchTenderTaskPendingListSql" />) temp
+    </select>
+
+    <sql id="excSearchTenderTaskPendingListSql">
+        SELECT
+        t.*
+        FROM
+        (
+        SELECT
+          ttt.tender_task_id AS tenderTaskId,
+          ttt.tender_task_name AS tenderTaskName,
+          '' AS contractId,
+          '-' AS contractNum,
+          ttt.tender_task_content AS tenderTaskContent,
+          ttt.sort_num AS sortNum,
+          ttt.department_id AS departmentId,
+          ttt.start_date AS startDate,
+          ttt.tender_task_sts AS tenderTaskSts,
+          ttt.verify_state AS verifyState,
+          tu.user_name AS userName,
+          ttt.is_can_recall AS isCanRecall,
+          ttt.delegate_task_id AS delegateTaskId,
+          ttt.delegate_task_key AS delegateTaskKey,
+          ttt.create_date AS createDate,
+          tdtts.tender_task_sts_name AS currentStateName,
+          tdd.department_name AS departmentName,
+          '' AS projectId,
+          '' AS projectNum,
+          ttt.tender_task_id AS businessId,
+          '2' as sourceType,
+          ttt.submit_node AS submitNode,
+          ttt.update_date AS updateDate,
+          ttt.tender_task_id AS checkSign
+        FROM
+          tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+        LEFT JOIN tb_dict_department tdd ON ttt.department_id = tdd.department_id
+        LEFT JOIN tb_dict_tender_task_sts tdtts ON tdtts.tender_task_sts_id = ttt.current_state
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.delegate_task_key = #{delegateTaskKey}
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND tttu.is_main_duty = '1'
+        AND ttt.tender_task_id IN (
+        SELECT
+        tender_task_id
+        FROM
+        tb_tender_task_user tttu
+        WHERE
+        tttu.is_del_flg = '0'
+        AND tttu.is_main_duty = '0'
+        AND tttu.user_id = #{userId})
+        <if test="null != htIdList and htIdList.size()>0">
+            UNION
+            SELECT
+            ttt.tender_task_id AS tenderTaskId,
+            ttt.tender_task_name AS tenderTaskName,
+            '' AS contractId,
+            '-' AS contractNum,
+            ttt.tender_task_content AS tenderTaskContent,
+            ttt.sort_num AS sortNum,
+            ttt.department_id AS departmentId,
+            ttt.start_date AS startDate,
+            ttt.tender_task_sts AS tenderTaskSts,
+            ttt.verify_state AS verifyState,
+            tu.user_name AS userName,
+            ttt.is_can_recall AS isCanRecall,
+            ttt.delegate_task_id AS delegateTaskId,
+            ttt.delegate_task_key AS delegateTaskKey,
+            ttt.create_date AS createDate,
+            tdtts.tender_task_sts_name AS currentStateName,
+            tdd.department_name AS departmentName,
+            '' AS projectId,
+            '' AS projectNum,
+            tttp.relation_id AS business_id,
+            '2' as sourceType,
+            ttt.submit_node AS submitNode,
+            ttt.update_date AS updateDate,
+            ttt.tender_task_id AS checkSign
+            FROM
+            tb_tender_task ttt
+            LEFT JOIN (
+                    select
+                      tttp1.tender_task_id,
+                      tttp1.relation_id,
+                      ttp.period_name
+                    from
+                      tb_tender_task_period tttp1
+                    left join
+                      tb_task_period ttp
+                    on
+                      tttp1.period_id = ttp.period_id
+                    where ttp.period_name='编制投标文件') tttp
+            ON tttp.tender_task_id = ttt.tender_task_id
+            LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+            LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = ttt.department_id
+            LEFT JOIN tb_dict_tender_task_sts tdtts ON tdtts.tender_task_sts_id = ttt.current_state
+            WHERE
+            ttt.is_del_flg = '0'
+            AND tttu.is_main_duty = '1'
+            <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+                AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+            </if>
+            AND ttt.tender_task_id IN (
+            <foreach collection = "htIdList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="null != htIdList and htIdList.size()>0">
+            UNION
+            SELECT
+                ''                        AS tenderTaskId,
+                '-'                       AS tenderTaskName,
+                tc.contract_id            AS contractId,
+                tc.contract_num           AS contractNum,
+                ''                        AS tenderTaskContent,
+                ''                        AS sortNum,
+                tc.department_id          AS departmentId,
+                tc.start_date             AS startDate,
+                ''                        AS tenderTaskSts,
+                tc.verify_state           AS verifyState,
+                tu.user_name              AS userName,
+                tc.is_can_recall          AS isCanRecall,
+                tc.delegate_task_id       AS delegateTaskId,
+                tc.delegate_task_key      AS delegateTaskKey,
+                tc.create_date            AS createDate,
+                tdcs.contract_sts_name    AS currentStateName,
+                tdd.department_name       AS departmentName,
+                tc.project_id             AS projectId,
+                tp.project_num            AS projectNum,
+                tc.contract_id            AS businessId,
+                '0'                       AS sourceType,
+                tc.submit_node            AS submitNode,
+                tc.update_date            AS updateDate,
+                tc.contract_id            AS checkSign
+            FROM tb_contract tc
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_user tu ON tc.apply_user_id = tu.user_id
+            LEFT JOIN tb_dict_contract_sts tdcs on tdcs.contract_sts_id = tc.current_state
+            LEFT JOIN tb_dict_department tdd on tdd.department_id = tc.department_id
+            WHERE tc.is_del_flg = 0
+            AND tc.contract_id IN (
+            <foreach collection = "htIdList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+        </if>
+        <if test="null != htIdList and htIdList.size()>0">
+            UNION
+              SELECT
+                ''                         AS tenderTaskId,
+                tt.task_name               AS tenderTaskName,
+                tc.contract_id             AS contractId,
+                tc.contract_num            AS contractNum,
+                ''                         AS tenderTaskContent,
+                ''                         AS sortNum,
+                tc.department_id           AS departmentId,
+                tc.start_date              AS startDate,
+                ''                         AS tenderTaskSts,
+                tt.verify_state            AS verifyState,
+                tu.user_name               AS userName,
+                tt.is_can_recall           AS isCanRecall,
+                tt.delegate_task_id        AS delegateTaskId,
+                tt.delegate_task_key       AS delegateTaskKey,
+                tt.create_date             AS createDate,
+                tdts.task_sts_name         AS currentStateName,
+                tdd.department_name        AS departmentName,
+                tc.project_id              AS projectId,
+                tp.project_num             AS projectNum,
+                ttpr.relation_id           AS businessId,
+                '1-1'                      AS sourceType,
+                tt.submit_node             AS submitNode,
+                tt.update_date             AS updateDate,
+                tt.task_id                 AS checkSign
+              FROM
+                tb_task tt
+              LEFT JOIN tb_task_period_relation ttpr ON ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+              LEFT JOIN tb_user tu ON tu.user_id = tt.apply_user_id
+              LEFT JOIN tb_dict_task_sts tdts ON tdts.task_sts_id = tt.current_state
+              LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+              LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+              LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+              WHERE
+                tt.is_submit_reedit = '0'
+              AND
+                tt.task_id IN(
+                  <foreach collection = "htIdList" item = "item" separator="," >
+                      #{item}
+                  </foreach>
+                )
+              AND tp.project_sts = 0
+            UNION
+            SELECT
+                ''                         AS tenderTaskId,
+                tt.task_name               AS tenderTaskName,
+                tc.contract_id             AS contractId,
+                tc.contract_num            AS contractNum,
+                ''                         AS tenderTaskContent,
+                ''                         AS sortNum,
+                tc.department_id           AS departmentId,
+                tc.start_date              AS startDate,
+                ''                         AS tenderTaskSts,
+                ttpr.verify_state          AS verifyState,
+                tu.user_name               AS userName,
+                ttpr.is_can_recall         AS isCanRecall,
+                ttpr.delegate_task_id      AS delegateTaskId,
+                ttpr.delegate_task_key     AS delegateTaskKey,
+                ttpr.create_date           AS createDate,
+                concat(ttp.period_name,'-',tdtps.task_period_sts_name) AS currentStateName,
+                tdd.department_name        AS departmentName,
+                tc.project_id              AS projectId,
+                tp.project_num             AS projectNum,
+                ttpr.relation_id           AS businessId,
+                '1-2'                      AS sourceType,
+                ttpr.submit_node           AS submitNode,
+                ttpr.update_date           AS updateDate,
+                ttpr.relation_id           AS checkSign
+            FROM tb_task_period_relation ttpr
+            LEFT JOIN tb_task tt ON ttpr.task_id = tt.task_id
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_user tu ON ttpr.apply_user_id = tu.user_id
+            LEFT JOIN tb_dict_task_period_sts tdtps ON tdtps.task_period_sts_id = ttpr.current_state
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+            LEFT JOIN tb_task_period ttp ON ttp.period_id = ttpr.period_id
+            WHERE tc.is_del_flg = 0
+            AND ttpr.relation_id IN (
+            <foreach collection = "htIdList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+            UNION
+              SELECT
+                  ''                         AS tenderTaskId,
+                  tt.task_name               AS tenderTaskName,
+                  tc.contract_id             AS contractId,
+                  tc.contract_num            AS contractNum,
+                  ''                         AS tenderTaskContent,
+                  ''                         AS sortNum,
+                  tc.department_id           AS departmentId,
+                  tc.start_date              AS startDate,
+                  ''                         AS tenderTaskSts,
+                  ttr.verify_state           AS verifyState,
+                  tu.user_name               AS userName,
+                  ''                         AS isCanRecall,
+                  ttr.delegate_task_id       AS delegateTaskId,
+                  ttr.delegate_task_key      AS delegateTaskKey,
+                  tt.create_date             AS createDate,
+                  tdtrs.task_reedit_sts_name AS currentStateName,
+                  tdd.department_name        AS departmentName,
+                  tc.project_id              AS projectId,
+                  tp.project_num             AS projectNum,
+                  ttpr.relation_id           AS businessId,
+                  '1-3'                      AS sourceType,
+                  ttr.submit_node            AS submitNode,
+                  tt.update_date             AS updateDate,
+                  ttr.reedit_id              AS checkSign
+              FROM
+                tb_task_reedit ttr
+              LEFT JOIN tb_task tt ON tt.task_id = ttr.task_id
+              LEFT  JOIN tb_task_period_relation ttpr ON ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+              LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+              LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+              LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+              LEFT JOIN tb_dict_task_reedit_sts tdtrs ON tdtrs.task_reedit_sts_id = ttr.current_state
+              LEFT JOIN tb_user tu ON tu.user_id = ttr.apply_user_id
+              WHERE
+                ttr.reedit_id IN (
+                  <foreach collection = "htIdList" item = "item" separator="," >
+                      #{item}
+                  </foreach>
+                )
+                AND tp.project_sts = 0
+        </if>
+        <if test="null != htIdList and htIdList.size()>0">
+            UNION
+            SELECT
+            ''                         AS tenderTaskId,
+            '-'                        AS tenderTaskName,
+            tc.contract_id             AS contractId,
+            tc.contract_num            AS contractNum,
+            ''                         AS tenderTaskContent,
+            ''                         AS sortNum,
+            tc.department_id           AS departmentId,
+            tc.start_date              AS startDate,
+            ''                         AS tenderTaskSts,
+            trm.verify_state           AS verifyState,
+            tu.user_name               AS userName,
+            trm.is_can_recall           AS isCanRecall,
+            trm.delegate_task_id        AS delegateTaskId,
+            trm.delegate_task_key       AS delegateTaskKey,
+            tc.create_date             AS createDate,
+            tdrms.request_menu_sts_name    AS currentStateName,
+            tdd.department_name       AS departmentName,
+            tc.project_id             AS projectId,
+            tp.project_num            AS projectNum,
+            trm.request_menu_id       AS businessId,
+            '3'                      AS sourceType,
+            trm.submit_node            AS submitNode,
+            trm.update_date            AS updateDate,
+            trm.request_menu_id       AS checkSign
+            FROM tb_request_menu trm
+            LEFT JOIN tb_contract tc ON tc.contract_id	= trm.contract_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_user tu ON trm.apply_user_id = tu.user_id
+            LEFT JOIN tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+            LEFT JOIN tb_dict_department tdd on tdd.department_id = tc.department_id
+            WHERE tc.is_del_flg = 0
+            AND trm.request_menu_id IN (
+            <foreach collection = "htIdList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+        </if>
+        ) t
+        WHERE
+            1=1
+        <if test = "userName !=null and userName!= ''" >
+            AND t.userName LIKE concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="null != projectName and '' != projectName">
+            and t.projectName like concat(concat('%',#{projectName}),'%')
+        </if>
+        ORDER BY
+        t.createDate DESC
+    </sql>
+
+    <!--查询待办列表数据的总条数-->
+    <select id="excSearchTenderTaskPendingAllCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchTenderTaskPendingAllListSql" />) temp
+    </select>
+    <sql id="excSearchTenderTaskPendingAllListSql">
+        select
+        tc.project_id                as projectId
+        ,tp.project_num              as projectNum
+        ,tc.contract_id              as contractId
+        ,tc.contract_num             as contractNum
+        ,trm.delegate_task_id        as delegateTaskId
+        ,trm.delegate_task_key       as delegateTaskKey
+        ,trm.create_date             as createDate
+        ,tu.user_name                as createUserName
+        ,tdrms.request_menu_sts_name as currentStateName
+        ,tc.department_id            as departmentId
+        ,tdd.department_name         as departmentName
+        ,tuau.user_name              as userName
+        ,'-'                         as tenderTaskName
+        ,trm.senior_manager_id       as seniorManagerId
+        ,tusm.user_name              as seniorManagerName
+        ,trm.request_menu_id         as businessId
+        ,'3'                         as sourceType
+        ,trm.submit_node             as submitNode
+        ,trm.update_date             as updateDate
+        ,trm.request_menu_id         as checkSign
+        from
+        tb_request_menu trm
+        left join tb_contract tc on tc.contract_id = trm.contract_id
+        left join tb_project tp on tp.project_id = tc.project_id
+        left join tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+        left join tb_user tu on tu.user_id = trm.create_user_id
+        left join tb_user tusm on tusm.user_id = trm.senior_manager_id
+        left join tb_user tuau on tuau.user_id = trm.apply_user_id
+        left join tb_dict_department tdd on trm.department_id = tdd.department_id
+        where
+         tp.project_sts = 0
+        and trm.verify_state is not null
+    </sql>
+    <!--查询已办列表数据-->
+    <select id="excSearchTenderTaskCompletedList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+          temp.*
+        from
+        (<include refid="excSearchTenderTaskCompletedListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--查询已办列表数据的总条数-->
+    <select id="excSearchTenderTaskCompletedCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchTenderTaskCompletedListSql" />) temp
+    </select>
+
+    <!--普通和执行人已完成列表-->
+    <sql id="excSearchTenderTaskCompletedListSql" >
+        SELECT
+        t.*
+        FROM
+        (
+        SELECT
+          ttt.tender_task_id AS tenderTaskId,
+          ttt.tender_task_name AS tenderTaskName,
+          ttt.tender_task_content AS tenderTaskContent,
+          ttt.sort_num AS sortNum,
+          ttt.start_date AS startDate,
+          ttt.tender_task_sts AS tenderTaskSts,
+          ttt.verify_state AS verifyState,
+          tu.user_name AS userName,
+          ttt.is_can_recall AS isCanRecall,
+          ttt.delegate_task_id AS delegateTaskId,
+          ttt.delegate_task_key AS delegateTaskKey,
+          ttt.submit_node AS submitNode,
+          ttt.create_date AS createDate
+        FROM
+        tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        LEFT JOIN tb_user tu ON ttt.create_user_id = tu.user_id
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.tender_task_sts  = '0'
+        AND tttu.is_done = '1'
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND tttu.is_main_duty = '1'
+        AND ttt.tender_task_id IN (
+        SELECT
+        tender_task_id
+        FROM
+        tb_tender_task_user tttu
+        WHERE
+        tttu.is_del_flg = '0'
+        AND tttu.is_main_duty = '0'
+        AND tttu.user_id = #{userId})
+        <if test="null != tenderTaskIds and tenderTaskIds.size()>0">
+            UNION
+            SELECT
+              ttt.tender_task_id AS tenderTaskId,
+              ttt.tender_task_name AS tenderTaskName,
+              ttt.tender_task_content AS tenderTaskContent,
+              ttt.sort_num AS sortNum,
+              ttt.start_date AS startDate,
+              ttt.tender_task_sts AS tenderTaskSts,
+              ttt.verify_state AS verifyState,
+              tu.user_name AS userName,
+              ttt.is_can_recall AS isCanRecall,
+              ttt.delegate_task_id AS delegateTaskId,
+              ttt.delegate_task_key AS delegateTaskKey,
+              ttt.submit_node AS submitNode,
+              ttt.create_date AS createDate
+            FROM
+            tb_tender_task ttt
+            LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+            LEFT JOIN tb_user tu ON ttt.create_user_id = tu.user_id
+            WHERE
+            ttt.is_del_flg = '0'
+            AND ttt.tender_task_sts  = '0'
+            AND tttu.is_main_duty = '1'
+            <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+                AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+            </if>
+            AND ttt.tender_task_id IN (
+            <foreach collection = "tenderTaskIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+
+        </if>
+        ) t
+        ORDER BY
+        t.createDate DESC
+    </sql>
+
+
+    <!--查询经手列表数据-->
+    <select id="excSearchTenderTaskHandleList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchTenderTaskHandleListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--查询经手列表数据的总条数-->
+    <select id="excSearchTenderTaskHandleCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchTenderTaskHandleListSql" />) temp
+    </select>
+
+    <!--普通和执行人经手列表-->
+    <sql id="excSearchTenderTaskHandleListSql">
+        SELECT
+        t.*
+        FROM
+        (
+        SELECT
+        ttt.tender_task_id AS tenderTaskId,
+        ttt.tender_task_name AS tenderTaskName,
+        ttt.tender_task_content AS tenderTaskContent,
+        ttt.sort_num AS sortNum,
+        ttt.start_date AS startDate,
+        ttt.tender_task_sts AS tenderTaskSts,
+        ttt.verify_state AS verifyState,
+        tu.user_name AS userName,
+        ttt.is_can_recall AS isCanRecall,
+        ttt.delegate_task_id AS delegateTaskId,
+        ttt.delegate_task_key AS delegateTaskKey,
+        ttt.submit_node AS submitNode,
+        ttt.create_date AS createDate
+        FROM
+        tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        LEFT JOIN tb_user tu ON ttt.create_user_id = tu.user_id
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.tender_task_sts  IN ('1','2')
+        AND tttu.is_done = '1'
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND tttu.is_main_duty = '1'
+        AND ttt.tender_task_id IN (
+        SELECT
+        tender_task_id
+        FROM
+        tb_tender_task_user tttu
+        WHERE
+        tttu.is_del_flg = '0'
+        AND tttu.is_main_duty = '0'
+        AND tttu.user_id = #{userId})
+        <if test="null != tenderTaskIds and tenderTaskIds.size()>0">
+            UNION
+            SELECT
+              ttt.tender_task_id AS tenderTaskId,
+              ttt.tender_task_name AS tenderTaskName,
+              ttt.tender_task_content AS tenderTaskContent,
+              ttt.sort_num AS sortNum,
+              ttt.start_date AS startDate,
+              ttt.tender_task_sts AS tenderTaskSts,
+              ttt.verify_state AS verifyState,
+              tu.user_name AS userName,
+              ttt.is_can_recall AS isCanRecall,
+              ttt.delegate_task_id AS delegateTaskId,
+              ttt.delegate_task_key AS delegateTaskKey,
+              ttt.submit_node AS submitNode,
+              ttt.create_date AS createDate
+            FROM
+            tb_tender_task ttt
+            LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+            LEFT JOIN tb_user tu ON ttt.create_user_id = tu.user_id
+            WHERE
+            ttt.is_del_flg = '0'
+            AND ttt.tender_task_sts  IN ('1','2')
+            AND tttu.is_main_duty = '1'
+            <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+                AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+            </if>
+            AND ttt.tender_task_id IN (
+            <foreach collection = "tenderTaskIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+
+        </if>
+        ) t
+        ORDER BY
+        t.createDate DESC
+    </sql>
+
+
+
+    <!--合同待办列表-->
+    <select id="excSearchNewContractListInfo" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchNewContractListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--合同待办列表总数-->
+    <select id="excSearchNewContractListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchNewContractListSql" />) temp
+    </select>
+
+    <sql id="excSearchNewContractListSql">
+        SELECT
+        t.*
+        FROM
+        (
+        select
+        tc.project_id           as projectId
+        ,tp.project_num         as projectNum
+        ,tp.project_name        as projectName
+        ,tp.counsel_type_period as counselTypePeriod
+        ,'-'                    as counselType
+        ,tc.contract_id         as contractId
+        ,tc.contract_num        as contractNum
+        ,tc.project_name        as contractName
+        ,tc.cooperate_company   as cooperateCompany
+        ,tc.process_inst_id     as processInstId
+        ,tc.create_date         as contractCreateDate
+        ,tcu.user_name          as contractCreateUserName
+        ,tc.delegate_task_id    as delegateTaskId
+        ,tc.delegate_task_key   as delegateTaskKey
+        ,tc.create_date         as createDate
+        ,tu.user_name           as createUserName
+        ,tdcs.contract_sts_name as currentStateName
+        ,tc.department_id       as departmentId
+        ,tdd.department_name    as departmentName
+        ,tu2.user_name          as userName
+        ,'-'                    as tenderTaskName
+        ,''                     as seniorManagerId
+        ,''                     as seniorManagerName
+        ,tc.contract_id         as businessId
+        ,'0'                    as sourceType
+        ,tc.submit_node         as submitNode
+        ,tc.update_date         as updateDate
+        ,tc.contract_id         as checkSign
+        from
+        tb_contract tc
+        left join
+        tb_project tp
+        on
+        tc.project_id = tp.project_id
+        left join
+        tb_user tu
+        on
+        tc.create_user_id = tu.user_id
+        left join tb_user tcu on tcu.user_id = tc.create_user_id
+        left join
+        tb_dict_contract_sts tdcs
+        on
+        tdcs.contract_sts_id = tc.current_state
+        left join
+        tb_dict_department tdd
+        on
+        tdd.department_id = tc.department_id
+        left join
+        tb_user tu2
+        on
+        tc.apply_user_id = tu2.user_id
+        where
+        tc.is_del_flg = 0
+        and
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        <if test="contractIdsFlag">
+            and
+            tc.contract_id in (
+            <foreach collection = "contractIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+        and tp.project_sts = 0
+        <if test="!contractIdsFlag">
+            and
+            0=1
+        </if>
+        <if test="TaskFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,if(
+                ct.contract_type_name is null,
+                  tdct.counsel_type_name,
+                    concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                           as counselType
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,tt.process_inst_id         as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,tt.delegate_task_id        as delegateTaskId
+            ,tt.delegate_task_key       as delegateTaskKey
+            ,ttpr.create_date           as createDate
+            ,tu.user_name               as createUserName
+            ,tdts.task_sts_name         as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,tu1.user_name              as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-1'                      as sourceType
+            ,tt.submit_node             as submitNode
+            ,tt.update_date             as updateDate
+            ,tt.task_id                 as checkSign
+            from
+            tb_task_period_relation ttpr
+            left join
+            tb_task tt
+            on
+            ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            left join
+            tb_contract tc
+            on
+            tt.contract_id = tc.contract_id
+            left join
+            tb_project tp
+            on
+            tc.project_id = tp.project_id
+            left join
+            tb_user tu
+            on
+            ttpr.create_user_id = tu.user_id
+            left join
+            tb_user tu1
+            on
+            ttpr.apply_user_id = tu1.user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join
+            tb_dict_task_sts tdts
+            on
+            tdts.task_sts_id = tt.current_state
+            left join
+            tb_dict_department tdd
+            on
+            tdd.department_id = tc.department_id
+            left join
+              tb_dict_contract_type ct
+            on
+              ct.contract_type_id = tt.contract_type_id
+            left join
+              tb_dict_counsel_type tdct
+            on
+              tdct.counsel_type_id = tt.counsel_type_id
+            where
+            ttpr.is_del_flg = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            and
+            tt.is_submit_reedit = '0'
+            and
+            tt.task_id in (
+            <foreach collection = "Task" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+        </if>
+        <if test="Task_A3Flag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,if(
+              ct.contract_type_name is null,
+                tdct.counsel_type_name,
+                  concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                           as counselType
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,ttpr.process_inst_id       as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,ttpr.delegate_task_id      as delegateTaskId
+            ,ttpr.delegate_task_key     as delegateTaskKey
+            ,ttpr.create_date           as createDate
+            ,tu.user_name               as createUserName
+            ,concat(ttp.period_name,'-',tdtps.task_period_sts_name)  as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,''                         as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-2'                      as sourceType
+            ,ttpr.submit_node           as submitNode
+            ,ttpr.update_date           as updateDate
+            ,ttpr.relation_id           as checkSign
+            from
+            tb_task_period_relation ttpr
+            left join tb_task tt on tt.task_id = ttpr.task_id
+            left join tb_task_period ttp on ttp.period_id = ttpr.period_id
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_user tu on tu.user_id = ttpr.create_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            left join tb_dict_task_period_sts tdtps on tdtps.task_period_sts_id = ttpr.current_state
+            left join tb_dict_contract_type ct on ct.contract_type_id = tt.contract_type_id
+            left join tb_dict_counsel_type tdct on tdct.counsel_type_id = tt.counsel_type_id
+            where
+            ttpr.relation_id in (
+            <foreach collection = "Task_A3" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        <if test="Task_ReeditFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,if(
+                ct.contract_type_name is null,
+                  tdct.counsel_type_name,
+                    concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                           as counselType
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,ttr.process_inst_id         as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,ttr.delegate_task_id       as delegateTaskId
+            ,ttr.delegate_task_key      as delegateTaskKey
+            ,tt.create_date             as createDate
+            ,tu.user_name               as createUserName
+            ,tdtrs.task_reedit_sts_name as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,''                         as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-3'                      as sourceType
+            ,ttr.submit_node            as submitNode
+            ,tt.update_date            as updateDate
+            ,ttr.reedit_id           as checkSign
+            from
+            tb_task_reedit ttr
+            left join tb_task tt on ttr.task_id = tt.task_id
+            left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_task_reedit_sts tdtrs on tdtrs.task_reedit_sts_id = ttr.current_state
+            left join tb_user tu on tu.user_id = tt.create_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            left join tb_dict_contract_type ct on ct.contract_type_id = tt.contract_type_id
+            left join tb_dict_counsel_type tdct on tdct.counsel_type_id = tt.counsel_type_id
+            where
+            ttr.reedit_id in (
+            <foreach collection = "Task_Reedit" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        <if test="CashApplyFlag">
+            UNION
+            select
+            tc.project_id                as projectId
+            ,tp.project_num              as projectNum
+            ,tp.project_name             as projectName
+            ,tp.counsel_type_period      as counselTypePeriod
+            ,'-'                         as counselType
+            ,tc.contract_id              as contractId
+            ,tc.contract_num             as contractNum
+            ,tc.project_name             as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,trm.process_inst_id         as processInstId
+            ,tc.create_date              as contractCreateDate
+            ,tcu.user_name               as contractCreateUserName
+            ,trm.delegate_task_id        as delegateTaskId
+            ,trm.delegate_task_key       as delegateTaskKey
+            ,trm.create_date             as createDate
+            ,tu.user_name                as createUserName
+            ,tdrms.request_menu_sts_name as currentStateName
+            ,tc.department_id            as departmentId
+            ,tdd.department_name         as departmentName
+            ,tuau.user_name              as userName
+            ,'-'                         as tenderTaskName
+            ,trm.senior_manager_id       as seniorManagerId
+            ,tusm.user_name              as seniorManagerName
+            ,trm.request_menu_id         as businessId
+            ,'3'                         as sourceType
+            ,trm.submit_node             as submitNode
+            ,trm.update_date             as updateDate
+            ,trm.request_menu_id           as checkSign
+            from
+            tb_request_menu trm
+            left join tb_contract tc on tc.contract_id = trm.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+            left join tb_user tu on tu.user_id = trm.create_user_id
+            left join tb_user tusm on tusm.user_id = trm.senior_manager_id
+            left join tb_user tuau on tuau.user_id = trm.apply_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on trm.department_id = tdd.department_id
+            where
+            trm.request_menu_id in (
+            <foreach collection = "CashApply" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            and trm.verify_state is not null
+        </if>
+        <if test="ArchiveFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,if(
+                ct.contract_type_name is null,
+                  tdct.counsel_type_name,
+                    concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                           as counselType
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,tta.process_inst_id        as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,tta.delegate_task_id       as delegateTaskId
+            ,tta.delegate_task_key      as delegateTaskKey
+            ,tt.create_date             as createDate
+            ,tu.user_name               as createUserName
+            ,tdxts.xm_task_sts_name     as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,tu2.user_name              as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1'                        as sourceType
+            ,tta.submit_node            as submitNode
+            ,tta.update_date            as updateDate
+            ,tta.task_archive_id           as checkSign
+            from
+            tb_task_archive tta
+            left join tb_task tt on tta.task_id = tt.task_id
+            left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.period_id = '033aec1d-9e6e-11e9-a036-0e411fd5cf70'
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_xm_task_sts tdxts on tdxts.xm_task_sts_id = tta.current_state
+            left join tb_user tu on tu.user_id = tt.create_user_id
+            left join tb_user tu2 on tu2.user_id = tt.apply_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            left join tb_dict_contract_type ct on ct.contract_type_id = tt.contract_type_id
+            left join tb_dict_counsel_type tdct on tdct.counsel_type_id = tt.counsel_type_id
+            where
+            tta.task_archive_id in (
+            <foreach collection = "Archive" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        ) t
+        where
+        1=1
+        <if test = "projectNum !=null and projectNum!= ''" >
+            and t.projectNum LIKE concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test = "projectName !=null and projectName!= ''" >
+            and t.projectName LIKE concat(concat('%',#{projectName}),'%')
+        </if>
+        <if test = "userName !=null and userName!= ''" >
+            AND t.userName LIKE concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="null != orderList and orderList.size()>0">
+            order by
+            field(checkSign,
+            <foreach collection = "orderList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+    </sql>
+    <!--查询待办列表-->
+    <select id="excSearchNewTenderTaskPendingList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchNewTenderTaskPendingListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--查询待办列表数据的总条数-->
+    <select id="excSearchNewTenderTaskPendingCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchNewTenderTaskPendingListSql" />) temp
+    </select>
+
+    <sql id="excSearchNewTenderTaskPendingListSql">
+        SELECT
+        t.*,
+        t.business_id AS businessId
+        FROM
+        (
+            SELECT
+              ttt.tender_task_id AS tenderTaskId,
+              ttt.tender_task_name AS tenderTaskName,
+              '' AS projectId,
+              '' AS projectNum,
+              '-'AS projectName,
+              '' AS counselTypePeriod,
+              '-'AS counselType,
+              '' AS contractId,
+              '' AS contractNum,
+              '-'AS contractName,
+              '' AS cooperateCompany,
+              ttt.process_inst_id AS processInstId,
+              null AS contractCreateDate,
+              '-' AS contractCreateUserName,
+              ttt.tender_task_content AS tenderTaskContent,
+              ttt.sort_num AS sortNum,
+              ttt.department_id AS departmentId,
+              ttt.start_date AS startDate,
+              ttt.tender_task_sts AS tenderTaskSts,
+              ttt.verify_state AS verifyState,
+              tu.user_name AS userName,
+              ttt.is_can_recall AS isCanRecall,
+              ttt.delegate_task_id AS delegateTaskId,
+              ttt.delegate_task_key AS delegateTaskKey,
+              ttt.create_date AS createDate,
+              tdtts.tender_task_sts_name AS currentStateName,
+              tdd.department_name AS departmentName,
+              tttp.relation_id AS business_id,
+              '2' AS sourceType,
+              ttt.submit_node AS submitNode,
+              ttt.update_date AS updateDate,
+              ttt.tender_task_id AS checkSign
+            FROM
+            tb_tender_task ttt
+            LEFT JOIN (
+            select
+            tttp1.tender_task_id,
+            tttp1.relation_id,
+            ttp.period_name
+            from
+            tb_tender_task_period tttp1
+            left join
+            tb_task_period ttp
+            on
+            tttp1.period_id = ttp.period_id
+            where ttp.period_name='编制投标文件') tttp
+            ON tttp.tender_task_id = ttt.tender_task_id
+            LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+            LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = ttt.department_id
+            LEFT JOIN tb_dict_tender_task_sts tdtts ON tdtts.tender_task_sts_id = ttt.current_state
+            WHERE
+            ttt.is_del_flg = '0'
+        <if test="!TenderFlag">
+            AND
+            1 = 0
+        </if>
+            AND tttu.is_main_duty = '1'
+            <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+                AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+            </if>
+        <if test="TenderFlag">
+            AND ttt.tender_task_id IN (
+
+            <foreach collection = "Tender" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="contractIdsFlag">
+            UNION
+            SELECT
+            ''                        AS tenderTaskId,
+            '-'                       AS tenderTaskName,
+            tp.project_id             AS projectId,
+            tp.project_num            AS projectNum,
+            tp.project_name           AS projectName,
+            tp.counsel_type_period    AS counselTypePeriod,
+            '-'                       AS counselType,
+            tc.contract_id            AS contractId,
+            tc.contract_num           AS contractNum,
+            tc.project_name           AS contractName,
+            tc.cooperate_company      AS cooperateCompany,
+            tc.process_inst_id        AS processInstId,
+            tc.create_date            AS contractCreateDate,
+            tcu.user_name             AS contractCreateUserName,
+            ''                        AS tenderTaskContent,
+            ''                        AS sortNum,
+            tc.department_id          AS departmentId,
+            tc.start_date             AS startDate,
+            ''                        AS tenderTaskSts,
+            tc.verify_state           AS verifyState,
+            tu.user_name              AS userName,
+            tc.is_can_recall          AS isCanRecall,
+            tc.delegate_task_id       AS delegateTaskId,
+            tc.delegate_task_key      AS delegateTaskKey,
+            tc.create_date            AS createDate,
+            tdcs.contract_sts_name    AS currentStateName,
+            tdd.department_name       AS departmentName,
+            tc.contract_id            AS businessId,
+            '0'                       AS sourceType,
+            tc.submit_node            AS submitNode,
+            tc.update_date            AS updateDate,
+            tc.contract_id            AS checkSign
+            FROM tb_contract tc
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_user tu ON tc.apply_user_id = tu.user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            LEFT JOIN tb_dict_contract_sts tdcs on tdcs.contract_sts_id = tc.current_state
+            LEFT JOIN tb_dict_department tdd on tdd.department_id = tc.department_id
+            WHERE tc.is_del_flg = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            AND tc.contract_id IN (
+            <foreach collection = "contractIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+        </if>
+        <if test="TaskFlag">
+            UNION
+            SELECT
+            ''                         AS tenderTaskId,
+            tt.task_name               AS tenderTaskName,
+            tc.project_id              AS projectId,
+            tp.project_num             AS projectNum,
+            tp.project_name            AS projectName,
+            tp.counsel_type_period     AS counselTypePeriod,
+            if(
+              ct.contract_type_name is null,
+                tdct.counsel_type_name,
+                  concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                          AS counselType,
+            tc.contract_id             AS contractId,
+            tc.contract_num            AS contractNum,
+            tc.project_name            AS contractName,
+            tc.cooperate_company       AS cooperateCompany,
+            tt.process_inst_id         AS processInstId,
+            tc.create_date             AS contractCreateDate,
+            tcu.user_name              AS contractCreateUserName,
+            ''                         AS tenderTaskContent,
+            ''                         AS sortNum,
+            tc.department_id           AS departmentId,
+            tc.start_date              AS startDate,
+            ''                         AS tenderTaskSts,
+            tt.verify_state            AS verifyState,
+            tu.user_name               AS userName,
+            tt.is_can_recall           AS isCanRecall,
+            tt.delegate_task_id        AS delegateTaskId,
+            tt.delegate_task_key       AS delegateTaskKey,
+            tt.create_date             AS createDate,
+            tdts.task_sts_name         AS currentStateName,
+            tdd.department_name        AS departmentName,
+            ttpr.relation_id           AS businessId,
+            '1-1'                      AS sourceType,
+            tt.submit_node             AS submitNode,
+            tt.update_date             AS updateDate,
+            tt.task_id                 AS checkSign
+            FROM
+            tb_task tt
+            LEFT JOIN tb_task_period_relation ttpr ON ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            LEFT JOIN tb_user tu ON tu.user_id = tt.apply_user_id
+            LEFT JOIN tb_dict_task_sts tdts ON tdts.task_sts_id = tt.current_state
+            LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+            LEFT JOIN tb_dict_contract_type ct ON ct.contract_type_id = tt.contract_type_id
+            LEFT JOIN tb_dict_counsel_type tdct ON tdct.counsel_type_id = tt.counsel_type_id
+            WHERE
+            tt.is_submit_reedit = '0'
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            AND
+            tt.task_id IN(
+            <foreach collection = "Task" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+        </if>
+        <if test="Task_A3Flag">
+            UNION
+            SELECT
+            ''                         AS tenderTaskId,
+            tt.task_name               AS tenderTaskName,
+            tc.project_id              AS projectId,
+            tp.project_num             AS projectNum,
+            tp.project_name            AS projectName,
+            tp.counsel_type_period     AS counselTypePeriod,
+            if(
+              ct.contract_type_name is null,
+                tdct.counsel_type_name,
+                  concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                          AS counselType,
+            tc.contract_id             AS contractId,
+            tc.contract_num            AS contractNum,
+            tc.project_name            AS contractName,
+            tc.cooperate_company       AS cooperateCompany,
+            ttpr.process_inst_id       AS processInstId,
+            tc.create_date             AS contractCreateDate,
+            tcu.user_name              AS contractCreateUserName,
+            ''                         AS tenderTaskContent,
+            ''                         AS sortNum,
+            tc.department_id           AS departmentId,
+            tc.start_date              AS startDate,
+            ''                         AS tenderTaskSts,
+            ttpr.verify_state          AS verifyState,
+            tu.user_name               AS userName,
+            ttpr.is_can_recall         AS isCanRecall,
+            ttpr.delegate_task_id      AS delegateTaskId,
+            ttpr.delegate_task_key     AS delegateTaskKey,
+            ttpr.create_date           AS createDate,
+            concat(ttp.period_name,'-',tdtps.task_period_sts_name) AS currentStateName,
+            tdd.department_name        AS departmentName,
+            ttpr.relation_id           AS businessId,
+            '1-2'                      AS sourceType,
+            ttpr.submit_node           AS submitNode,
+            ttpr.update_date           AS updateDate,
+            ttpr.relation_id           AS checkSign
+            FROM tb_task_period_relation ttpr
+            LEFT JOIN tb_task tt ON ttpr.task_id = tt.task_id
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_user tu ON ttpr.apply_user_id = tu.user_id
+            LEFT JOIN tb_dict_task_period_sts tdtps ON tdtps.task_period_sts_id = ttpr.current_state
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+            LEFT JOIN tb_task_period ttp ON ttp.period_id = ttpr.period_id
+            LEFT JOIN tb_dict_contract_type ct ON ct.contract_type_id = tt.contract_type_id
+            LEFT JOIN tb_dict_counsel_type tdct ON tdct.counsel_type_id = tt.counsel_type_id
+            WHERE tc.is_del_flg = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            AND ttpr.relation_id IN (
+            <foreach collection = "Task_A3" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+        </if>
+        <if test="Task_ReeditFlag">
+            UNION
+            SELECT
+            ''                         AS tenderTaskId,
+            tt.task_name               AS tenderTaskName,
+            tc.project_id              AS projectId,
+            tp.project_num             AS projectNum,
+            tp.project_name            AS projectName,
+            tp.counsel_type_period     AS counselTypePeriod,
+            if(
+              ct.contract_type_name is null,
+                tdct.counsel_type_name,
+                  concat(ct.contract_type_name,'-',tdct.counsel_type_name)
+            )                          AS counselType,
+            tc.contract_id             AS contractId,
+            tc.contract_num            AS contractNum,
+            tc.project_name            AS contractName,
+            tc.cooperate_company       AS cooperateCompany,
+            ttr.process_inst_id        AS processInstId,
+            tc.create_date             AS contractCreateDate,
+            tcu.user_name              AS contractCreateUserName,
+            ''                         AS tenderTaskContent,
+            ''                         AS sortNum,
+            tc.department_id           AS departmentId,
+            tc.start_date              AS startDate,
+            ''                         AS tenderTaskSts,
+            ttr.verify_state           AS verifyState,
+            tu.user_name               AS userName,
+            ''                         AS isCanRecall,
+            ttr.delegate_task_id       AS delegateTaskId,
+            ttr.delegate_task_key      AS delegateTaskKey,
+            tt.create_date             AS createDate,
+            tdtrs.task_reedit_sts_name AS currentStateName,
+            tdd.department_name        AS departmentName,
+            ttpr.relation_id           AS businessId,
+            '1-3'                      AS sourceType,
+            ttr.submit_node            AS submitNode,
+            tt.update_date             AS updateDate,
+            ttr.reedit_id              AS checkSign
+            FROM
+            tb_task_reedit ttr
+            LEFT JOIN tb_task tt ON tt.task_id = ttr.task_id
+            LEFT  JOIN tb_task_period_relation ttpr ON ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+            LEFT JOIN tb_dict_task_reedit_sts tdtrs ON tdtrs.task_reedit_sts_id = ttr.current_state
+            LEFT JOIN tb_user tu ON tu.user_id = ttr.apply_user_id
+            WHERE
+            ttr.reedit_id IN (
+            <foreach collection = "Task_Reedit" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        <if test="CashApplyFlag">
+            UNION
+            SELECT
+            ''                         AS tenderTaskId,
+            '-'                        AS tenderTaskName,
+            tc.project_id              AS projectId,
+            tp.project_num             AS projectNum,
+            tp.project_name            AS projectName,
+            tp.counsel_type_period     AS counselTypePeriod,
+            '-'                        AS counselType,
+            tc.contract_id             AS contractId,
+            tc.contract_num            AS contractNum,
+            tc.project_name            AS contractName,
+            tc.cooperate_company       AS cooperateCompany,
+            trm.process_inst_id        AS processInstId,
+            tc.create_date             AS contractCreateDate,
+            tcu.user_name              AS contractCreateUserName,
+            ''                         AS tenderTaskContent,
+            ''                         AS sortNum,
+            tc.department_id           AS departmentId,
+            tc.start_date              AS startDate,
+            ''                         AS tenderTaskSts,
+            trm.verify_state           AS verifyState,
+            tu.user_name               AS userName,
+            trm.is_can_recall          AS isCanRecall,
+            trm.delegate_task_id       AS delegateTaskId,
+            trm.delegate_task_key      AS delegateTaskKey,
+            tc.create_date             AS createDate,
+            tdrms.request_menu_sts_name    AS currentStateName,
+            tdd.department_name       AS departmentName,
+            trm.request_menu_id       AS businessId,
+            '3'                      AS sourceType,
+            trm.submit_node            AS submitNode,
+            trm.update_date            AS updateDate,
+            trm.request_menu_id       AS checkSign
+            FROM tb_request_menu trm
+            LEFT JOIN tb_contract tc ON tc.contract_id	= trm.contract_id
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            LEFT JOIN tb_user tu ON trm.apply_user_id = tu.user_id
+            LEFT JOIN tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+            LEFT JOIN tb_dict_department tdd on tdd.department_id = tc.department_id
+            WHERE tc.is_del_flg = 0
+            AND trm.request_menu_id IN (
+            <foreach collection = "CashApply" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            AND tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        ) t
+        WHERE
+        1=1
+        <if test = "userName !=null and userName!= ''" >
+            AND t.userName LIKE concat(concat('%',#{userName}),'%')
+        </if>
+        <if test = "projectName !=null and projectName!= ''" >
+            and t.projectName LIKE concat(concat('%',#{projectName}),'%')
+        </if>
+        <if test="null != orderList and orderList.size()>0">
+            ORDER BY
+            field(checkSign,
+            <foreach collection = "orderList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+    </sql>
+
+
+    <!--查询普通执行人投标任务待办列表-->
+    <select id="excSearchExecutorTenderTaskPendingList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchExecutorTenderTaskPendingListSql" />) temp
+    </select>
+    <!--查询普通执行人投标任务待办个数-->
+    <select id="excSearchExecutorTenderTaskPendingCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchExecutorTenderTaskPendingListSql" />) temp
+    </select>
+    <sql id="excSearchExecutorTenderTaskPendingListSql">
+        SELECT
+        ttt.delegate_task_id AS delegateTaskId,
+        ttt.tender_task_id AS businessId
+        FROM
+        tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.delegate_task_key = #{delegateTaskKey}
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND tttu.is_main_duty = '1'
+        AND ttt.tender_task_id IN (
+        SELECT
+        tender_task_id
+        FROM
+        tb_tender_task_user tttu
+        WHERE
+        tttu.is_del_flg = '0'
+        AND tttu.is_main_duty = '0'
+        AND tttu.user_id = #{userId})
+    </sql>
+    <!--查询普通执行人归档待办列表-->
+    <select id="excSearchExecutortaskArchivePendingList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchExecutortaskArchivePendingListSql" />) temp
+    </select>
+    <!--查询普通执行人归档待办个数-->
+    <select id="excSearchExecutortaskArchivePendingCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchExecutortaskArchivePendingListSql" />) temp
+    </select>
+
+    <sql id="excSearchExecutortaskArchivePendingListSql">
+        select
+        tta.delegate_task_id   as delegateTaskId
+        ,tta.task_archive_id   as businessId
+        from
+        tb_task_archive tta
+        left join tb_task tt on tt.task_id = tta.task_id
+        LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+        left join tb_project tp on tc.project_id = tp.project_id
+        where
+        tta.task_id in (
+        select
+        ttur.task_id
+        from
+        tb_task_user_relation ttur
+        where
+        ttur.is_del_flg = 0
+        and
+        ttur.is_main_duty = 0
+        and
+        ttur.user_id = #{userId}
+        )
+        and
+        tta.delegate_task_key = #{delegateTaskKey}
+        and tp.project_sts = 0
+    </sql>
+    <!--查询普通执行人任务待办列表-->
+    <select id="excSearchExecutorTaskPendingList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchExecutorTaskPendingListSql" />) temp
+    </select>
+    <!--查询普通执行人任务待办总条数-->
+    <select id="excSearchExecutorTaskPendingCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchExecutorTaskPendingListSql" />) temp
+    </select>
+    <sql id="excSearchExecutorTaskPendingListSql">
+        select
+        tt.delegate_task_id   as delegateTaskId,
+        tt.task_id           as businessId
+        from
+        tb_task tt
+        left join tb_contract tc on tt.contract_id = tc.contract_id
+        left join tb_project tp on tc.project_id = tp.project_id
+        where
+        tt.task_id in (
+        select
+        ttur.task_id
+        from
+        tb_task_user_relation ttur
+        left join
+        tb_task tt2
+        on
+        ttur.task_id = tt2.task_id
+        where
+        ttur.is_del_flg = '0'
+        and
+        ttur.is_main_duty = '0'
+        and
+        ttur.user_id = #{userId}
+        )
+        and
+        tt.delegate_task_key = #{delegateTaskKey}
+        and
+        tc.department_id = #{departmentId}
+        and tp.project_sts = 0
+    </sql>
+
+    <!--查询待办列表数据的总条数-->
+    <select id="excSearchPendingCount" resultType="com.hd.manager.dao.bean.HTWorkBean">
+            select
+            temp.businessId AS businessId
+            from
+            (
+            SELECT
+              tc.contract_id AS businessId
+            FROM
+            tb_contract tc
+            left join
+            tb_project tp on tc.project_id = tp.project_id
+            where
+                tc.is_del_flg = '0'
+            and tp.project_sts = '0'
+        <choose>
+            <when test="null != ids and ids.size()>0">
+              and
+                tc.contract_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+            </when>
+            <otherwise>
+              and
+               1=0
+            </otherwise>
+        </choose>
+            UNION
+            SELECT
+                tt.task_id AS businessId
+            FROM
+            tb_task tt
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+            left join
+            tb_project tp on tc.project_id = tp.project_id
+            where
+                tt.is_del_flg = '0'
+        and tp.project_sts = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+            tt.task_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+        </when>
+        <otherwise>
+                and
+                1=0
+        </otherwise>
+        </choose>
+            UNION
+            SELECT
+              ttt.tender_task_id  AS businessId
+            FROM
+            tb_tender_task ttt
+            where
+                ttt.is_del_flg = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+                ttt.tender_task_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+        </when>
+            <otherwise>
+                and
+                1=0
+            </otherwise>
+        </choose>
+            UNION
+            SELECT
+              ttpr.relation_id AS businessId
+            FROM
+            tb_task_period_relation ttpr
+            LEFT JOIN tb_task tt ON tt.task_id = ttpr.task_id
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+        left join
+        tb_project tp on tc.project_id = tp.project_id
+            where
+                ttpr.is_del_flg = '0'
+        and tp.project_sts = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+                ttpr.relation_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+        </when>
+            <otherwise>
+                and
+                1=0
+            </otherwise>
+        </choose>
+            UNION
+            SELECT
+              ttr.reedit_id AS businessId
+            FROM
+            tb_task_reedit ttr
+            LEFT JOIN tb_task tt ON tt.task_id = ttr.task_id
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+        left join
+        tb_project tp on tc.project_id = tp.project_id
+            where
+              1=1
+        and tp.project_sts = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+            ttr.reedit_id in (
+            <foreach collection = "ids" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </when>
+            <otherwise>
+                and
+                1=0
+            </otherwise>
+        </choose>
+          UNION
+            SELECT
+            tta.task_archive_id AS businessId
+            FROM
+            tb_task_archive tta
+        LEFT JOIN tb_task tt ON tt.task_id = tta.task_id
+        LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+        left join
+        tb_project tp on tc.project_id = tp.project_id
+            where
+                tta.is_del_flg = '0'
+        and tp.project_sts = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+                tta.task_archive_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+        </when>
+            <otherwise>
+                and
+                1=0
+            </otherwise>
+        </choose>
+          UNION
+            SELECT
+            trm.request_menu_id AS businessId
+            FROM
+            tb_request_menu trm
+        LEFT JOIN tb_contract tc ON trm.contract_id = tc.contract_id
+        left join
+        tb_project tp on tc.project_id = tp.project_id
+            where
+                trm.is_del_flg = '0'
+        and tp.project_sts = '0'
+        <choose>
+        <when test="null != ids and ids.size()>0">
+            and
+                trm.request_menu_id in (
+                <foreach collection = "ids" item = "item" separator="," >
+                    #{item}
+                </foreach>
+                )
+        </when>
+            <otherwise>
+                and
+                1=0
+            </otherwise>
+        </choose>
+         ) temp
+    </select>
+
+
+    <!--查询普通执行人归档待办列表-->
+    <select id="excSearchExecutorTaskArchiveDoneList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchExecutorTaskArchiveDoneListSql" />) temp
+    </select>
+    <!--查询普通执行人归档待办个数-->
+    <select id="excSearchExecutorTaskArchiveDoneCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchExecutorTaskArchiveDoneListSql" />) temp
+    </select>
+
+    <sql id="excSearchExecutorTaskArchiveDoneListSql">
+        select
+        tta.delegate_task_id   as delegateTaskId
+        ,tt.task_id           as businessId
+        from
+        tb_task_archive tta
+        left join tb_task tt on tt.task_id = tta.task_id
+        LEFT JOIN tb_contract tc ON tc.contract_id = tt.contract_id
+        left join tb_project tp on tc.project_id = tp.project_id
+        where
+        tta.task_id in (
+        select
+        ttur.task_id
+        from
+        tb_task_user_relation ttur
+        where
+        ttur.is_del_flg = 0
+        and
+        ttur.is_main_duty = 0
+        and
+        ttur.user_id = #{userId}
+        )
+        and
+        tta.delegate_task_key != #{delegateTaskKey}
+        and tp.project_sts = 0
+    </sql>
+    <!--查询普通执行人任务待办列表-->
+    <select id="excSearchExecutorTaskDoneList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchExecutorTaskDoneListSql" />) temp
+    </select>
+    <!--查询普通执行人任务待办总条数-->
+    <select id="excSearchExecutorTaskDoneCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchExecutorTaskDoneListSql" />) temp
+    </select>
+    <sql id="excSearchExecutorTaskDoneListSql">
+        select
+        tt.delegate_task_id   as delegateTaskId,
+        tt.task_id           as businessId
+        from
+        tb_task tt
+        left join tb_contract tc on tt.contract_id = tc.contract_id
+        left join tb_project tp on tc.project_id = tp.project_id
+        where
+        tt.task_id in (
+        select
+        ttur.task_id
+        from
+        tb_task_user_relation ttur
+        left join
+        tb_task tt2
+        on
+        ttur.task_id = tt2.task_id
+        where
+        ttur.is_del_flg = '0'
+        and
+        ttur.is_main_duty = '0'
+        and
+        ttur.user_id = #{userId}
+        )
+        and
+        tt.delegate_task_key != #{delegateTaskKey}
+        and tp.project_sts = 0
+    </sql>
+
+
+    <!--(新)查询合同已办列表-->
+    <select id="excSearchNewContractCompleteList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchNewContractCompleteListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--(新)查询合同已办列表总数-->
+    <select id="excSearchNewContractCompleteCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchNewContractCompleteListSql" />) temp
+    </select>
+
+    <!--查询登陆人当周审批的信息-->
+    <select id="excSearchWeekWorkList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+
+        SELECT
+	      *
+        FROM
+	(
+		SELECT
+			ifnull(tc.project_name,'-') AS contractName,
+			ifnull(tdpct.counsel_type_name,'-') AS counselTypePeriod,
+			ifnull(tc.cooperate_company,'-') AS cooperateCompany,
+			'-' AS tenderTaskName,
+			aht.START_TIME_ AS startDate,
+			aht.END_TIME_ AS endDate,
+			concat(if(tchti.is_pass=0,'驳回','通过'),':',tchti.reject_reason) AS isPass,
+			aht.DURATION_ AS duration
+		FROM
+			(
+			SELECT
+			  (@num := @num +1) AS NUM,
+			    T.*
+			FROM
+			  ACT_HI_TASKINST T,
+			  ( SELECT @num := 0 ) AS ST
+			WHERE
+			  T.ASSIGNEE_ = #{userId}
+			AND
+			  T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+            AND
+              T.END_TIME_ IS NOT NULL
+            AND
+              T.PROC_DEF_ID_ IN ('WriteContract:1:16')
+            AND
+              date_format(T.END_TIME_,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+            ORDER BY START_TIME_ )aht
+		LEFT JOIN (
+		      SELECT
+		        ( @num1 := @num1 +1) AS NUM ,
+		        T.*
+		      FROM
+		        tb_contract_his_task_inst T,
+		        ( SELECT @num1 := 0 ) AS ST
+		        WHERE
+		           T.task_key IN ('GenerManagerVerify','QualityVerify')
+		        AND
+		          T.approve_user_id = #{userId}
+		        AND
+                  date_format(T.approve_time,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+		        ORDER BY T.approve_time
+		        ) tchti  ON tchti.NUM = aht.NUM
+		LEFT JOIN tb_contract tc ON tchti.contract_task_id = tc.contract_id
+		LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+		LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+
+		UNION ALL
+			SELECT
+
+				ifnull(tc.project_name,'-') AS contractName,
+				ifnull(tdpct.counsel_type_name,'-') AS counselTypePeriod,
+				ifnull(tc.cooperate_company,'-') AS cooperateCompany,
+				tt.task_name AS tenderTaskName,
+				aht.START_TIME_ AS startDate,
+				aht.END_TIME_ AS endDate,
+				concat(if(ttpht.is_pass=0,'驳回','通过'),':',ttpht.reject_reason) AS isPass,
+				aht.DURATION_ AS duration
+			FROM
+			(
+			    SELECT
+			      (@num := @num +1) AS NUM,
+			        T.*
+			    FROM
+			      ACT_HI_TASKINST T,
+			      ( SELECT @num := 0 ) AS ST
+			    WHERE
+			      T.ASSIGNEE_ = #{userId}
+			    AND
+			      T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                AND
+                  T.END_TIME_ IS NOT NULL
+                AND
+                  T.PROC_DEF_ID_ IN ('Task_A3:1:28', 'Task:1:12')
+                AND
+                  date_format(T.END_TIME_,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+                ORDER BY START_TIME_
+              )aht
+		    LEFT JOIN (
+		        SELECT
+		          ( @num1 := @num1 +1) AS NUM ,
+		          T.*
+		        FROM
+		        tb_task_period_his_task_inst T,
+		        ( SELECT @num1 := 0 ) AS ST
+		        WHERE
+		           T.task_key IN ('GenerManagerVerify','QualityVerify')
+		        AND
+		          T.approve_user_id = #{userId}
+		        AND
+                  date_format(T.approve_time,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+		        ORDER BY T.approve_time
+		        ) ttpht  ON ttpht.NUM = aht.NUM
+			LEFT JOIN tb_task tt ON tt.task_id = ttpht.task_id
+			LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+			LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+			LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+
+
+			UNION ALL
+				SELECT
+
+					ifnull(tc.project_name,'-') AS contractName,
+					ifnull(tdpct.counsel_type_name,'-') AS counselTypePeriod,
+					ifnull(tc.cooperate_company,'-')AS cooperateCompany,
+					tt.task_name AS tenderTaskName,
+					aht.START_TIME_ AS startDate,
+					aht.END_TIME_ AS endDate,
+					concat(if(ttrhti.is_pass=0,'驳回','通过'),':',ttrhti.reject_reason) AS isPass,
+					aht.DURATION_ AS duration
+				FROM
+
+				(
+			                SELECT
+			                  (@num := @num +1) AS NUM,
+			                    T.*
+			                FROM
+			                  ACT_HI_TASKINST T,
+			                  ( SELECT @num := 0 ) AS ST
+			                WHERE
+			                  T.ASSIGNEE_ = #{userId}
+			                AND
+			                  T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                            AND
+                              T.END_TIME_ IS NOT NULL
+                            AND
+                              T.PROC_DEF_ID_ IN ('Task_Reedit:1:36')
+                            AND
+                              date_format(T.END_TIME_,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+                            ORDER BY START_TIME_
+              )aht
+		        LEFT JOIN (
+		                              SELECT
+		                                (@num1 := @num1 +1) AS NUM ,
+		                                T.*
+		                              FROM
+		                              tb_task_reedit_his_task_inst T,
+		                              ( SELECT @num1 := 0 ) AS ST
+		                              WHERE
+		                                 T.task_key IN ('GenerManagerVerify','QualityVerify')
+		                              AND
+		                                T.approve_user_id = #{userId}
+		                              AND
+                                        date_format(T.approve_time,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+		                              ORDER BY T.approve_time
+		        ) ttrhti  ON ttrhti.NUM = aht.NUM
+				LEFT JOIN tb_task tt ON tt.task_id = ttrhti.task_id
+				LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+				LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+				LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+
+
+				UNION ALL
+					SELECT
+
+						ifnull(tc.project_name,'-') AS contractName,
+						ifnull(tdpct.counsel_type_name,'-') AS counselTypePeriod,
+						ifnull(tc.cooperate_company,'-') AS cooperateCompany,
+						'-' AS tenderTaskName,
+						aht.START_TIME_ AS startDate,
+						aht.END_TIME_ AS endDate,
+						concat(if(trmhti.is_pass=0,'驳回','通过'),':',trmhti.reject_reason) AS isPass,
+						aht.DURATION_ AS duration
+					FROM
+
+					(
+			                SELECT
+			                  (@num := @num +1) AS NUM,
+			                    T.*
+			                FROM
+			                  ACT_HI_TASKINST T,
+			                  ( SELECT @num := 0 ) AS ST
+			                WHERE
+			                  T.ASSIGNEE_ = #{userId}
+			                AND
+			                  T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                            AND
+                              T.END_TIME_ IS NOT NULL
+                            AND
+                              T.PROC_DEF_ID_ IN ('CashApply:1:4')
+                            AND
+                              date_format(T.END_TIME_,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+                            ORDER BY START_TIME_
+                      )aht
+		              LEFT JOIN (
+		                              SELECT
+		                                (@num1 := @num1 +1) AS NUM ,
+		                                T.*
+		                              FROM
+		                              tb_request_menu_his_task_inst T,
+		                              ( SELECT @num1 := 0 ) AS ST
+		                              WHERE
+		                                 T.task_key IN ('GenerManagerVerify','QualityVerify')
+		                              AND
+		                                T.approve_user_id = #{userId}
+		                              AND
+                                        date_format(T.approve_time,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+		                              ORDER BY T.approve_time
+		            ) trmhti  ON trmhti.NUM = aht.NUM
+					LEFT JOIN tb_request_menu trm ON trm.request_menu_id = trmhti.request_menu_id
+					LEFT JOIN tb_contract tc ON trm.contract_id = tc.contract_id
+					LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+					LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+
+					UNION ALL
+						SELECT
+
+							'-' contractName,
+							'-'  AS counselTypePeriod,
+							'-'  AS cooperateCompany,
+							ttt.tender_task_name AS tenderTaskName,
+							aht.START_TIME_ AS startDate,
+							aht.END_TIME_ AS endDate,
+							concat(if(ttthti.is_pass=0,'驳回','通过'),':',ttthti.reject_reason) AS isPass,
+							aht.DURATION_ AS duration
+						FROM
+
+						(
+			                    SELECT
+			                      (@num := @num +1) AS NUM,
+			                        T.*
+			                    FROM
+			                      ACT_HI_TASKINST T,
+			                      ( SELECT @num := 0 ) AS ST
+			                    WHERE
+			                      T.ASSIGNEE_ = #{userId}
+			                    AND
+			                      T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                                AND
+                                  T.END_TIME_ IS NOT NULL
+                                AND
+                                  T.PROC_DEF_ID_ IN ('Tender:1:20')
+                                AND
+                                  date_format(T.END_TIME_,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+                                ORDER BY START_TIME_
+                        )aht
+		                LEFT JOIN (
+		                              SELECT
+		                                (@num1 := @num1 +1) AS NUM ,
+		                                T.*
+		                              FROM
+		                              tb_tender_task_his_task_inst T,
+		                              ( SELECT @num1 := 0 ) AS ST
+		                              WHERE
+		                                 T.task_key IN ('GenerManagerVerify','QualityVerify')
+		                              AND
+		                                T.approve_user_id = #{userId}
+		                              AND
+                                        date_format(T.approve_time,'%Y-%m-%d') = date_format(#{createDate}, '%Y-%m-%d')
+		                              ORDER BY T.approve_time
+		                ) ttthti  ON ttthti.NUM = aht.NUM
+						LEFT JOIN tb_tender_task ttt ON ttt.tender_task_id = ttthti.tender_task_id
+
+	) week_info
+
+ORDER BY
+	week_info.endDate
+    </select>
+
+    <!--查询登陆人选择时间段内审批任务的信息-->
+    <select id="excSearchWeekTaskList" resultType="com.hd.manager.dao.bean.HTWorkBean">
+
+        SELECT
+	      *
+        FROM
+	(
+
+			SELECT
+                concat(
+                    tp.project_num,
+                      if(tc.contract_num is null || tc.contract_num='','','-'),
+                      if(tc.contract_num is null || tc.contract_num='','',
+                      tc.contract_num))                                           AS contractNum,
+				ifnull(tc.project_name,'-')                                       AS contractName,
+				ifnull(tdpct.counsel_type_name,'-')                               AS counselTypePeriod,
+				concat(
+				  if(ct.contract_type_name is null,'',ct.contract_type_name),
+				    if(ct.contract_type_name is null,'','-'),
+				      tdct.counsel_type_name)                                     AS counselType,
+				if(
+				  tc.cooperate_company is null || tc.cooperate_company='',
+				    '-',
+				      tc.cooperate_company)                                       AS cooperateCompany,
+				tt.task_name                                                      AS tenderTaskName,
+				aht.START_TIME_                                                   AS startDate,
+				aht.END_TIME_                                                     AS endDate,
+				concat(if(ttpht.is_pass=0,'驳回','通过'),':',ttpht.reject_reason) AS isPass,
+				aht.DURATION_                                                     AS duration
+			FROM
+			(
+					            SELECT
+					            	T1. *
+					            FROM
+					            	tb_task T1
+					            LEFT JOIN
+					            	tb_task_period_his_task_inst T2
+					            ON
+					            	T1.task_id = T2.task_id
+					            WHERE
+					            	T2.approve_user_id = #{userId}
+					            AND
+                                  date_format(T2.approve_time,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                                AND
+                                  date_format(T2.approve_time,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+					            AND
+					            	T2.is_pass = 1
+					            GROUP BY
+					                T1.task_id
+			) tt
+			LEFT JOIN
+			(
+		                      SELECT
+		                        ( @num1 := @num1 +1) AS NUM ,
+		                        T.*
+		                      FROM
+		                      tb_task_period_his_task_inst T,
+		                      ( SELECT @num1 := 0 ) AS ST
+		                      WHERE
+		                         T.task_key IN ('GenerManagerVerify','QualityVerify')
+		                      AND
+		                        T.approve_user_id = #{userId}
+		                      AND
+                                date_format(T.approve_time,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                              AND
+                                date_format(T.approve_time,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+		                      ORDER BY T.approve_time
+		        ) ttpht
+		    ON tt.task_id = ttpht.task_id
+			LEFT JOIN
+			(
+			                  SELECT
+			                    (@num := @num +1) AS NUM,
+			                      T.*
+			                  FROM
+			                    ACT_HI_TASKINST T,
+			                    ( SELECT @num := 0 ) AS ST
+			                  WHERE
+			                    T.ASSIGNEE_ = #{userId}
+			                  AND
+			                    T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                              AND
+                                T.END_TIME_ IS NOT NULL
+                              AND
+                                T.PROC_DEF_ID_ IN ('Task_A3:1:28', 'Task:1:12')
+                              AND
+                                date_format(T.END_TIME_,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                              AND
+                                date_format(T.END_TIME_,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+                              ORDER BY START_TIME_
+              )aht
+		    ON ttpht.NUM = aht.NUM
+		    LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+			LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+			LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+			LEFT JOIN tb_dict_counsel_type tdct ON tdct.counsel_type_id = tt.counsel_type_id
+			LEFT JOIN tb_dict_contract_type ct ON ct.contract_type_id = tt.contract_type_id
+
+            UNION ALL
+				SELECT
+                    concat(
+                            tp.project_num,
+                              if(tc.contract_num is null || tc.contract_num='','','-'),
+                                if(tc.contract_num is null || tc.contract_num='','',
+                                  tc.contract_num))                                           AS contractNum,
+					ifnull(tc.project_name,'-')                                               AS contractName,
+					ifnull(tdpct.counsel_type_name,'-')                                       AS counselTypePeriod,
+					concat(
+				        if(ct.contract_type_name is null,'',ct.contract_type_name),
+				          if(ct.contract_type_name is null,'','-'),
+				            tdct.counsel_type_name)                                           AS counselType,
+					if(
+				        tc.cooperate_company is null || tc.cooperate_company='',
+				          '-',
+				            tc.cooperate_company)                                             AS cooperateCompany,
+					tt.task_name                                                              AS tenderTaskName,
+					aht.START_TIME_                                                           AS startDate,
+					aht.END_TIME_                                                             AS endDate,
+					concat(if(ttrhti.is_pass=0,'驳回','通过'),':',ttrhti.reject_reason)       AS isPass,
+					aht.DURATION_                                                             AS duration
+				FROM
+                (
+					            SELECT
+					            	T1. *
+					            FROM
+					            	tb_task T1
+					            LEFT JOIN
+					            	tb_task_reedit_his_task_inst T2
+					            ON
+					            	T1.task_id = T2.task_id
+					            WHERE
+					            	T2.approve_user_id = #{userId}
+					            AND
+                                  date_format(T2.approve_time,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                                AND
+                                  date_format(T2.approve_time,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+					            AND
+					            	T2.is_pass = 1
+					            GROUP BY
+					                T1.task_id
+			      ) tt
+			      LEFT JOIN (
+		                              SELECT
+		                                (@num1 := @num1 +1) AS NUM ,
+		                                T.*
+		                              FROM
+		                              tb_task_reedit_his_task_inst T,
+		                              ( SELECT @num1 := 0 ) AS ST
+		                              WHERE
+		                                  T.task_key IN ('GenerManagerVerify','QualityVerify')
+		                              AND
+		                                  T.approve_user_id = #{userId}
+                                      AND
+                                          date_format(T.approve_time,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                                      AND
+                                          date_format(T.approve_time,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+		                              ORDER BY T.approve_time
+		        ) ttrhti
+			    ON tt.task_id = ttrhti.task_id
+			    LEFT JOIN(
+			                SELECT
+			                  (@num := @num +1) AS NUM,
+			                    T.*
+			                FROM
+			                  ACT_HI_TASKINST T,
+			                  ( SELECT @num := 0 ) AS ST
+			                WHERE
+			                  T.ASSIGNEE_ = #{userId}
+			                AND
+			                  T.TASK_DEF_KEY_ IN ('GenerManagerVerify','QualityVerify')
+                            AND
+                              T.END_TIME_ IS NOT NULL
+                            AND
+                              T.PROC_DEF_ID_ IN ('Task_Reedit:1:36')
+                            AND
+                              date_format(T.END_TIME_,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{startDate}, '%Y-%m-%d')
+                            AND
+                              date_format(T.END_TIME_,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate}, '%Y-%m-%d')
+
+                            ORDER BY START_TIME_
+                  )aht ON ttrhti.NUM = aht.NUM
+                LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+				LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+				LEFT JOIN tb_dict_project_counsel_type tdpct ON tdpct.counsel_type_id = tp.counsel_type_period
+				LEFT JOIN tb_dict_counsel_type tdct ON tdct.counsel_type_id = tt.counsel_type_id
+			    LEFT JOIN tb_dict_contract_type ct ON ct.contract_type_id = tt.contract_type_id
+
+	) week_info
+    ORDER BY
+	  week_info.contractNum,week_info.endDate
+    </select>
+
+
+    <sql id="excSearchNewContractCompleteListSql">
+        SELECT
+        t.*
+        FROM
+        (
+        select
+        tc.project_id           as projectId
+        ,tp.project_num         as projectNum
+        ,tp.project_name        as projectName
+        ,tp.counsel_type_period as counselTypePeriod
+        ,tc.contract_id         as contractId
+        ,tc.contract_num        as contractNum
+        ,tc.project_name        as contractName
+        ,tc.cooperate_company   as cooperateCompany
+        ,tc.process_inst_id     as processInstId
+        ,tc.create_date         as contractCreateDate
+        ,tcu.user_name          as contractCreateUserName
+        ,tc.delegate_task_id    as delegateTaskId
+        ,tc.delegate_task_key   as delegateTaskKey
+        ,tc.create_date         as createDate
+        ,tu.user_name           as createUserName
+        ,tdcs.contract_sts_name as currentStateName
+        ,tc.department_id       as departmentId
+        ,tdd.department_name    as departmentName
+        ,tu2.user_name          as userName
+        ,'-'                    as tenderTaskName
+        ,''                     as seniorManagerId
+        ,''                     as seniorManagerName
+        ,tc.contract_id         as businessId
+        ,'0'                    as sourceType
+        ,tc.submit_node         as submitNode
+        ,tc.update_date         as updateDate
+        ,tc.contract_id         as checkSign
+        from
+        tb_contract tc
+        left join
+        tb_project tp
+        on
+        tc.project_id = tp.project_id
+        left join
+        tb_user tu
+        on
+        tc.create_user_id = tu.user_id
+        left join tb_user tcu on tcu.user_id = tc.create_user_id
+        left join
+        tb_dict_contract_sts tdcs
+        on
+        tdcs.contract_sts_id = tc.current_state
+        left join
+        tb_dict_department tdd
+        on
+        tdd.department_id = tc.department_id
+        left join
+        tb_user tu2
+        on
+        tc.apply_user_id = tu2.user_id
+        where
+        tc.is_del_flg = 0
+        and
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        <if test="contractIdsFlag">
+            and
+            tc.contract_id in (
+            <foreach collection = "contractIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+        and tp.project_sts = 0
+        <if test="!contractIdsFlag">
+            and
+            0=1
+        </if>
+        <if test="TaskFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,tt.process_inst_id         as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,tt.delegate_task_id        as delegateTaskId
+            ,tt.delegate_task_key       as delegateTaskKey
+            ,ttpr.create_date           as createDate
+            ,tu.user_name               as createUserName
+            ,tdts.task_sts_name         as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,tu1.user_name              as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-1'                      as sourceType
+            ,tt.submit_node             as submitNode
+            ,tt.update_date             as updateDate
+            ,tt.task_id                 as checkSign
+            from
+            tb_task_period_relation ttpr
+            left join
+            tb_task tt
+            on
+            ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            left join
+            tb_contract tc
+            on
+            tt.contract_id = tc.contract_id
+            left join
+            tb_project tp
+            on
+            tc.project_id = tp.project_id
+            left join
+            tb_user tu
+            on
+            ttpr.create_user_id = tu.user_id
+            left join
+            tb_user tu1
+            on
+            ttpr.apply_user_id = tu1.user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join
+            tb_dict_task_sts tdts
+            on
+            tdts.task_sts_id = tt.current_state
+            left join
+            tb_dict_department tdd
+            on
+            tdd.department_id = tc.department_id
+            where
+            ttpr.is_del_flg = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            and
+            tt.is_submit_reedit = '0'
+            and
+            tt.task_id in (
+            <foreach collection = "Task" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+        </if>
+        <if test="Task_A3Flag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,ttpr.process_inst_id       as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,ttpr.delegate_task_id      as delegateTaskId
+            ,ttpr.delegate_task_key     as delegateTaskKey
+            ,ttpr.create_date           as createDate
+            ,tu.user_name               as createUserName
+            ,concat(ttp.period_name,'-',tdtps.task_period_sts_name)  as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,''                         as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-2'                      as sourceType
+            ,ttpr.submit_node           as submitNode
+            ,ttpr.update_date           as updateDate
+            ,ttpr.relation_id           as checkSign
+            from
+            tb_task_period_relation ttpr
+            left join tb_task tt on tt.task_id = ttpr.task_id
+            left join tb_task_period ttp on ttp.period_id = ttpr.period_id
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_user tu on tu.user_id = ttpr.create_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            left join tb_dict_task_period_sts tdtps on tdtps.task_period_sts_id = ttpr.current_state
+            where
+            ttpr.relation_id in (
+            <foreach collection = "Task_A3" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        <if test="Task_ReeditFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,ttr.process_inst_id         as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,ttr.delegate_task_id       as delegateTaskId
+            ,ttr.delegate_task_key      as delegateTaskKey
+            ,tt.create_date             as createDate
+            ,tu.user_name               as createUserName
+            ,tdtrs.task_reedit_sts_name as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,''                         as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1-3'                      as sourceType
+            ,ttr.submit_node            as submitNode
+            ,tt.update_date            as updateDate
+            ,ttr.reedit_id              as checkSign
+            from
+            tb_task_reedit ttr
+            left join tb_task tt on ttr.task_id = tt.task_id
+            left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.is_result_file = 1
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_task_reedit_sts tdtrs on tdtrs.task_reedit_sts_id = ttr.current_state
+            left join tb_user tu on tu.user_id = tt.create_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            where
+            ttr.reedit_id in (
+            <foreach collection = "Task_Reedit" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        <if test="CashApplyFlag">
+            UNION
+            select
+            tc.project_id                as projectId
+            ,tp.project_num              as projectNum
+            ,tp.project_name             as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,tc.contract_id              as contractId
+            ,tc.contract_num             as contractNum
+            ,tc.project_name             as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,trm.process_inst_id         as processInstId
+            ,tc.create_date              as contractCreateDate
+            ,tcu.user_name               as contractCreateUserName
+            ,trm.delegate_task_id        as delegateTaskId
+            ,trm.delegate_task_key       as delegateTaskKey
+            ,trm.create_date             as createDate
+            ,tu.user_name                as createUserName
+            ,tdrms.request_menu_sts_name as currentStateName
+            ,tc.department_id            as departmentId
+            ,tdd.department_name         as departmentName
+            ,tuau.user_name              as userName
+            ,'-'                         as tenderTaskName
+            ,trm.senior_manager_id       as seniorManagerId
+            ,tusm.user_name              as seniorManagerName
+            ,trm.request_menu_id         as businessId
+            ,'3'                         as sourceType
+            ,trm.submit_node             as submitNode
+            ,trm.update_date             as updateDate
+            ,trm.request_menu_id         as checkSign
+            from
+            tb_request_menu trm
+            left join tb_contract tc on tc.contract_id = trm.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_request_menu_sts tdrms on tdrms.request_menu_sts_id = trm.current_state
+            left join tb_user tu on tu.user_id = trm.create_user_id
+            left join tb_user tusm on tusm.user_id = trm.senior_manager_id
+            left join tb_user tuau on tuau.user_id = trm.apply_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on trm.department_id = tdd.department_id
+            where
+            trm.request_menu_id in (
+            <foreach collection = "CashApply" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+            and trm.verify_state is not null
+        </if>
+        <if test="ArchiveFlag">
+            UNION
+            select
+            tc.project_id               as projectId
+            ,tp.project_num             as projectNum
+            ,tp.project_name            as projectName
+            ,tp.counsel_type_period     as counselTypePeriod
+            ,tc.contract_id             as contractId
+            ,tc.contract_num            as contractNum
+            ,tc.project_name            as contractName
+            ,tc.cooperate_company       as cooperateCompany
+            ,tta.process_inst_id        as processInstId
+            ,tc.create_date             as contractCreateDate
+            ,tcu.user_name              as contractCreateUserName
+            ,tta.delegate_task_id       as delegateTaskId
+            ,tta.delegate_task_key      as delegateTaskKey
+            ,tt.create_date             as createDate
+            ,tu.user_name               as createUserName
+            ,tdxts.xm_task_sts_name     as currentStateName
+            ,tc.department_id           as departmentId
+            ,tdd.department_name        as departmentName
+            ,tu2.user_name              as userName
+            ,tt.task_name               as tenderTaskName
+            ,''                         as seniorManagerId
+            ,''                         as seniorManagerName
+            ,ttpr.relation_id           as businessId
+            ,'1'                        as sourceType
+            ,tta.submit_node            as submitNode
+            ,tta.update_date            as updateDate
+            ,tta.task_archive_id        as checkSign
+            from
+            tb_task_archive tta
+            left join tb_task tt on tta.task_id = tt.task_id
+            left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id AND ttpr.period_id = '033aec1d-9e6e-11e9-a036-0e411fd5cf70'
+            left join tb_contract tc on tc.contract_id = tt.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            left join tb_dict_xm_task_sts tdxts on tdxts.xm_task_sts_id = tta.current_state
+            left join tb_user tu on tu.user_id = tt.create_user_id
+            left join tb_user tu2 on tu2.user_id = tt.apply_user_id
+            left join tb_user tcu on tcu.user_id = tc.create_user_id
+            left join tb_dict_department tdd on tdd.department_id = tc.department_id
+            where
+            tta.task_archive_id in (
+            <foreach collection = "Archive" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+            and tp.project_sts = 0
+            and
+            (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        </if>
+        ) t
+        where
+        1=1
+        <if test = "projectNum !=null and projectNum!= ''" >
+            and t.projectNum LIKE concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test = "projectName !=null and projectName!= ''" >
+            and t.projectName LIKE concat(concat('%',#{projectName}),'%')
+        </if>
+        <if test = "contractNum !=null and contractNum!= ''" >
+            and concat(concat(t.projectNum,'-'),t.contractNum)  like concat(concat('%',#{contractNum}),'%')
+        </if>
+        <if test = "userName !=null and userName!= ''" >
+            AND t.userName LIKE concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="null != orderList and orderList.size()>0">
+            order by
+            field(checkSign,
+            <foreach collection = "orderList" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        </if>
+    </sql>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTMessageDao">
+
+    <!--查询消息信息列表-->
+    <select id="searchMessageList" resultType="com.hd.manager.dao.bean.HTMessageBean">
+        select
+        temp.*
+        from
+        (<include refid="searchMessageListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+    <!--修改消息信息已读状态-->
+    <update id="updateMessageIsReadType">
+        UPDATE
+            tb_message
+        SET
+            is_read = 1,
+            update_date = #{updateDate},
+            update_user_id = #{updateUserId}
+        WHERE
+            message_id = #{messageId}
+    </update>
+    <!--删除消息信息-->
+    <update id="deleteMessageInfo">
+        UPDATE
+            tb_message
+        SET
+            is_del_flg = 1,
+            update_date = #{updateDate},
+            update_user_id = #{updateUserId}
+        WHERE
+            message_id IN(${messageId})
+    </update>
+
+    <!--查询消息信息列表数据的总条数-->
+    <select id="searchMessageListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchMessageListSql" />) temp
+    </select>
+
+    <sql id="searchMessageListSql">
+        SELECT
+            tm.message_id       AS messageId,
+            tm.message_content  AS messageContent,
+            tm.accept_user_id   AS acceptUserId,
+            tm.is_read          AS isRead,
+            tm.create_date      AS createDate
+        FROM
+            tb_message tm
+        WHERE
+            tm.is_del_flg = 0
+        AND
+            tm.accept_user_id = #{acceptUserId}
+        ORDER BY
+            tm.is_read asc,tm.create_date desc
+    </sql>
+
+    <!--查询消息集合中的最大创建时间的数据信息-->
+    <select id="excSearchMessageListInfo" resultType="com.hd.manager.dao.bean.HTMessageBean">
+        select
+            tm2.message_id as messageId,
+            tm2.create_date as createDate
+        from
+            tb_message tm2
+        where
+            tm2.is_del_flg = 0
+        and
+            tm2.create_date = (
+                select
+                    max(tm.create_date)
+                from
+                    tb_message tm
+                where
+                    tm.is_del_flg = 0
+                and
+                    tm.is_read = 0
+                and
+                    tm.accept_user_id = #{acceptUserId}
+            )
+    </select>
+
+    <!--查询即将到期的请款信息-->
+    <select id="excSearchContractPredictRequestListInfoByCurrentDate"  resultType="com.hd.manager.dao.bean.HTContractBean">
+        select
+            tcprr.start_date            as startDate,
+            tcprr.received_amount       as receivedAmount,
+            tcprr.create_user_id        as createUserId,
+            tc.contract_num             as contractNum,
+            tp.project_num              as projectNum,
+            tu.user_name                as applyUserName,
+            tu.open_id                  as openId
+        from
+            tb_contract_predict_request_relation tcprr
+        left join
+            tb_contract tc
+        on
+            tcprr.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = tcprr.create_user_id
+        where
+            tcprr.is_del_flg = 0
+        and
+            tcprr.start_date= DATE_ADD(date_format(#{currentDate},'%Y-%m-%d'),INTERVAL 1 DAY);
+    </select>
+
+</mapper>

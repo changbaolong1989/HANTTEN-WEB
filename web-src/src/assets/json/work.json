@@ -1,0 +1,23 @@
+{
+	"project-phase":[
+		{
+			"label":"全部阶段",
+			"children":[{
+				"label":"合同",
+				"children":[{
+					"label":"HT 100 BJ"
+				},{
+					"label":"请款"
+				}]
+			},{
+				"label":"合同",
+				"children":[{
+					"label":"HT 100 BJ"
+				},{
+					"label":"请款"
+				}]
+			}]
+			
+		}
+	]
+}

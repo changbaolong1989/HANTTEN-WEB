@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTCompanyDao">
+
+    <!--查询公司列表数据的总条数-->
+    <select id="excSearchCompanyListCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            (<include refid="excSearchCompanyListSql" />) temp
+    </select>
+
+    <!--查询公司列表数据-->
+    <select id="excSearchCompanyList" resultType="com.hd.manager.dao.bean.HTCompanyBean">
+        select
+            temp.*
+        from
+            (<include refid="excSearchCompanyListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--列表sql-->
+    <sql id="excSearchCompanyListSql">
+        select
+             company_id   as companyId
+            ,company_name as companyName
+            ,condense     as condense
+            ,bank_name    as bankName
+            ,bank_account as bankAccount
+            ,postcode     as postCode
+            ,phone_num    as phoneNum
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 0
+        <if test='null != companyName and "" != companyName'>
+            and company_name like concat(concat('%',#{companyName}),'%')
+        </if>
+        <if test='null != condense and "" != condense'>
+            and condense like concat(concat('%',#{condense}),'%')
+        </if>
+        order by
+           create_date desc
+    </sql>
+
+    <!--查询公司名称是否重复-->
+    <select id="excSearchCompanyName" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 0
+        <if test='null != companyName and "" != companyName'>
+            and company_name = #{companyName}
+        </if>
+        <if test='null == companyName or "" == companyName'>
+            and 1!=1
+        </if>
+        <if test='null != companyId and "" != companyId'>
+            and company_id != #{companyId}
+        </if>
+    </select>
+
+    <!--查询公司缩写是否重复-->
+    <select id="excSearchCondense" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 0
+        <if test='null != condense and "" != condense'>
+            and condense = #{condense}
+        </if>
+        <if test='null == condense and "" == condense'>
+            and 1!=1
+        </if>
+        <if test='null != companyId and "" != companyId'>
+            and company_id != #{companyId}
+        </if>
+    </select>
+
+    <!--查询公司详情数据-->
+    <select id="excSearchCompanyInfo" resultType="com.hd.manager.dao.bean.HTCompanyBean">
+        select
+            company_name     as companyName
+            ,condense        as condense
+            ,bank_name       as bankName
+            ,bank_account    as bankAccount
+            ,postcode        as postCode
+            ,phone_num       as phoneNum
+            ,phone_foreign   as phoneForeign
+            ,fax_num         as faxNum
+            ,email           as email
+            ,company_address as companyAddress
+            ,update_date     as updateDate
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 0
+        <if test='null != companyId and "" != companyId'>
+            and company_id = #{companyId}
+        </if>
+    </select>
+
+    <!--查询该公司是否已经和项目绑定-->
+    <select id="excSearchCompanyIdFromProject" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_project
+        where
+            is_del_flg = 0
+        <if test='null != companyId and "" != companyId'>
+            and company_id = #{companyId}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,35 @@
+@charset "UTF-8";
+.m-work {
+  /* 表单样式 */
+}
+.m-work .form-block {
+  margin-top: 10px;
+  background-color: #edf1f4;
+  border-radius: 5px;
+  padding: 20px 20px 20px 10px;
+}
+.m-work .form-block:first-child {
+  margin-top: 0;
+}
+.m-work .form-block.form-block__row--auto-width .el-row {
+  max-width: unset !important;
+}
+.m-work .form-block .btn-upload {
+  height: 30px !important;
+}
+.m-work .form-block .el-row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-bottom: 5px;
+}
+.m-work .form-block .el-row .el-col {
+  padding-right: 0 !important;
+}
+.m-work .is-disabled .el-input__inner, .m-work .is-disabled + span.el-radio__label {
+  color: #606266 !important;
+}
+.m-work .is-disabled .el-input__inner::placeholder, .m-work .is-disabled + span.el-radio__label::placeholder {
+  color: #606266 !important;
+}
+
+/*# sourceMappingURL=other.css.map */

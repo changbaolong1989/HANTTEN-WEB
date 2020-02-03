@@ -1,0 +1,48 @@
+@charset "utf-8";
+/* 待办已办经手 */
+.work__table-backlog,
+.work__table-finished,
+.work__table-handle,
+/* 请章记录 */
+.work__table-please-record-chapter,
+/* 用章记录 */
+.work__table-recorded-chapter,
+/* 用章审核 */
+.work__table-chapter-review{
+  *{
+    box-sizing: border-box;
+  }
+
+  /* 待办已办经手__类表格列表 */
+  /* 内容列表 */
+  .contentlist{
+    margin:15px auto;
+
+    .contentlist-li{
+
+      /* 可点击的 */
+      .contentlist-li--clickable{
+        color: #06a1ee!important;
+      }
+
+      .contentlist-li--clickable--refuse{
+        color: red!important;
+      }
+      &>span{
+        max-width:50%;
+
+        &+span{
+          text-align: right;
+        }
+
+        &:first-child{
+          min-width: 100px;
+        }
+      }
+    }
+  }
+}
+
+.mint-toast{
+  z-index: 999999;
+}

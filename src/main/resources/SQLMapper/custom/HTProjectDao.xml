@@ -1,0 +1,1069 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTProjectDao">
+
+    <!--查询已收入汇总和合同金额汇总-->
+    <select id="excSearchIncomeReceivedSumAndContractAmountSum" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            ifnull(sum(trm.payment_amount),0)                            as incomeReceivedSum
+            ,ifnull(sum(ifnull(tc.predict_total,tc.contract_amount)),0)  as contractAmountSum
+        from
+            tb_contract tc
+        left join
+            tb_request_menu trm
+        on
+            trm.contract_id = tc.contract_id and trm.verify_state = 1
+        where
+            tc.is_del_flg = 0
+        <if test="startDate != null">
+            and date_format(tc.start_date,'%Y-%m-%d') <![CDATA[>=]]>date_format(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="startDate != null">
+            and date_format(tc.start_date,'%Y-%m-%d')<![CDATA[<=]]>date_format(#{endDate},'%Y-%m-%d')
+        </if>
+        <if test='departmentIdList != null and departmentIdList.size() > 0'>
+            and tc.department_id in (
+                <foreach collection="departmentIdList" item="item" separator=",">
+                    #{item}
+                </foreach>
+            )
+        </if>
+    </select>
+
+    <!--查询公司缩写下拉列表-->
+    <select id="excSearchCondenseList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            company_id   as companyId
+            ,condense     as condense
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 0
+        <if test='null != companyId and "" != companyId'>
+            and company_id = #{companyId}
+        </if>
+        order by
+            create_date desc
+    </select>
+
+    <!--查询部门人员下拉列表-->
+    <select id="excSearchPersonList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            tj.job_name          as jobName
+            ,tj.job_id           as jobId
+            ,tdd.department_name as departmentName
+            ,tdd.department_id   as departmentId
+            ,tdd.abbr            as abbr
+        from
+            tb_job tj
+        left join
+            tb_dict_department tdd
+        on
+            tdd.department_id = tj.involved_department
+        where
+            tj.is_del_flg = 0
+        and
+            tj.involved_department in (#{deptIdZj},#{deptIdZbdl},#{deptIdXmjl})
+        and
+            tj.job_name = #{jobName}
+        order by
+            tj.create_date desc
+    </select>
+
+    <!--批量插入合同列表-->
+    <insert id="excInsertHTProjectVOList">
+        INSERT INTO
+        tb_contract(
+            contract_id,
+            contract_num,
+            verify_state,
+            project_id,
+            delivery_user_id,
+            department_id,
+            is_del_flg,
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                UUID(),
+                #{item.contractNum},
+                #{item.contractSts},
+                #{item.projectId},
+                #{item.deliveryUserId},
+                #{item.departmentId},
+                #{item.isDelFlg},
+                #{item.createUserId},
+                #{item.createDate},
+                #{item.updateUserId},
+                #{item.updateDate}
+            )
+        </foreach>
+    </insert>
+
+    <!--查询项目总条数-->
+    <select id="excSearchProjectListCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            (<include refid="excSearchProjectListSql" />) temp
+    </select>
+
+    <!--查询项目列表数据-->
+    <select id="excSearchProjectList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            temp.*
+        from
+            (<include refid="excSearchProjectListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+
+    <!--查询项目信息-->
+    <sql id="excSearchProjectListSql">
+        select
+            tp.project_id        as projectId
+            ,tp.project_num      as projectNum
+            ,tp.project_name     as projectName
+            ,tp.project_sts      as projectSts
+            ,tp.is_invalid_flag  as projectIsInvalidFlag
+            ,tc.contract_num     as contractNum
+            ,tdd.department_name as departmentName
+            ,tc.duty_people      as dutyPeople
+            ,tc.contract_date    as contractDate
+            ,tc.project_name     as contractName
+            ,tc.contract_id      as contractId
+            ,tc.cooperate_company as cooperateCompany
+            ,tc.counsel_business_type    as counselBusinessType
+            ,tp.counsel_type_period    as counselTypePeriod
+            ,tc.is_invalid_flag  as isInvalidFlag
+            ,tc.invalid_reason  as invalidReason
+            ,trm.income_received  as incomeReceived
+            ,ifnull(tc.predict_total,tc.contract_amount) contractAmount
+            ,tpc.contractCount
+            ,tp.project_id  as businessId
+        from
+            tb_project tp
+        left join
+            tb_contract tc
+        on
+            tc.project_id = tp.project_id and tc.is_del_flg = 0
+        left join
+            tb_dict_department tdd
+        on
+            tdd.department_id = tc.department_id
+        left join
+            (select count(contract_id) as contractCount,project_id from tb_contract tc
+            where 1=1
+            <if test='null != counselBusinessType and "" != counselBusinessType'>
+                and tc.counsel_business_type = #{counselBusinessType}
+            </if>
+            <if test='null != counselTypePeriod and "" != counselTypePeriod'>
+                and tc.counsel_type_period =#{counselTypePeriod}
+            </if>
+            group by project_id) tpc
+        on
+            tpc.project_id = tp.project_id
+        left join
+          (
+            select
+              sum(payment_amount) AS income_received,
+              contract_id
+            from
+              tb_request_menu
+            where
+              verify_state = "1"
+            group by contract_id
+          )trm
+        on
+          trm.contract_id = tc.contract_id
+        where
+            tp.is_del_flg = 0
+        <if test='null != departmentId and "" != departmentId'>
+            and tp.project_id in (
+                select project_id from tb_contract where department_id = #{departmentId}
+            )
+        </if>
+        <if test='departmentIdList != null and departmentIdList.size() > 0'>
+            and
+                tp.project_id in (
+                    select
+                        distinct(project_id)
+                    from
+                        tb_contract
+                    where
+                        department_id in (
+                        <foreach collection="departmentIdList" item="item" separator=",">
+                            #{item}
+                        </foreach>
+                    )
+                )
+        </if>
+        <if test='null != projectNum and "" != projectNum'>
+            and tp.project_num like concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test='null != projectName and "" != projectName'>
+            and tp.project_name like concat(concat('%',#{projectName}),'%')
+        </if>
+        <if test='null != counselBusinessType and "" != counselBusinessType'>
+            and tc.counsel_business_type = #{counselBusinessType}
+        </if>
+        <if test='null != counselTypePeriod and "" != counselTypePeriod'>
+            and tc.counsel_type_period =#{counselTypePeriod}
+        </if>
+        <if test='null != projectSts and "" != projectSts'>
+            and tp.project_sts = #{projectSts}
+        </if>
+        <if test="startDate != null">
+            and date_format(tp.start_date,'%Y-%m-%d') <![CDATA[>=]]>date_format(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and date_format(tp.start_date,'%Y-%m-%d')<![CDATA[<=]]>date_format(#{endDate},'%Y-%m-%d')
+        </if>
+        order by
+            tp.project_num desc
+           /*tp.create_date desc,tc.create_date desc*/
+    </sql>
+
+    <!--通过当前登录人id查询所属部门id集合-->
+    <select id="excSearchDepartmentIdByCurrentUserId" resultType="java.lang.String">
+        select
+            involved_department as departmentId
+        from
+            tb_user_job_relation tujr
+        left join
+            tb_job tj
+        on
+            tujr.job_id = tj.job_id
+        where
+            tujr.user_id = #{item}
+    </select>
+
+    <!--查询项目编号是否重复-->
+    <select id="excSearchProjectNumInfo" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        tb_project
+        where
+        is_del_flg = 0
+        <if test='null != projectNum and "" != projectNum'>
+            and project_num = #{projectNum}
+        </if>
+        <if test='null != projectId and "" != projectId'>
+            and project_id != #{projectId}
+        </if>
+    </select>
+
+    <!--查询项目编号是否重复-->
+    <select id="excSearchProjectNameInfo" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        tb_project
+        where
+        is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and project_id != #{projectId}
+        </if>
+        <if test='null != projectName and "" != projectName'>
+            and project_name = #{projectName}
+        </if>
+    </select>
+
+    <!--查询合同编号是否重复-->
+    <select id="excSearchContractNumInfo" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_contract tc
+        left join
+            tb_project tp
+        on
+            tc.project_id = tp.project_id
+        where
+            tc.is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and tc.project_id = #{projectId}
+        </if>
+        <if test='null != projectNum and "" != projectNum'>
+            and tp.project_num = #{projectNum}
+        </if>
+        <if test='null != contractNum and "" != contractNum'>
+            and tc.contract_num = #{contractNum}
+        </if>
+        <if test='null != contractId and "" != contractId'>
+            and tc.contract_id != #{contractId}
+        </if>
+    </select>
+
+    <!--查询最大的项目编号-->
+    <select id="excSearchMaxProjectNum" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            max(substring(project_num,3,4)) as projectNum
+        from
+            tb_project
+        where
+            is_del_flg = 0
+    </select>
+
+    <!--查询当前登录人是否所属财务部门-->
+    <select id="excSearchDepartmentIdByUserId" resultType="java.lang.String">
+        select
+            involved_department
+        from
+            tb_job
+        where
+            job_id in (
+                     select
+                        job_id
+                     from
+                        tb_user_job_relation
+                     where
+                        user_id = #{currentUserId})
+
+
+    </select>
+
+    <!--查询每个合同下的任务-->
+    <select id="excSearchTaskByContractId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            tt.task_id         as taskId
+           ,tt.task_name       as taskName
+           ,tt.verify_state    as verifyState
+           ,tt.counsel_type_id as counselTypeId
+           ,tdct.counsel_type_name as counselTypeName
+        from
+            tb_task tt
+        left join
+            tb_dict_counsel_type tdct
+        on
+            tt.counsel_type_id = tdct.counsel_type_id
+        where
+            tt.is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and tt.contract_id = #{contractId}
+        </if>
+        order by
+            tt.create_date desc
+    </select>
+
+    <!--查询每个合同下的任务的阶段-->
+    <select id="excSearchTaskPeriodByContractId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            tt.task_id        as taskId
+            ,tt.task_name     as taskName
+            ,tt.is_submit_reedit  as isSubmitReedit
+            ,ttp.period_id    as periodId
+            ,ttp.period_name  as periodName
+            ,ttp.period_type  as periodType
+            ,ttp.page_content as pageContent
+            ,ttp.period_desc  as periodDesc
+            ,ttpr.relation_id as relationId
+            ,ifnull(ttpr.is_ignore,'0')   as isIgnore
+            ,ifnull(ttpr.is_finish,'0')   as isFinish
+            ,tc.department_id as departmentId
+            ,tp.project_sts    as projectSts
+        from
+            tb_task tt
+        left join
+            tb_task_period_relation ttpr
+        on
+            ttpr.task_id = tt.task_id and ttpr.is_del_flg = 0
+        left join
+            tb_task_period ttp
+        on
+            ttp.period_id = ttpr.period_id and ttp.is_del_flg = 0
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        where
+            tt.is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and tt.contract_id = #{contractId}
+        </if>
+        order by
+            ttp.sort asc
+    </select>
+
+    <!--查询每个任务下的任务阶段-->
+    <select id="excSearchTaskListByTaskId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            ttpr.relation_id  as relationId,
+            ttpr.verify_state as verifyState,
+            tt.counsel_type_id as counselTypeId
+        from
+            tb_task_period_relation ttpr
+        LEFT JOIN
+          tb_task tt
+        ON
+          ttpr.task_id = tt.task_id
+        where
+            ttpr.is_del_flg = 0
+        <if test='null != taskId and "" != taskId'>
+            and ttpr.task_id = #{taskId}
+        </if>
+        order by
+            ttpr.create_date desc
+    </select>
+
+    <!--查询每个任务下的归档任务-->
+    <select id="excSearchArchiveTaskListByTaskId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            tta.task_id      as taskId,
+            tta.verify_state as verifyState,
+            tta.approve_time as approveTime
+        from
+            tb_task_archive tta
+        where
+            tta.is_del_flg = 0
+        <if test='null != taskId and "" != taskId'>
+            and tta.task_id = #{taskId}
+        </if>
+        order by
+            tta.create_date desc
+    </select>
+
+    <!--项目-->
+    <resultMap id="project" type="com.hd.manager.dao.bean.HTProjectBean">
+        <id column="projectId" property="projectId" />
+        <result column="projectNum" property="projectNum" />
+        <result column="projectSts" property="projectSts" />
+        <result column="isInvalidFlag" property="isInvalidFlag" />
+        <!--合同-->
+        <collection property="htContractBeanList" ofType="com.hd.manager.dao.bean.HTProjectBean">
+            <id column="contractId" property="contractId" />
+            <result column="projectId" property="projectId" />
+            <result column="projectNum" property="projectNum" />
+            <result column="projectSts" property="projectSts" />
+            <result column="contractIsInvalidFlag" property="isInvalidFlag" />
+            <result column="contractNum" property="contractNum" />
+            <result column="departmentId" property="departmentId" />
+            <result column="verifyState" property="verifyState" />
+            <result column="applyUserId" property="applyUserId" />
+            <result column="applyTime" property="applyTime" />
+            <!--任务-->
+            <collection property="htTaskBeanList" ofType="com.hd.manager.dao.bean.HTProjectBean">
+                <id column="taskId" property="taskId" />
+                <result column="taskName" property="taskName" />
+                <result column="taskVerifyState" property="verifyState" />
+                <result column="counselTypeId" property="counselTypeId" />
+                <result column="counselTypeName" property="counselTypeName" />
+                <result column="isSubmitReedit" property="isSubmitReedit" />
+                <result column="currentState" property="currentState" />
+                <result column="approveTime" property="approveTime" />
+                <!--任务阶段-->
+                <collection property="htTaskPeriodBeanList" ofType="com.hd.manager.dao.bean.HTProjectBean">
+                    <id column="relationId" property="relationId" />
+                    <result column="periodName" property="periodName" />
+                    <result column="periodType" property="periodType" />
+                    <result column="pageContent" property="pageContent" />
+                    <result column="periodDesc" property="periodDesc" />
+                    <result column="isIgnore" property="isIgnore" />
+                    <result column="isFinish" property="isFinish" />
+                    <result column="periodVerifyState" property="verifyState" />
+                    <result column="periodApproveTime" property="approveTime" />
+                </collection>
+            </collection>
+            <!--请款单-->
+            <collection property="htRequestMenuBeanList" ofType="com.hd.manager.dao.bean.HTProjectBean">
+                <id column="requestMenuId" property="requestMenuId" />
+                <result column="requestMenuName" property="requestMenuName" />
+                <result column="requestApplyUserId" property="applyUserId" />
+                <result column="requestVerifyState" property="verifyState" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询指定项目下的合同树信息-->
+    <select id="excSearchProjectTree" resultMap="project">
+        select
+            /*合同*/
+            tp.project_id           as projectId
+            ,tp.project_num         as projectNum
+            ,tp.project_sts         as projectSts
+            ,tp.is_invalid_flag     as isInvalidFlag
+            ,tc.contract_id         as contractId
+            ,tc.contract_num        as contractNum
+            ,tc.department_id       as departmentId
+            ,tc.verify_state        as verifyState
+            ,tc.apply_user_id       as applyUserId
+            ,tc.apply_time          as applyTime
+            ,tc.is_invalid_flag     as contractIsInvalidFlag
+            /*任务*/
+            ,tt.task_id             as taskId
+            ,tt.task_name           as taskName
+            ,tt.verify_state        as taskVerifyState
+            ,tt.counsel_type_id     as counselTypeId
+            ,tdct.counsel_type_name as counselTypeName
+            ,tt.is_submit_reedit    as isSubmitReedit
+            ,tt.current_state       as currentState
+            ,tt.approve_time        as approveTime
+            /*任务阶段*/
+            ,ttp.period_name        as periodName
+            ,ttp.period_type        as periodType
+            ,ttp.page_content       as pageContent
+            ,ttp.period_desc        as periodDesc
+            ,ttpr.relation_id       as relationId
+            ,ttpr.is_ignore         as isIgnore
+            ,ttpr.is_finish         as isFinish
+            ,ttpr.verify_state      as periodVerifyState
+            ,ttpr.approve_time      as periodApproveTime
+            /*请款单*/
+            ,trm.request_menu_id  			AS	requestMenuId
+            ,trm.request_menu_name			AS	requestMenuName
+            ,trm.apply_user_id				AS	requestApplyUserId
+            ,trm.verify_state				AS	requestVerifyState
+        from
+            tb_project tp
+        left join tb_contract tc on tp.project_id = tc.project_id
+        left join tb_task tt on tt.contract_id = tc.contract_id
+        left join tb_dict_counsel_type tdct on tt.counsel_type_id = tdct.counsel_type_id
+        left join tb_task_period_relation ttpr on ttpr.task_id = tt.task_id
+        left join tb_task_period ttp on ttp.period_id = ttpr.period_id
+        left join tb_request_menu trm on trm.contract_id = tc.contract_id
+        where tp.is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and tp.project_id = #{projectId}
+        </if>
+        order by tc.create_date desc,tt.create_date desc,trm.create_date desc,ttp.sort asc
+    </select>
+
+    <!--查询指定项目下的合同树信息(为了适用于更改成果文件之后查询历史数据)-->
+    <select id="excSearchProjectTreeV2" resultMap="project">
+        select
+        /*合同*/
+        tp.project_id           as projectId
+        ,tp.project_num         as projectNum
+        ,tp.project_sts         as projectSts
+        ,tp.is_invalid_flag     as isInvalidFlag
+        ,tc.contract_id         as contractId
+        ,tc.contract_num        as contractNum
+        ,tc.department_id       as departmentId
+        ,tc.verify_state        as verifyState
+        ,tc.apply_user_id       as applyUserId
+        ,tc.apply_time          as applyTime
+        ,tc.is_invalid_flag     as contractIsInvalidFlag
+        /*任务*/
+        ,tt.task_id             as taskId
+        ,tt.task_name           as taskName
+        ,tt.verify_state        as taskVerifyState
+        ,tt.counsel_type_id     as counselTypeId
+        ,tdct.counsel_type_name as counselTypeName
+        ,tt.is_submit_reedit    as isSubmitReedit
+        ,tt.current_state       as currentState
+        ,tt.approve_time        as approveTime
+        /*任务阶段*/
+        ,ttpr.period_name        as periodName
+        ,ttpr.period_type        as periodType
+        ,ttpr.page_content       as pageContent
+        ,ttpr.period_desc        as periodDesc
+        ,ttpr.relation_id       as relationId
+        ,ttpr.is_ignore         as isIgnore
+        ,ttpr.is_finish         as isFinish
+        ,ttpr.verify_state      as periodVerifyState
+        ,ttpr.approve_time      as periodApproveTime
+        /*请款单*/
+        ,trm.request_menu_id  			AS	requestMenuId
+        ,trm.request_menu_name			AS	requestMenuName
+        ,trm.apply_user_id				AS	requestApplyUserId
+        ,trm.verify_state				AS	requestVerifyState
+        from
+        tb_project tp
+        left join tb_contract tc on tp.project_id = tc.project_id
+        left join tb_task tt on tt.contract_id = tc.contract_id
+        left join tb_dict_counsel_type tdct on tt.counsel_type_id = tdct.counsel_type_id
+        left join (
+            select
+                ttp.sort
+                ,ttp.period_name
+                ,ttp.period_type
+                ,ttp.page_content
+                ,ttp.period_desc
+                ,ttpr.task_id
+                ,ttpr.relation_id
+                ,ttpr.is_ignore
+                ,ttpr.is_finish
+                ,ttpr.verify_state
+                ,ttpr.approve_time
+            from tb_task_period ttp
+            left join tb_task_period_relation ttpr on  ttp.period_id = ttpr.period_id
+            left join tb_task tt on ttpr.task_id = tt.task_id
+            left join tb_contract tc on tt.contract_id = tc.contract_id
+            left join tb_project tp on tp.project_id = tc.project_id
+            where ttp.is_del_flg = 0
+            <if test='null != projectId and "" != projectId'>
+                and tp.project_id = #{projectId}
+            </if>
+        ) ttpr on ttpr.task_id = tt.task_id
+        left join tb_request_menu trm on trm.contract_id = tc.contract_id
+        where tp.is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and tp.project_id = #{projectId}
+        </if>
+        order by tc.create_date desc,tt.create_date desc,trm.create_date desc,ttpr.sort asc
+    </select>
+
+    <!--查询被分配的合同数-->
+    <select id="excSearchContractCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_contract
+        where
+            is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and
+                current_state != 9
+            and
+                project_id = #{projectId}
+        </if>
+        <if test='null != contractId and "" != contractId'>
+            and
+                verify_state != 0
+            and
+                contract_id = #{contractId}
+        </if>
+    </select>
+
+    <!--查询该合同下的任务数-->
+    <select id="excSearchTaskCountByContractId" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_task
+        where
+            is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and contract_id = #{contractId}
+        </if>
+    </select>
+
+    <!--查询该合同下的请款单数-->
+    <select id="excSearchRequestMenuCountByContractId" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_request_menu
+        where
+            is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and contract_id = #{contractId}
+        </if>
+    </select>
+
+    <!--根据项目id删除合同信息-->
+    <delete id="excDeleteContractInfo" parameterType="com.hd.manager.dao.bean.HTProjectBean">
+        delete from
+            tb_contract
+        where
+            1=1
+        <if test='(null == projectId or "" == projectId) and (null == contractId or "" == contractId)'>
+            and 0=1
+        </if>
+        <if test='null != projectId and "" != projectId'>
+            and project_id = #{projectId}
+        </if>
+        <if test='null != contractId and "" != contractId'>
+            and contract_id = #{contractId}
+        </if>
+    </delete>
+
+    <!--通过项目id和部门id查询合同数-->
+    <select id="excSearchContractCountByProjectIdAndDepartmentId" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_contract
+        where
+            is_del_flg = 0
+        <if test='null != projectId and "" != projectId'>
+            and project_id = #{projectId}
+        </if>
+        <if test='null != departmentId and "" != departmentId'>
+            and department_id = #{departmentId}
+        </if>
+    </select>
+
+    <!--查询合同详情-->
+    <select id="excSearchContractInfo" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            '副总经理'           as jobName,
+            tdd.department_name as departmentName,
+            tc.department_id    as departmentId,
+            tc.job_id           as jobId
+        from
+            tb_contract tc
+        left join
+            tb_dict_department tdd
+        on
+            tdd.department_id = tc.department_id
+        where
+            tc.is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and tc.contract_id = #{contractId}
+        </if>
+    </select>
+
+    <!--查询部门人员下拉列表-->
+    <select id="excSearchPersonListByDepartmentId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+          user_info.user_id as userId,
+          user_info.user_name as userName
+        from tb_user user_info
+          left join tb_user_job_relation tujr
+            on user_info.user_id = tujr.user_id
+          left join
+          tb_job job_info
+            on job_info.job_id = tujr.job_id and job_info.is_del_flg = 0
+        where user_info.is_del_flg = 0
+              and user_info.is_incumbent = 1
+              and job_info.job_level in (10, 15, 20, 25)
+        <if test='null != departmentId and "" != departmentId'>
+            and job_info.involved_department = #{departmentId}
+        </if>
+        group by user_info.user_id, user_info.user_name
+    </select>
+
+    <!--查询参与人员列表-->
+    <select id="excSearchParticipantsInfoList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchParticipantsInfoListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--查询参与人员总条数-->
+    <select id="excSearchParticipantsInfoCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchParticipantsInfoListSql" />) temp
+    </select>
+
+    <sql id="excSearchParticipantsInfoListSql">
+        SELECT
+            t.projectId,
+            concat(project_info.project_num,'-',t.contractNum) AS contractNum,
+            t.departmentId,
+            t.departmentName,
+            t.taskName,
+            t.jobType,
+            t.userId,
+            t.userName,
+            t.userType,
+            t.processInstId,
+            t.taskId
+        FROM
+            (
+            SELECT
+                tc.project_id AS projectId,
+                tc.contract_num AS contractNum,
+                tc.department_id AS departmentId,
+                tc.department_name AS departmentName,
+                tt.task_name AS taskName,
+                '1' AS jobType,
+                ttur.user_id AS userId,
+                tu.user_name AS userName,
+                ttur.is_main_duty AS userType,
+                ttur.create_date AS createDate,
+                tt.process_inst_id AS processInstId,
+                tt.task_id AS taskId
+            FROM
+                tb_task_user_relation ttur
+                LEFT JOIN tb_task tt ON tt.task_id = ttur.task_id AND tt.is_del_flg = '0'
+                LEFT JOIN tb_user tu ON tu.user_id = ttur.user_id AND tu.is_del_flg = '0'
+                INNER JOIN (
+                    SELECT tc.*, tdd.department_name
+                    FROM tb_contract tc
+                    LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+                    WHERE tc.is_del_flg = '0'
+                ) AS tc ON tt.contract_id = tc.contract_id WHERE ttur.is_del_flg = '0'
+            UNION
+            SELECT
+                tc.project_id AS projectId,
+                tc.contract_num AS contractNum,
+                tc.department_id AS departmentId,
+                tc.department_name AS departmentName,
+                '-' AS taskName,
+                '0' AS jobType,
+                tc.apply_user_id AS userId,
+                tu.user_name AS userName,
+                '-' AS userType,
+                tc.create_date AS createDate,
+                tc.process_inst_id AS processInstId,
+                '' AS taskId
+            FROM
+                tb_user tu
+                INNER JOIN (
+                    SELECT tc.*, tdd.department_name
+                    FROM tb_contract tc
+                    LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+                    WHERE tc.is_del_flg = '0'
+                ) AS tc ON tu.user_id = tc.apply_user_id
+                WHERE tu.is_del_flg = '0'
+            UNION
+            SELECT
+                tc.project_id AS projectId,
+                tc.contract_num AS contractNum,
+                tc.department_id AS departmentId,
+                tc.department_name AS departmentName,
+                '-' AS taskName,
+                '4' AS jobType,
+                trm.apply_user_id AS userId,
+                tu.user_name AS userName,
+                '-' AS userType,
+                trm.create_date AS createDate,
+                trm.process_inst_id AS processInstId,
+                '' AS taskId
+            FROM
+                tb_request_menu trm
+                LEFT JOIN tb_user tu ON tu.user_id = trm.apply_user_id AND tu.is_del_flg = '0'
+                INNER JOIN (
+                    SELECT tc.*, tdd.department_name
+                    FROM tb_contract tc
+                    LEFT JOIN tb_dict_department tdd ON tdd.department_id = tc.department_id
+                    WHERE tc.is_del_flg = '0'
+                ) AS tc ON trm.contract_id = tc.contract_id
+                WHERE trm.is_del_flg = '0'
+            ) t
+        LEFT JOIN
+            tb_project project_info
+        ON
+            t.projectId = project_info.project_id
+        WHERE
+            t.projectId = #{projectId}
+        order by
+            t.jobType asc,
+            t.contractNum Desc,
+            t.createDate desc
+    </sql>
+
+    <!--导出参与人员列表-->
+    <select id="excExportParticipantsInfoList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchParticipantsInfoListSql" />) temp
+    </select>
+
+    <!--查询成果文件台账列表-->
+    <select id="excSearchResultFileLedgerInfoList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchResultFileLedgerInfoListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--查询成果文件台账总条数-->
+    <select id="excSearchResultFileLedgerInfoListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchResultFileLedgerInfoListSql" />) temp
+    </select>
+
+    <sql id="excSearchResultFileLedgerInfoListSql">
+        select
+          tp.project_num as projectNum
+          ,tp.project_name as projectName
+          ,tc.contract_num as contractNum
+          ,tc.project_name as contractName
+          ,tt.task_id as taskId
+          ,tt.formwork_type as formworkType
+          ,tt.task_material_name as taskMaterialName
+          ,tt.report_num as reportNum
+          ,tt.task_type as taskType
+          ,tt.file_number as fileNumber
+          ,ttphti.approve_time as approveTime
+        from
+          tb_task tt
+        left join
+          tb_task_period_his_task_inst ttphti
+        on
+          ttphti.task_id = tt.task_id and ttphti.is_result_file = 1 and ttphti.task_key = 'Signer' and ttphti.is_pass = 1
+        left join
+          tb_contract tc
+        on
+          tt.contract_id = tc.contract_id
+        left join
+          tb_project tp
+        on
+          tp.project_id = tc.project_id
+        where tt.is_del_flg = 0 and tt.task_type is not null and tp.project_id = #{projectId} and tt.is_draft_flg != 1
+        order by tt.create_date desc
+    </sql>
+
+    <!--通过任务id查询负责人名称-->
+    <select id="excSearchUserNameByTaskId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+          tu.user_name as userName
+        from
+          tb_task_user_relation ttur
+        left join
+          tb_user tu
+        on
+          ttur.user_id = tu.user_id
+        where ttur.is_del_flg = 0 and ttur.task_id = #{taskId}
+    </select>
+    <select id="excSearchCounselTypePeriodList"
+            resultType="com.hd.manager.dao.bean.HTDictProjectCounselTypeBean">
+        select
+          tdpct.counsel_type_id as counselTypeId,
+          tdpct.counsel_type_name as counselTypeName,
+          tdpct.sort_num as sortNum,
+          tdpct.department_id as departmentId,
+          tdd.department_name as departmentName
+        from
+          tb_dict_project_counsel_type tdpct
+          left join
+          tb_dict_department tdd
+          on
+          tdd.department_id = tdpct.department_id
+    </select>
+
+    <!--导出成果文件台账列表-->
+    <select id="excExportResultFileLedgerInfoList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select temp.*
+        from (<include refid="excSearchResultFileLedgerInfoListSql" />) temp
+    </select>
+
+
+    <!--查询项目总条数(供全过程使用)-->
+    <select id="excSearchProjectWholeListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProjectWholeListSql" />) temp
+    </select>
+
+    <!--查询项目列表数据(供全过程使用)-->
+    <select id="excSearchProjectWholeList" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProjectWholeListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+
+    <!--查询项目信息-->
+    <sql id="excSearchProjectWholeListSql">
+        select
+        tp.project_id        as projectId
+        ,tp.project_num      as projectNum
+        ,tp.project_name     as projectName
+        ,tp.project_sts      as projectSts
+        ,tc.contract_num     as contractNum
+        ,tdd.department_name as departmentName
+        ,tc.duty_people      as dutyPeople
+        ,tc.contract_date    as contractDate
+        ,tc.project_name     as contractName
+        ,tc.contract_id      as contractId
+        ,tc.cooperate_company as cooperateCompany
+        ,tc.counsel_business_type    as counselBusinessType
+        ,tp.counsel_type_period    as counselTypePeriod
+        ,tc.is_invalid_flag  as isInvalidFlag
+        ,tc.invalid_reason  as invalidReason
+        ,trm.income_received  as incomeReceived
+        ,ifnull(tc.predict_total,tc.contract_amount) contractAmount
+        ,tpc.contractCount
+        ,tp.project_id  as businessId
+        from
+        tb_project tp
+        left join
+        tb_contract tc
+        on
+        tc.project_id = tp.project_id and tc.is_del_flg = 0
+        left join
+        tb_dict_department tdd
+        on
+        tdd.department_id = tc.department_id
+        left join
+        (select count(contract_id) as contractCount,project_id from tb_contract tc
+        where 1=1
+        <if test='null != counselBusinessType and "" != counselBusinessType'>
+            and tc.counsel_business_type = #{counselBusinessType}
+        </if>
+        <if test='null != counselTypePeriod and "" != counselTypePeriod'>
+            and tc.counsel_type_period =#{counselTypePeriod}
+        </if>
+        group by project_id) tpc
+        on
+        tpc.project_id = tp.project_id
+        left join
+        (
+        select
+        sum(payment_amount) AS income_received,
+        contract_id
+        from
+        tb_request_menu
+        where
+        verify_state = "1"
+        group by contract_id
+        )trm
+        on
+        trm.contract_id = tc.contract_id
+        where
+        tp.is_del_flg = 0
+        AND
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        AND
+        (tp.is_invalid_flag = '0' OR tp.is_invalid_flag is null)
+        <if test='null != departmentId and "" != departmentId'>
+            and tp.project_id in (
+            select project_id from tb_contract where department_id = #{departmentId}
+            )
+        </if>
+        <if test='departmentIdList != null and departmentIdList.size() > 0'>
+            and
+            tp.project_id in (
+            select
+            distinct(project_id)
+            from
+            tb_contract
+            where
+            department_id in (
+            <foreach collection="departmentIdList" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+            )
+        </if>
+        <if test='null != projectNum and "" != projectNum'>
+            and tp.project_num like concat(concat('%',#{projectNum}),'%')
+        </if>
+        <if test='null != projectName and "" != projectName'>
+            and tp.project_name like concat(concat('%',#{projectName}),'%')
+        </if>
+        <if test='null != counselBusinessType and "" != counselBusinessType'>
+            and tc.counsel_business_type = #{counselBusinessType}
+        </if>
+        <if test='null != counselTypePeriod and "" != counselTypePeriod'>
+            and tc.counsel_type_period =#{counselTypePeriod}
+        </if>
+        <if test='null != projectSts and "" != projectSts'>
+            and tp.project_sts = #{projectSts}
+        </if>
+        <if test="startDate != null">
+            and date_format(tp.start_date,'%Y-%m-%d') <![CDATA[>=]]>date_format(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and date_format(tp.start_date,'%Y-%m-%d')<![CDATA[<=]]>date_format(#{endDate},'%Y-%m-%d')
+        </if>
+        order by
+        tp.project_num desc
+        /*tp.create_date desc,tc.create_date desc*/
+    </sql>
+</mapper>

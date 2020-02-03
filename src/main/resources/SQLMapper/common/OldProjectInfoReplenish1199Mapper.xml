@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.data.dao.OldProjectInfoReplenish1199Mapper">
+  <resultMap id="BaseResultMap" type="com.hd.data.entity.OldProjectInfoReplenish1199">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="clsid" jdbcType="INTEGER" property="clsid" />
+    <result column="clcid" jdbcType="INTEGER" property="clcid" />
+    <result column="clpid" jdbcType="INTEGER" property="clpid" />
+    <result column="clnid" jdbcType="INTEGER" property="clnid" />
+    <result column="clmid" jdbcType="INTEGER" property="clmid" />
+    <result column="paid" jdbcType="INTEGER" property="paid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="client" jdbcType="VARCHAR" property="client" />
+    <result column="client_manager" jdbcType="VARCHAR" property="clientManager" />
+    <result column="client_manager_phone" jdbcType="VARCHAR" property="clientManagerPhone" />
+    <result column="consultant" jdbcType="VARCHAR" property="consultant" />
+    <result column="thrid" jdbcType="VARCHAR" property="thrid" />
+    <result column="scale" jdbcType="VARCHAR" property="scale" />
+    <result column="place" jdbcType="VARCHAR" property="place" />
+    <result column="invest_sum" jdbcType="VARCHAR" property="investSum" />
+    <result column="contract_sum" jdbcType="VARCHAR" property="contractSum" />
+    <result column="contract_manager" jdbcType="VARCHAR" property="contractManager" />
+    <result column="contract_time" jdbcType="INTEGER" property="contractTime" />
+    <result column="manager" jdbcType="VARCHAR" property="manager" />
+    <result column="deid" jdbcType="INTEGER" property="deid" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="up_time" jdbcType="INTEGER" property="upTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="finance_status" jdbcType="BIT" property="financeStatus" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="project_contract_num" jdbcType="VARCHAR" property="projectContractNum" />
+    <result column="target_flag" jdbcType="VARCHAR" property="targetFlag" />
+    <result column="is_cancel" jdbcType="VARCHAR" property="isCancel" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hd.data.entity.OldProjectInfoReplenish1199">
+    <result column="remark" jdbcType="LONGVARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, uid, clsid, clcid, clpid, clnid, clmid, paid, name, client, client_manager, client_manager_phone, 
+    consultant, thrid, scale, place, invest_sum, contract_sum, contract_manager, contract_time, 
+    manager, deid, number, time, up_time, status, finance_status, type, project_contract_num, 
+    target_flag, is_cancel
+  </sql>
+  <sql id="Blob_Column_List">
+    remark
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199Example" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from old_project_info_replenish_1199
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199Example" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from old_project_info_replenish_1199
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199Example">
+    delete from old_project_info_replenish_1199
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199">
+    insert into old_project_info_replenish_1199 (id, uid, clsid, 
+      clcid, clpid, clnid, 
+      clmid, paid, name, 
+      client, client_manager, client_manager_phone, 
+      consultant, thrid, scale, 
+      place, invest_sum, contract_sum, 
+      contract_manager, contract_time, manager, 
+      deid, number, time, 
+      up_time, status, finance_status, 
+      type, project_contract_num, target_flag, 
+      is_cancel, remark)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{clsid,jdbcType=INTEGER}, 
+      #{clcid,jdbcType=INTEGER}, #{clpid,jdbcType=INTEGER}, #{clnid,jdbcType=INTEGER}, 
+      #{clmid,jdbcType=INTEGER}, #{paid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{client,jdbcType=VARCHAR}, #{clientManager,jdbcType=VARCHAR}, #{clientManagerPhone,jdbcType=VARCHAR}, 
+      #{consultant,jdbcType=VARCHAR}, #{thrid,jdbcType=VARCHAR}, #{scale,jdbcType=VARCHAR}, 
+      #{place,jdbcType=VARCHAR}, #{investSum,jdbcType=VARCHAR}, #{contractSum,jdbcType=VARCHAR}, 
+      #{contractManager,jdbcType=VARCHAR}, #{contractTime,jdbcType=INTEGER}, #{manager,jdbcType=VARCHAR}, 
+      #{deid,jdbcType=INTEGER}, #{number,jdbcType=VARCHAR}, #{time,jdbcType=INTEGER}, 
+      #{upTime,jdbcType=INTEGER}, #{status,jdbcType=BIT}, #{financeStatus,jdbcType=BIT}, 
+      #{type,jdbcType=INTEGER}, #{projectContractNum,jdbcType=VARCHAR}, #{targetFlag,jdbcType=VARCHAR}, 
+      #{isCancel,jdbcType=VARCHAR}, #{remark,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199">
+    insert into old_project_info_replenish_1199
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="clsid != null">
+        clsid,
+      </if>
+      <if test="clcid != null">
+        clcid,
+      </if>
+      <if test="clpid != null">
+        clpid,
+      </if>
+      <if test="clnid != null">
+        clnid,
+      </if>
+      <if test="clmid != null">
+        clmid,
+      </if>
+      <if test="paid != null">
+        paid,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="client != null">
+        client,
+      </if>
+      <if test="clientManager != null">
+        client_manager,
+      </if>
+      <if test="clientManagerPhone != null">
+        client_manager_phone,
+      </if>
+      <if test="consultant != null">
+        consultant,
+      </if>
+      <if test="thrid != null">
+        thrid,
+      </if>
+      <if test="scale != null">
+        scale,
+      </if>
+      <if test="place != null">
+        place,
+      </if>
+      <if test="investSum != null">
+        invest_sum,
+      </if>
+      <if test="contractSum != null">
+        contract_sum,
+      </if>
+      <if test="contractManager != null">
+        contract_manager,
+      </if>
+      <if test="contractTime != null">
+        contract_time,
+      </if>
+      <if test="manager != null">
+        manager,
+      </if>
+      <if test="deid != null">
+        deid,
+      </if>
+      <if test="number != null">
+        number,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="upTime != null">
+        up_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="financeStatus != null">
+        finance_status,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="projectContractNum != null">
+        project_contract_num,
+      </if>
+      <if test="targetFlag != null">
+        target_flag,
+      </if>
+      <if test="isCancel != null">
+        is_cancel,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="clsid != null">
+        #{clsid,jdbcType=INTEGER},
+      </if>
+      <if test="clcid != null">
+        #{clcid,jdbcType=INTEGER},
+      </if>
+      <if test="clpid != null">
+        #{clpid,jdbcType=INTEGER},
+      </if>
+      <if test="clnid != null">
+        #{clnid,jdbcType=INTEGER},
+      </if>
+      <if test="clmid != null">
+        #{clmid,jdbcType=INTEGER},
+      </if>
+      <if test="paid != null">
+        #{paid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="client != null">
+        #{client,jdbcType=VARCHAR},
+      </if>
+      <if test="clientManager != null">
+        #{clientManager,jdbcType=VARCHAR},
+      </if>
+      <if test="clientManagerPhone != null">
+        #{clientManagerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consultant != null">
+        #{consultant,jdbcType=VARCHAR},
+      </if>
+      <if test="thrid != null">
+        #{thrid,jdbcType=VARCHAR},
+      </if>
+      <if test="scale != null">
+        #{scale,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null">
+        #{place,jdbcType=VARCHAR},
+      </if>
+      <if test="investSum != null">
+        #{investSum,jdbcType=VARCHAR},
+      </if>
+      <if test="contractSum != null">
+        #{contractSum,jdbcType=VARCHAR},
+      </if>
+      <if test="contractManager != null">
+        #{contractManager,jdbcType=VARCHAR},
+      </if>
+      <if test="contractTime != null">
+        #{contractTime,jdbcType=INTEGER},
+      </if>
+      <if test="manager != null">
+        #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="deid != null">
+        #{deid,jdbcType=INTEGER},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=INTEGER},
+      </if>
+      <if test="upTime != null">
+        #{upTime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="financeStatus != null">
+        #{financeStatus,jdbcType=BIT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="projectContractNum != null">
+        #{projectContractNum,jdbcType=VARCHAR},
+      </if>
+      <if test="targetFlag != null">
+        #{targetFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="isCancel != null">
+        #{isCancel,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.data.entity.OldProjectInfoReplenish1199Example" resultType="java.lang.Long">
+    select count(*) from old_project_info_replenish_1199
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update old_project_info_replenish_1199
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.uid != null">
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.clsid != null">
+        clsid = #{record.clsid,jdbcType=INTEGER},
+      </if>
+      <if test="record.clcid != null">
+        clcid = #{record.clcid,jdbcType=INTEGER},
+      </if>
+      <if test="record.clpid != null">
+        clpid = #{record.clpid,jdbcType=INTEGER},
+      </if>
+      <if test="record.clnid != null">
+        clnid = #{record.clnid,jdbcType=INTEGER},
+      </if>
+      <if test="record.clmid != null">
+        clmid = #{record.clmid,jdbcType=INTEGER},
+      </if>
+      <if test="record.paid != null">
+        paid = #{record.paid,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.client != null">
+        client = #{record.client,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clientManager != null">
+        client_manager = #{record.clientManager,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clientManagerPhone != null">
+        client_manager_phone = #{record.clientManagerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.consultant != null">
+        consultant = #{record.consultant,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thrid != null">
+        thrid = #{record.thrid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.scale != null">
+        scale = #{record.scale,jdbcType=VARCHAR},
+      </if>
+      <if test="record.place != null">
+        place = #{record.place,jdbcType=VARCHAR},
+      </if>
+      <if test="record.investSum != null">
+        invest_sum = #{record.investSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractSum != null">
+        contract_sum = #{record.contractSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractManager != null">
+        contract_manager = #{record.contractManager,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractTime != null">
+        contract_time = #{record.contractTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.manager != null">
+        manager = #{record.manager,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deid != null">
+        deid = #{record.deid,jdbcType=INTEGER},
+      </if>
+      <if test="record.number != null">
+        number = #{record.number,jdbcType=VARCHAR},
+      </if>
+      <if test="record.time != null">
+        time = #{record.time,jdbcType=INTEGER},
+      </if>
+      <if test="record.upTime != null">
+        up_time = #{record.upTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=BIT},
+      </if>
+      <if test="record.financeStatus != null">
+        finance_status = #{record.financeStatus,jdbcType=BIT},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.projectContractNum != null">
+        project_contract_num = #{record.projectContractNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.targetFlag != null">
+        target_flag = #{record.targetFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isCancel != null">
+        is_cancel = #{record.isCancel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update old_project_info_replenish_1199
+    set id = #{record.id,jdbcType=INTEGER},
+      uid = #{record.uid,jdbcType=INTEGER},
+      clsid = #{record.clsid,jdbcType=INTEGER},
+      clcid = #{record.clcid,jdbcType=INTEGER},
+      clpid = #{record.clpid,jdbcType=INTEGER},
+      clnid = #{record.clnid,jdbcType=INTEGER},
+      clmid = #{record.clmid,jdbcType=INTEGER},
+      paid = #{record.paid,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      client = #{record.client,jdbcType=VARCHAR},
+      client_manager = #{record.clientManager,jdbcType=VARCHAR},
+      client_manager_phone = #{record.clientManagerPhone,jdbcType=VARCHAR},
+      consultant = #{record.consultant,jdbcType=VARCHAR},
+      thrid = #{record.thrid,jdbcType=VARCHAR},
+      scale = #{record.scale,jdbcType=VARCHAR},
+      place = #{record.place,jdbcType=VARCHAR},
+      invest_sum = #{record.investSum,jdbcType=VARCHAR},
+      contract_sum = #{record.contractSum,jdbcType=VARCHAR},
+      contract_manager = #{record.contractManager,jdbcType=VARCHAR},
+      contract_time = #{record.contractTime,jdbcType=INTEGER},
+      manager = #{record.manager,jdbcType=VARCHAR},
+      deid = #{record.deid,jdbcType=INTEGER},
+      number = #{record.number,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=INTEGER},
+      up_time = #{record.upTime,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=BIT},
+      finance_status = #{record.financeStatus,jdbcType=BIT},
+      type = #{record.type,jdbcType=INTEGER},
+      project_contract_num = #{record.projectContractNum,jdbcType=VARCHAR},
+      target_flag = #{record.targetFlag,jdbcType=VARCHAR},
+      is_cancel = #{record.isCancel,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update old_project_info_replenish_1199
+    set id = #{record.id,jdbcType=INTEGER},
+      uid = #{record.uid,jdbcType=INTEGER},
+      clsid = #{record.clsid,jdbcType=INTEGER},
+      clcid = #{record.clcid,jdbcType=INTEGER},
+      clpid = #{record.clpid,jdbcType=INTEGER},
+      clnid = #{record.clnid,jdbcType=INTEGER},
+      clmid = #{record.clmid,jdbcType=INTEGER},
+      paid = #{record.paid,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      client = #{record.client,jdbcType=VARCHAR},
+      client_manager = #{record.clientManager,jdbcType=VARCHAR},
+      client_manager_phone = #{record.clientManagerPhone,jdbcType=VARCHAR},
+      consultant = #{record.consultant,jdbcType=VARCHAR},
+      thrid = #{record.thrid,jdbcType=VARCHAR},
+      scale = #{record.scale,jdbcType=VARCHAR},
+      place = #{record.place,jdbcType=VARCHAR},
+      invest_sum = #{record.investSum,jdbcType=VARCHAR},
+      contract_sum = #{record.contractSum,jdbcType=VARCHAR},
+      contract_manager = #{record.contractManager,jdbcType=VARCHAR},
+      contract_time = #{record.contractTime,jdbcType=INTEGER},
+      manager = #{record.manager,jdbcType=VARCHAR},
+      deid = #{record.deid,jdbcType=INTEGER},
+      number = #{record.number,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=INTEGER},
+      up_time = #{record.upTime,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=BIT},
+      finance_status = #{record.financeStatus,jdbcType=BIT},
+      type = #{record.type,jdbcType=INTEGER},
+      project_contract_num = #{record.projectContractNum,jdbcType=VARCHAR},
+      target_flag = #{record.targetFlag,jdbcType=VARCHAR},
+      is_cancel = #{record.isCancel,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

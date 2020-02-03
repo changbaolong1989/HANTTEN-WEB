@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.data.dao.OldProjectInfoEntityMapper">
+    <resultMap id="BaseResultMap" type="com.hd.data.entity.OldProjectInfoEntity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="uid" jdbcType="INTEGER" property="uid"/>
+        <result column="clsid" jdbcType="INTEGER" property="clsid"/>
+        <result column="clcid" jdbcType="INTEGER" property="clcid"/>
+        <result column="clpid" jdbcType="INTEGER" property="clpid"/>
+        <result column="clnid" jdbcType="INTEGER" property="clnid"/>
+        <result column="clmid" jdbcType="INTEGER" property="clmid"/>
+        <result column="paid" jdbcType="INTEGER" property="paid"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="client" jdbcType="VARCHAR" property="client"/>
+        <result column="client_manager" jdbcType="VARCHAR" property="clientManager"/>
+        <result column="client_manager_phone" jdbcType="VARCHAR" property="clientManagerPhone"/>
+        <result column="consultant" jdbcType="VARCHAR" property="consultant"/>
+        <result column="thrid" jdbcType="VARCHAR" property="thrid"/>
+        <result column="scale" jdbcType="VARCHAR" property="scale"/>
+        <result column="place" jdbcType="VARCHAR" property="place"/>
+        <result column="invest_sum" jdbcType="VARCHAR" property="investSum"/>
+        <result column="contract_sum" jdbcType="VARCHAR" property="contractSum"/>
+        <result column="contract_manager" jdbcType="VARCHAR" property="contractManager"/>
+        <result column="contract_time" jdbcType="INTEGER" property="contractTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="manager" jdbcType="VARCHAR" property="manager"/>
+        <result column="deid" jdbcType="INTEGER" property="deid"/>
+        <result column="numselectProjectInfober" jdbcType="VARCHAR" property="number"/>
+        <result column="time" jdbcType="INTEGER" property="time"/>
+        <result column="up_time" jdbcType="INTEGER" property="upTime"/>
+        <result column="status" jdbcType="BIT" property="status"/>
+        <result column="finance_status" jdbcType="BIT" property="financeStatus"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+
+        <result column="old_id" jdbcType="VARCHAR" property="oldDeptId"/>
+        <result column="old_name" jdbcType="VARCHAR" property="oldDeptName"/>
+        <result column="new_id" jdbcType="VARCHAR" property="newDeptId"/>
+        <result column="new_name" jdbcType="VARCHAR" property="newDeptName"/>
+        <result column="fu_manager_user_id" jdbcType="VARCHAR" property="fuManagerUserId"/>
+        <result column="fu_manager_user_name" jdbcType="VARCHAR" property="fuManagerUserName"/>
+
+        <result column="job_id" jdbcType="VARCHAR" property="jobId"/>
+        <result column="job_name" jdbcType="VARCHAR" property="jobName"/>
+
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="apply_user_id" jdbcType="VARCHAR" property="applyUserId"/>
+        <result column="apply_user_name" jdbcType="VARCHAR" property="applyUserName"/>
+
+        <result column="project_nature" jdbcType="VARCHAR" property="projectNature"/>
+        <result column="confrim_method" jdbcType="VARCHAR" property="confrimMethod"/>
+
+        <result column="project_contract_num" jdbcType="VARCHAR" property="projectContractNum"/>
+        <result column="target_flag" jdbcType="VARCHAR" property="targetFlag"/>
+        <result column="is_cancel" jdbcType="VARCHAR" property="isCancel"/>
+
+    </resultMap>
+
+    <select id="selectProjectReplenishInfo" resultMap="BaseResultMap">
+      SELECT
+            T.*,
+            T1.*,
+            T2.job_id,
+            T2.job_name,
+            T3.uid AS user_id,
+            T3.`name` AS apply_user_name
+        FROM
+            old_project_info_replenish T
+            LEFT JOIN old_department T1 ON T.deid = T1.old_id
+            LEFT JOIN tb_job T2 ON T1.new_id = T2.involved_department
+            LEFT JOIN old_user T3 ON T.uid = T3.uid
+        WHERE
+            T2.job_level = 10
+            AND T1.old_id = 8
+            AND T.project_contract_num IS NOT NULL
+    </select>
+
+
+    <select id="selectProjectInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+            T.*,
+            T1.*,
+            T2.job_id,
+            T2.job_name,
+            T3.uid AS user_id,
+            CASE
+		      WHEN T1.old_id = 6 THEN '其他_招标'
+		      WHEN T1.old_id = 8 THEN '其他_造价' ELSE ''
+	        END AS apply_user_name,
+            CASE
+		      WHEN T1.old_id = 6 THEN '46825f46-10e9-11ea-8252-f40343489768'
+		      WHEN T1.old_id = 8 THEN 'a15be817-10e8-11ea-8252-f40343489768' ELSE ''
+	        END AS apply_user_id,
+            CASE
+                WHEN T.paid = 1 THEN
+                '0'
+                WHEN T.paid = 2 THEN
+                '1'
+                WHEN T.paid = 3 THEN
+                '2' ELSE ''
+            END AS project_nature,
+            CASE
+                WHEN T.clmid = 1 THEN
+                '0'
+                WHEN T.clmid = 2 THEN
+                '2'
+                WHEN T.clmid = 3 THEN
+                '3'
+                WHEN T.clmid = 4 THEN
+                '1'
+                WHEN T.clmid = 5 THEN
+                '4'
+                WHEN T.clmid = 6 THEN
+                '5'ELSE ''
+            END AS confrim_method
+        FROM
+            ${tableName} T
+            LEFT JOIN old_department T1 ON T.deid = T1.old_id
+            LEFT JOIN tb_job T2 ON T1.new_id = T2.involved_department
+            LEFT JOIN old_user T3 ON T.uid = T3.uid
+            LEFT JOIN tb_user T4 ON T3.`name` = T4.user_name
+        WHERE
+            T2.job_level = #{jobLevel}
+        AND T4.user_id IS NULL
+        AND T1.old_id = #{oldDeptId}
+        AND T.remark IS NOT NULL
+  </select>
+
+
+    <select id="selectToDoArchiveProjectInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        	T.*,
+            T1.*,
+            T2.job_id,
+            T2.job_name,
+            T3.uid AS user_id,
+            T3.`name` AS apply_user_name,
+            T4.user_id AS apply_user_id,
+        CASE
+
+                WHEN T.paid = 1 THEN
+                '0'
+                WHEN T.paid = 2 THEN
+                '1'
+                WHEN T.paid = 3 THEN
+                '2' ELSE ''
+            END AS project_nature,
+        CASE
+
+                WHEN T.clmid = 1 THEN
+                '0'
+                WHEN T.clmid = 2 THEN
+                '2'
+                WHEN T.clmid = 3 THEN
+                '3'
+                WHEN T.clmid = 4 THEN
+                '1'
+                WHEN T.clmid = 5 THEN
+                '4'
+                WHEN T.clmid = 6 THEN
+                '5' ELSE ''
+            END AS confrim_method
+        FROM
+        old_project_info_to_archive T
+        JOIN (
+        SELECT
+        T1.project_num
+        FROM
+        tb_contract T
+        JOIN ( SELECT T.project_id, T.project_num FROM tb_project T WHERE T.project_num IN ( SELECT T.project_contract_num FROM old_project_info_to_archive T ) ) T1 ON T.project_id = T1.project_id
+        WHERE
+        1 = 1
+        AND T.delegate_task_key = #{taskKey}
+        ) T1 ON T.project_contract_num = T1.project_num
+        LEFT JOIN old_department T1 ON T.deid = T1.old_id
+        LEFT JOIN tb_job T2 ON T1.new_id = T2.involved_department
+        LEFT JOIN old_user T3 ON T.uid = T3.uid
+        JOIN tb_user T4 ON T3.`name` = T4.user_name
+        WHERE
+        T2.job_level = #{jobLevel}
+        AND T1.old_id = #{oldDeptId}
+        AND T.remark IS NOT NULL
+    </select>
+
+</mapper>

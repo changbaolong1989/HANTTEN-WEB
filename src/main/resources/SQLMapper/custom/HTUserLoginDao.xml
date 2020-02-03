@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTUserLoginDao">
+    <!--查询用户信息-->
+    <select id="checkUserLogin"  resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+            tu.user_id AS userId,
+            tu.user_name AS userName,
+            tr.role_name AS roleName,
+            tu.user_account AS userAccount,
+            tu.password,
+            tu.telephone,
+            tu.email,
+            tu.education AS educationId,
+            tu.company_id AS companyId,
+            tu.entry_date AS entryDate,
+            tu.is_incumbent AS isIncumbent,
+            tu.sign_path AS signPath
+        FROM
+            tb_user tu
+        LEFT JOIN
+            tb_user_role tur
+            ON
+            tu.user_id = tur.user_id
+        LEFT JOIN
+            tb_role tr
+            ON
+            tr.role_id = tur.role_id
+        WHERE
+            tu.is_del_flg = 0
+        AND
+            tu.user_account = #{userAccount}
+    </select>
+    <!--查询用户菜单权限列表-->
+    <select id="searchMenuListByUserId" resultType="com.hd.manager.dao.bean.HTMenuBean">
+        SELECT
+            tm.menu_id AS menuId,
+            tm.menu_name AS menuName,
+            tm.menu_type AS menuType,
+            tm.menu_position AS menuPosition,
+            tm.menu_icon_url AS menuIconUrl,
+            tm.url AS url,
+            tm.order_num AS orderNum,
+            tm.parent_menu_id AS parentMenuId
+        FROM
+            tb_user_role tur
+            LEFT JOIN tb_role_menu_relation trmr ON trmr.role_id = tur.role_id
+            LEFT JOIN tb_menu tm ON trmr.menu_id = tm.menu_id
+        WHERE
+            tur.is_del_flg = 0
+        AND
+            trmr.is_del_flg = 0
+        AND
+            tm.is_del_flg = 0
+        AND
+            tur.user_id = #{item}
+        ORDER BY
+            tm.order_num
+        ASC
+    </select>
+    <!--查询用户所属部门ID集合-->
+    <select id="searchDepartmentIds" resultType="java.lang.String">
+        SELECT
+            tj.involved_department
+        FROM
+            tb_user_job_relation tujr
+            LEFT JOIN tb_job tj ON tujr.job_id = tj.job_id
+        WHERE
+            tj.is_del_flg = 0
+        AND
+            tujr.user_id = #{item}
+    </select>
+    <!--查询用户所属职位集合-->
+    <select id="searchJobIds" resultType="java.lang.String">
+        SELECT
+            tujr.job_id
+        FROM
+            tb_user_job_relation tujr
+        WHERE
+            tujr.user_id = #{item}
+    </select>
+
+
+
+</mapper>

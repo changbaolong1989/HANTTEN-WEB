@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTPowerConfigDao">
+
+
+    <resultMap id="jobPowerList" type="com.hd.manager.dao.bean.HTJobBean">
+        <id column="jobId" property="jobId" />
+        <result column="jobName" property="jobName"></result>
+        <result column="jobLevel" property="jobLevel"></result>
+        <result column="departmentId" property="departmentId"></result>
+        <result column="departmentName" property="departmentName"></result>
+        <collection property="htJobPowerRelationBeanList" ofType="com.hd.manager.dao.bean.HTJobPowerRelationBean">
+            <id column="relationId" property="relationId"></id>
+            <result column="powerId" property="powerId"></result>
+            <result column="powerName" property="powerName"></result>
+        </collection>
+    </resultMap>
+
+
+    <!--查询职位已知所属权限集合-->
+    <select id="excSearchJobInfo" resultMap="jobPowerList">
+        SELECT
+            tj.job_id AS jobId,
+            tj.job_name AS jobName,
+            tj.job_level AS jobLevel,
+            tjpr.relation_id AS relationId,
+            tjpr.power_id AS powerId
+        FROM
+            tb_job tj
+            LEFT JOIN tb_job_power_relation tjpr ON tj.job_id = tjpr.job_id
+        WHERE
+            tj.is_del_flg = '0'
+        AND
+            tj.job_id = #{jobId}
+        ORDER BY
+            tjpr.create_date DESC
+    </select>
+
+
+    <!--查询职位已知所属权限集合-->
+    <select id="excSearchJobList" resultType="com.hd.manager.dao.bean.HTJobBean">
+        select
+        temp.*
+        from
+        (<include refid="searchJobListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--查询职位已知所属权限集合总个数-->
+    <select id="excSearchJobListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchJobListSql" />) temp
+    </select>
+
+    <sql id="searchJobListSql">
+        SELECT
+        tj.involved_department AS departmentId,
+        tdd.department_name AS departmentName,
+        tj.job_id AS jobId,
+        tj.job_name AS jobName,
+        tj.job_level AS jobLevel,
+        (
+        SELECT
+        GROUP_CONCAT( tup.power_name )
+        FROM
+        tb_job_power_relation tjpr
+        LEFT JOIN tb_user_power tup ON tjpr.power_id = tup.power_id
+        WHERE
+        tjpr.job_id = tj.job_id
+        ) AS powerNames
+        FROM
+        tb_job tj
+        LEFT JOIN tb_dict_department tdd ON tj.involved_department = tdd.department_id
+        WHERE
+        tj.is_del_flg = '0'
+        <if test="departmentId !=null and departmentId!= ''">
+            AND
+            tj.involved_department = #{departmentId}
+        </if>
+        <if test="jobName !=null and jobName!= ''">
+            AND
+            tj.job_name LIKE concat(concat('%',#{jobName}),'%')
+        </if>
+        ORDER BY
+        tj.involved_department ASC,
+        tj.job_level+0 ASC,
+        tj.create_date DESC
+    </sql>
+
+    <!--查询所有权限列表-->
+    <select id="excSearchAllPowerList" resultType="com.hd.manager.dao.bean.HTPowerBean">
+        SELECT
+        tup.power_id AS powerId,
+        tup.power_key AS powerKey,
+        tup.power_name AS powerName,
+        tup.power_rule_key AS powerRuleKey,
+        tup.power_rule_name AS powerRuleName,
+        tup.module_belong AS moduleBelong,
+        tup.create_date AS createDate,
+        tup.create_user_id AS createUserId,
+        tup.update_date AS updateDate,
+        tup.update_user_id AS updateUserId
+        FROM
+        tb_user_power tup
+        WHERE
+        tup.is_del_flg = '0'
+        AND
+        tup.power_rule_key = 'oneself'
+        ORDER BY
+        tup.create_date DESC
+    </select>
+
+    <!--批量新增职位权限-->
+    <insert id="excInsertPowers">
+        INSERT INTO
+        tb_job_power_relation(
+        relation_id,job_id,power_id,create_date,create_user_id,update_date,update_user_id,is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.relationId},#{item.jobId},#{item.powerId},#{item.createDate},#{item.createUserId},#{item.updateDate},#{item.updateUserId},#{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量删除职位权限-->
+    <delete id="excDeletePowers">
+        DELETE
+        FROM
+            tb_job_power_relation
+        WHERE
+            job_id = #{item}
+    </delete>
+    <!--查询所有部门 -->
+    <select id="excSearchAllDepartments" resultType="com.hd.manager.dao.bean.HTJobBean">
+        select
+        department_id AS departmentId,
+        department_name AS departmentName
+        from
+        tb_dict_department
+    </select>
+</mapper>

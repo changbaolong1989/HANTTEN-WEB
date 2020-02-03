@@ -1,0 +1,56 @@
+@charset "utf-8";
+@import url("./custom.css");/* 自定义样式 */
+@import url("./form.css");/* 表单样式 */
+@import url("./table.css");/* 表格及页码样式 */
+@import url("./tree.css");/* 树形控件样式 */
+@import url("./popover.css");/* 弹窗及遮罩层样式 */
+
+
+body {
+	background-color: #f1f5f8;
+}
+/* 滚动条样式 */
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+	width: 6px;
+  height: 6px;
+}
+
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.3);
+	border-radius: 10px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.1);
+	-webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+ /* IE兼容调整*/
+    /* 动态调整z-index 可以是对话框显示 */
+   .zindex1 {
+    .el-dialog {
+      z-index: 4000;
+    }
+  }
+  .zindex2 {
+    .el-dialog {
+      z-index: 4001;
+    }
+  }
+
+/* 图标样式 */
+.el-icon-info{
+color: #06A1EE;
+}
+
+.pswp{
+  z-index: 9999;
+}

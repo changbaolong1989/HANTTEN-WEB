@@ -1,0 +1,38 @@
+@charset "utf-8";
+/* Tree 树形控件 */
+
+.el-tree-node{
+  margin-top:5px;
+
+  &.is-current,&.is-checked{
+    & > .el-tree-node__content{
+      background-color:#13A7F1 !important;
+      color: white;
+    }
+  }
+}
+.el-tree-node__content {
+	border-radius: 5px;
+
+	&:hover{
+		background-color: #C4E7FB !important;
+	}
+
+	/* 菜单扩展图标 */
+	.el-tree-node__expand-icon{
+		&+span{
+			width: calc(100% - 24px);
+			/* 装着文字的span标签 */
+			span:first-child{
+				text-overflow:ellipsis;
+				overflow:hidden;
+				white-space:nowrap;
+			}
+		}
+	}
+}
+
+.el-tree-node:focus>.el-tree-node__content {
+	background-color: #13A7F1 !important;
+	color: white;
+}

@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbProMeetingEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbProMeetingEntity">
+    <id column="meeting_id" jdbcType="VARCHAR" property="meetingId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="edit_date" jdbcType="TIMESTAMP" property="editDate" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="meeting_theme" jdbcType="VARCHAR" property="meetingTheme" />
+    <result column="content_summary" jdbcType="VARCHAR" property="contentSummary" />
+    <result column="participatory_unit" jdbcType="VARCHAR" property="participatoryUnit" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="meeting_file_path" jdbcType="VARCHAR" property="meetingFilePath" />
+    <result column="meeting_file_name" jdbcType="VARCHAR" property="meetingFileName" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    meeting_id, project_id, edit_date, address, meeting_theme, content_summary, participatory_unit, 
+    remark, meeting_file_path, meeting_file_name, create_date, create_user_id, update_date, 
+    update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbProMeetingEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_pro_meeting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_pro_meeting
+    where meeting_id = #{meetingId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_pro_meeting
+    where meeting_id = #{meetingId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbProMeetingEntityExample">
+    delete from tb_pro_meeting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbProMeetingEntity">
+    <selectKey keyProperty="meetingId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_meeting (meeting_id, project_id, edit_date, 
+      address, meeting_theme, content_summary, 
+      participatory_unit, remark, meeting_file_path, 
+      meeting_file_name, create_date, create_user_id, 
+      update_date, update_user_id, is_del_flg
+      )
+    values (#{meetingId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{editDate,jdbcType=TIMESTAMP}, 
+      #{address,jdbcType=VARCHAR}, #{meetingTheme,jdbcType=VARCHAR}, #{contentSummary,jdbcType=VARCHAR}, 
+      #{participatoryUnit,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{meetingFilePath,jdbcType=VARCHAR}, 
+      #{meetingFileName,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbProMeetingEntity">
+    <selectKey keyProperty="meetingId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_meeting
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      meeting_id,
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="editDate != null">
+        edit_date,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="meetingTheme != null">
+        meeting_theme,
+      </if>
+      <if test="contentSummary != null">
+        content_summary,
+      </if>
+      <if test="participatoryUnit != null">
+        participatory_unit,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="meetingFilePath != null">
+        meeting_file_path,
+      </if>
+      <if test="meetingFileName != null">
+        meeting_file_name,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{meetingId,jdbcType=VARCHAR},
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null">
+        #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingTheme != null">
+        #{meetingTheme,jdbcType=VARCHAR},
+      </if>
+      <if test="contentSummary != null">
+        #{contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="participatoryUnit != null">
+        #{participatoryUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingFilePath != null">
+        #{meetingFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingFileName != null">
+        #{meetingFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbProMeetingEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_pro_meeting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_pro_meeting
+    <set>
+      <if test="record.meetingId != null">
+        meeting_id = #{record.meetingId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.editDate != null">
+        edit_date = #{record.editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.address != null">
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.meetingTheme != null">
+        meeting_theme = #{record.meetingTheme,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contentSummary != null">
+        content_summary = #{record.contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="record.participatoryUnit != null">
+        participatory_unit = #{record.participatoryUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.meetingFilePath != null">
+        meeting_file_path = #{record.meetingFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.meetingFileName != null">
+        meeting_file_name = #{record.meetingFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_pro_meeting
+    set meeting_id = #{record.meetingId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      edit_date = #{record.editDate,jdbcType=TIMESTAMP},
+      address = #{record.address,jdbcType=VARCHAR},
+      meeting_theme = #{record.meetingTheme,jdbcType=VARCHAR},
+      content_summary = #{record.contentSummary,jdbcType=VARCHAR},
+      participatory_unit = #{record.participatoryUnit,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      meeting_file_path = #{record.meetingFilePath,jdbcType=VARCHAR},
+      meeting_file_name = #{record.meetingFileName,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbProMeetingEntity">
+    update tb_pro_meeting
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null">
+        edit_date = #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingTheme != null">
+        meeting_theme = #{meetingTheme,jdbcType=VARCHAR},
+      </if>
+      <if test="contentSummary != null">
+        content_summary = #{contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="participatoryUnit != null">
+        participatory_unit = #{participatoryUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingFilePath != null">
+        meeting_file_path = #{meetingFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="meetingFileName != null">
+        meeting_file_name = #{meetingFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where meeting_id = #{meetingId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbProMeetingEntity">
+    update tb_pro_meeting
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      edit_date = #{editDate,jdbcType=TIMESTAMP},
+      address = #{address,jdbcType=VARCHAR},
+      meeting_theme = #{meetingTheme,jdbcType=VARCHAR},
+      content_summary = #{contentSummary,jdbcType=VARCHAR},
+      participatory_unit = #{participatoryUnit,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      meeting_file_path = #{meetingFilePath,jdbcType=VARCHAR},
+      meeting_file_name = #{meetingFileName,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where meeting_id = #{meetingId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTUserQuestionRecordRelationDao">
+
+    <!---->
+    <select id="excSearchHTUserQuestionRecordRelationList"
+            resultType="com.hd.manager.dao.bean.HTUserQuestionRecordRelationBean">
+        SELECT
+            tuqrr.relation_id		AS relationId,
+            tuqrr.record_id			AS recordId,
+            tuqrr.user_id			AS userId,
+            tu.user_name			AS userName,
+            tuqrr.question_id		AS questionId,
+            tdq.question_name		AS questionName,
+            tuqrr.question_num	    AS questionNum,
+            tuqrr.source_type		AS sourceType
+        FROM
+            tb_user_question_record_relation tuqrr
+        LEFT JOIN
+            tb_user tu
+        ON tu.user_id = tuqrr.user_id
+
+        LEFT JOIN
+            tb_dict_question tdq
+        ON
+            tdq.question_id = tuqrr.question_id
+        WHERE
+            tuqrr.source_type = '2'
+        AND
+            tuqrr.record_id = #{recordId}
+    </select>
+
+    <!--批量插入审核记录和人员和问题类型关联-->
+    <insert id="excInsertUserQuestionRecordRelations">
+        INSERT INTO
+        tb_user_question_record_relation(
+        relation_id,record_id,user_id,question_id,question_num,source_type,business_id,create_date,create_user_id,update_date,update_user_id,is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.relationId},#{item.recordId},#{item.userId},#{item.questionId},#{item.questionNum},#{item.sourceType},#{item.businessId},#{item.createDate},#{item.createUserId},#{item.updateDate},#{item.updateUserId},#{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+
+    <!--批量删除-->
+    <update id="deleteUserQuestionRecord">
+        UPDATE
+            tb_user_question_record_relation
+        SET is_del_flg = '1'
+        WHERE
+            business_id in (
+                <foreach collection="list" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+        	)
+    </update>
+</mapper>

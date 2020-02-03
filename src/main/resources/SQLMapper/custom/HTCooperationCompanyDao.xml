@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTCooperationCompanyDao">
+
+    <!--查询合作公司列表数据的总条数-->
+    <select id="excSearchCooperationCompanyListCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            (<include refid="excSearchCooperationCompanyListSql" />) temp
+    </select>
+
+    <!--查询合作公司列表数据-->
+    <select id="excSearchCooperationCompanyList" resultType="com.hd.manager.dao.bean.HTCooperationCompanyBean">
+        select
+            temp.*
+        from
+            (<include refid="excSearchCooperationCompanyListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--列表sql-->
+    <sql id="excSearchCooperationCompanyListSql">
+        select
+             company_id      as companyId
+            ,company_name    as companyName
+            ,serial_num      as serialNum
+            ,company_address as companyAddress
+            ,charge_people   as chargePeople
+            ,phone_num       as phoneNum
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 1
+        <if test='null != companyName and "" != companyName'>
+            and company_name like concat(concat('%',#{companyName}),'%')
+        </if>
+        order by
+           create_date desc
+    </sql>
+
+    <!--查询合作公司名称是否重复-->
+    <select id="excSearchCooperationCompanyName" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 1
+        <if test='null != companyName and "" != companyName'>
+            and company_name = #{companyName}
+        </if>
+        <if test='null == companyName or "" == companyName'>
+            and 1!=1
+        </if>
+        <if test='null != companyId and "" != companyId'>
+            and company_id != #{companyId}
+        </if>
+    </select>
+
+    <!--查询序号是否重复-->
+    <select id="excSearchSerialNum" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 1
+        <if test='null != serialNum and "" != serialNum'>
+            and serial_num = #{serialNum}
+        </if>
+        <if test='null == serialNum or "" == serialNum'>
+            and 1!=1
+        </if>
+        <if test='null != companyId and "" != companyId'>
+            and company_id != #{companyId}
+        </if>
+    </select>
+
+    <!--查询合作公司详情数据-->
+    <select id="excSearchCooperationCompanyInfo" resultType="com.hd.manager.dao.bean.HTCooperationCompanyBean">
+        select
+             company_id      as companyId
+            ,company_name    as companyName
+            ,serial_num      as serialNum
+            ,company_address as companyAddress
+            ,charge_people   as chargePeople
+            ,phone_num       as phoneNum
+            ,update_date     as updateDate
+        from
+            tb_company
+        where
+            is_del_flg = 0
+        and
+            is_cooperate_company = 1
+        <if test='null != companyId and "" != companyId'>
+            and company_id = #{companyId}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,167 @@
+@charset "utf-8";
+input,
+button,
+.el-input__inner {
+  height: 30px !important;
+  line-height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+input,
+textarea,
+.el-textarea__inner,
+.el-input__inner {
+  background-color: #f8f9fb !important;
+}
+.el-date-editor .el-range-input {
+  height: 28px !important;
+}
+.el-range-separator {
+  padding: 0 !important;
+  line-height: 28px !important;
+}
+
+/* 只读元素 */
+.read-only input,
+.read-only textarea,
+.read-only .el-textarea__inner,
+.read-only .input__inner {
+  background-color: #e1e6ea !important;
+  color: #333333 !important;
+}
+.read-only .el-input-group__append,
+.read-only .el-input-group__prepend {
+  border: none !important;
+  background-color: #ced3d6 !important;
+}
+
+.read-only .el-input-group--append .el-input__inner {
+  border-radius: 5px 0 0 5px !important;
+}
+
+input,
+textarea,
+button,
+.el-textarea__inner,
+.el-input__inner {
+  font-size: 12px !important;
+  border-radius: 5px !important;
+}
+.el-textarea__inner {
+  overflow-x: hidden;
+  resize: none !important;
+  padding: 5px !important;
+}
+button {
+  border: none;
+}
+
+/* element-ui */
+/* 表单 */
+.el-input {
+  line-height: 30px;
+  height: 30px;
+}
+
+.el-textarea + .el-form-item__error,.el-input + .el-form-item__error,.el-date-editor + .el-form-item__error{
+  top: calc(100% + 5px)!important;
+}
+
+.el-select i[class*=' el-icon-'] {
+  vertical-align: middle;
+}
+
+.el-select .el-input__icon {
+  line-height: 30px;
+}
+
+/* 上传组件删除弹窗 */
+.el-message-box__btns button {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* 表单验证样式 */
+.el-form-item__error {
+  padding: 6px 10px;
+  background: #f85b48;
+  color: #fff !important;
+  border-radius: 5px;
+  z-index: 10;
+  left: auto !important;
+}
+
+.el-form-item__error::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border: 5px solid transparent!important;
+  border-right-color:transparent!important;
+  border-bottom: 5px solid #f85b48!important;
+  top: -10px!important;
+  left:10px!important;
+  position: absolute;
+}
+
+/* 上传下载按钮 */
+.btn-upload,
+.btn-download {
+  color: #06a1ee !important;
+  border: 1px solid #06a1ee !important;
+}
+
+/* 下拉框 */
+.el-select-dropdown {
+  margin-top: 7px !important;
+}
+
+/* 上传组件 */
+.el-upload-list__item-name,
+.el-upload-list__item-name [class^='el-icon'] {
+  color: #06a1ee !important;
+}
+
+/* 按鈕 */
+
+/* 超小按钮 */
+.el-button--mini {
+  height: 25px !important;
+  line-height: 25px !important;
+}
+/* 超小按钮激活状态 */
+.el-button--mini.active {
+  border-color: #0099e8 !important;
+  color: #0099e8 !important;
+}
+
+/* checkbox的括号 ()  */
+.checkbox-parentheses-left,
+.checkbox-parentheses-right {
+  color: #b0b0b0;
+}
+/* 计数器 */
+.el-input-number {
+  height: 30px !important;
+  line-height: 30px !important;
+  margin: 1px 0; // 修复表格中,call遮挡边框问题
+
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    margin-top: 1px;
+    height: 28px;
+  }
+}
+
+/* 合同表单 */
+.form-block {
+  .el-date-editor {
+    width: 100% !important;
+    vertical-align: middle;
+  }
+}
+
+.el-form-item.is-required:not(.is-no-asterisk)>.el-form-item__label:before{
+  content: "*"!important;
+  margin-right: 4px!important;
+}

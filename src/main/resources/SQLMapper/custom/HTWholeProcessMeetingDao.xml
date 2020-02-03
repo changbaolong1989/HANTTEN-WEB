@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessMeetingDao">
+
+    <!--查询列表-->
+    <select id="excSearchMeetingPeriodList" resultType="com.hd.manager.dao.bean.HTWholeProcessMeetingBean">
+        SELECT
+          temp.*
+        FROM
+          (<include refid="excSearchMeetingPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--查询列表信息条数-->
+    <select id="excSearchMeetingPeriodCount" resultType="java.lang.Integer">
+        SELECT
+          count(1)
+        FROM
+        (<include refid="excSearchMeetingPeriodListSql" />) temp
+    </select>
+
+    <!--查询信息（导出）-->
+    <select id="excSearchProMeetingPeriodListForExport"
+            resultType="com.hd.manager.dao.bean.HTWholeProcessMeetingBean">
+        SELECT
+        temp.*
+        FROM
+        (<include refid="excSearchMeetingPeriodListSql" />) temp
+    </select>
+
+    <sql id="excSearchMeetingPeriodListSql">
+        SELECT
+          meeting_id          AS meetingId
+          ,project_id         AS projectId
+          ,edit_date          AS editDate
+          ,address
+          ,meeting_theme      AS meetingTheme
+          ,content_summary    AS contentSummary
+          ,participatory_unit AS participatoryUnit
+          ,remark
+          ,meeting_file_path  AS meetingFilePath
+          ,meeting_file_name  AS meetingFileName
+        FROM
+          tb_pro_meeting
+        WHERE
+          project_id = #{projectId}
+        AND
+         is_del_flg = 0
+         ORDER BY edit_date DESC
+    </sql>
+
+
+</mapper>

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbTenderTaskEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbTenderTaskEntity">
+    <id column="tender_task_id" jdbcType="VARCHAR" property="tenderTaskId" />
+    <result column="sort_num" jdbcType="INTEGER" property="sortNum" />
+    <result column="department_id" jdbcType="VARCHAR" property="departmentId" />
+    <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId" />
+    <result column="delegate_task_key" jdbcType="VARCHAR" property="delegateTaskKey" />
+    <result column="delegate_task_id" jdbcType="VARCHAR" property="delegateTaskId" />
+    <result column="apply_user_id" jdbcType="VARCHAR" property="applyUserId" />
+    <result column="apply_user_name" jdbcType="VARCHAR" property="applyUserName" />
+    <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />
+    <result column="approve_user_id" jdbcType="VARCHAR" property="approveUserId" />
+    <result column="approve_user_name" jdbcType="VARCHAR" property="approveUserName" />
+    <result column="approve_time" jdbcType="TIMESTAMP" property="approveTime" />
+    <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime" />
+    <result column="current_state" jdbcType="VARCHAR" property="currentState" />
+    <result column="verify_state" jdbcType="VARCHAR" property="verifyState" />
+    <result column="submit_node" jdbcType="VARCHAR" property="submitNode" />
+    <result column="tender_task_name" jdbcType="VARCHAR" property="tenderTaskName" />
+    <result column="tender_task_content" jdbcType="VARCHAR" property="tenderTaskContent" />
+    <result column="tender_task_sts" jdbcType="VARCHAR" property="tenderTaskSts" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="is_can_recall" jdbcType="VARCHAR" property="isCanRecall" />
+    <result column="create_task_date" jdbcType="TIMESTAMP" property="createTaskDate" />
+    <result column="create_task_user_id" jdbcType="VARCHAR" property="createTaskUserId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    tender_task_id, sort_num, department_id, process_inst_id, delegate_task_key, delegate_task_id, 
+    apply_user_id, apply_user_name, apply_time, approve_user_id, approve_user_name, approve_time, 
+    complete_time, current_state, verify_state, submit_node, tender_task_name, tender_task_content, 
+    tender_task_sts, start_date, is_can_recall, create_task_date, create_task_user_id, 
+    create_date, create_user_id, update_date, update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbTenderTaskEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_tender_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_tender_task
+    where tender_task_id = #{tenderTaskId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_tender_task
+    where tender_task_id = #{tenderTaskId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbTenderTaskEntityExample">
+    delete from tb_tender_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbTenderTaskEntity">
+    <selectKey keyProperty="tenderTaskId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_tender_task (tender_task_id, sort_num, department_id, 
+      process_inst_id, delegate_task_key, delegate_task_id, 
+      apply_user_id, apply_user_name, apply_time, 
+      approve_user_id, approve_user_name, approve_time, 
+      complete_time, current_state, verify_state, 
+      submit_node, tender_task_name, tender_task_content, 
+      tender_task_sts, start_date, is_can_recall, 
+      create_task_date, create_task_user_id, create_date, 
+      create_user_id, update_date, update_user_id, 
+      is_del_flg)
+    values (#{tenderTaskId,jdbcType=VARCHAR}, #{sortNum,jdbcType=INTEGER}, #{departmentId,jdbcType=VARCHAR}, 
+      #{processInstId,jdbcType=VARCHAR}, #{delegateTaskKey,jdbcType=VARCHAR}, #{delegateTaskId,jdbcType=VARCHAR}, 
+      #{applyUserId,jdbcType=VARCHAR}, #{applyUserName,jdbcType=VARCHAR}, #{applyTime,jdbcType=TIMESTAMP}, 
+      #{approveUserId,jdbcType=VARCHAR}, #{approveUserName,jdbcType=VARCHAR}, #{approveTime,jdbcType=TIMESTAMP}, 
+      #{completeTime,jdbcType=TIMESTAMP}, #{currentState,jdbcType=VARCHAR}, #{verifyState,jdbcType=VARCHAR}, 
+      #{submitNode,jdbcType=VARCHAR}, #{tenderTaskName,jdbcType=VARCHAR}, #{tenderTaskContent,jdbcType=VARCHAR}, 
+      #{tenderTaskSts,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, #{isCanRecall,jdbcType=VARCHAR}, 
+      #{createTaskDate,jdbcType=TIMESTAMP}, #{createTaskUserId,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{isDelFlg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbTenderTaskEntity">
+    <selectKey keyProperty="tenderTaskId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_tender_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      tender_task_id,
+      <if test="sortNum != null">
+        sort_num,
+      </if>
+      <if test="departmentId != null">
+        department_id,
+      </if>
+      <if test="processInstId != null">
+        process_inst_id,
+      </if>
+      <if test="delegateTaskKey != null">
+        delegate_task_key,
+      </if>
+      <if test="delegateTaskId != null">
+        delegate_task_id,
+      </if>
+      <if test="applyUserId != null">
+        apply_user_id,
+      </if>
+      <if test="applyUserName != null">
+        apply_user_name,
+      </if>
+      <if test="applyTime != null">
+        apply_time,
+      </if>
+      <if test="approveUserId != null">
+        approve_user_id,
+      </if>
+      <if test="approveUserName != null">
+        approve_user_name,
+      </if>
+      <if test="approveTime != null">
+        approve_time,
+      </if>
+      <if test="completeTime != null">
+        complete_time,
+      </if>
+      <if test="currentState != null">
+        current_state,
+      </if>
+      <if test="verifyState != null">
+        verify_state,
+      </if>
+      <if test="submitNode != null">
+        submit_node,
+      </if>
+      <if test="tenderTaskName != null">
+        tender_task_name,
+      </if>
+      <if test="tenderTaskContent != null">
+        tender_task_content,
+      </if>
+      <if test="tenderTaskSts != null">
+        tender_task_sts,
+      </if>
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="isCanRecall != null">
+        is_can_recall,
+      </if>
+      <if test="createTaskDate != null">
+        create_task_date,
+      </if>
+      <if test="createTaskUserId != null">
+        create_task_user_id,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{tenderTaskId,jdbcType=VARCHAR},
+      <if test="sortNum != null">
+        #{sortNum,jdbcType=INTEGER},
+      </if>
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstId != null">
+        #{processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="delegateTaskKey != null">
+        #{delegateTaskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="delegateTaskId != null">
+        #{delegateTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUserId != null">
+        #{applyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUserName != null">
+        #{applyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null">
+        #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approveUserId != null">
+        #{approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveUserName != null">
+        #{approveUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null">
+        #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completeTime != null">
+        #{completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="currentState != null">
+        #{currentState,jdbcType=VARCHAR},
+      </if>
+      <if test="verifyState != null">
+        #{verifyState,jdbcType=VARCHAR},
+      </if>
+      <if test="submitNode != null">
+        #{submitNode,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskName != null">
+        #{tenderTaskName,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskContent != null">
+        #{tenderTaskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskSts != null">
+        #{tenderTaskSts,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isCanRecall != null">
+        #{isCanRecall,jdbcType=VARCHAR},
+      </if>
+      <if test="createTaskDate != null">
+        #{createTaskDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTaskUserId != null">
+        #{createTaskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbTenderTaskEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_tender_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_tender_task
+    <set>
+      <if test="record.tenderTaskId != null">
+        tender_task_id = #{record.tenderTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sortNum != null">
+        sort_num = #{record.sortNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.departmentId != null">
+        department_id = #{record.departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.processInstId != null">
+        process_inst_id = #{record.processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.delegateTaskKey != null">
+        delegate_task_key = #{record.delegateTaskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.delegateTaskId != null">
+        delegate_task_id = #{record.delegateTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyUserId != null">
+        apply_user_id = #{record.applyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyUserName != null">
+        apply_user_name = #{record.applyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyTime != null">
+        apply_time = #{record.applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.approveUserId != null">
+        approve_user_id = #{record.approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveUserName != null">
+        approve_user_name = #{record.approveUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveTime != null">
+        approve_time = #{record.approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.completeTime != null">
+        complete_time = #{record.completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.currentState != null">
+        current_state = #{record.currentState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.verifyState != null">
+        verify_state = #{record.verifyState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.submitNode != null">
+        submit_node = #{record.submitNode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderTaskName != null">
+        tender_task_name = #{record.tenderTaskName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderTaskContent != null">
+        tender_task_content = #{record.tenderTaskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderTaskSts != null">
+        tender_task_sts = #{record.tenderTaskSts,jdbcType=VARCHAR},
+      </if>
+      <if test="record.startDate != null">
+        start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isCanRecall != null">
+        is_can_recall = #{record.isCanRecall,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTaskDate != null">
+        create_task_date = #{record.createTaskDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createTaskUserId != null">
+        create_task_user_id = #{record.createTaskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_tender_task
+    set tender_task_id = #{record.tenderTaskId,jdbcType=VARCHAR},
+      sort_num = #{record.sortNum,jdbcType=INTEGER},
+      department_id = #{record.departmentId,jdbcType=VARCHAR},
+      process_inst_id = #{record.processInstId,jdbcType=VARCHAR},
+      delegate_task_key = #{record.delegateTaskKey,jdbcType=VARCHAR},
+      delegate_task_id = #{record.delegateTaskId,jdbcType=VARCHAR},
+      apply_user_id = #{record.applyUserId,jdbcType=VARCHAR},
+      apply_user_name = #{record.applyUserName,jdbcType=VARCHAR},
+      apply_time = #{record.applyTime,jdbcType=TIMESTAMP},
+      approve_user_id = #{record.approveUserId,jdbcType=VARCHAR},
+      approve_user_name = #{record.approveUserName,jdbcType=VARCHAR},
+      approve_time = #{record.approveTime,jdbcType=TIMESTAMP},
+      complete_time = #{record.completeTime,jdbcType=TIMESTAMP},
+      current_state = #{record.currentState,jdbcType=VARCHAR},
+      verify_state = #{record.verifyState,jdbcType=VARCHAR},
+      submit_node = #{record.submitNode,jdbcType=VARCHAR},
+      tender_task_name = #{record.tenderTaskName,jdbcType=VARCHAR},
+      tender_task_content = #{record.tenderTaskContent,jdbcType=VARCHAR},
+      tender_task_sts = #{record.tenderTaskSts,jdbcType=VARCHAR},
+      start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      is_can_recall = #{record.isCanRecall,jdbcType=VARCHAR},
+      create_task_date = #{record.createTaskDate,jdbcType=TIMESTAMP},
+      create_task_user_id = #{record.createTaskUserId,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbTenderTaskEntity">
+    update tb_tender_task
+    <set>
+      <if test="sortNum != null">
+        sort_num = #{sortNum,jdbcType=INTEGER},
+      </if>
+      <if test="departmentId != null">
+        department_id = #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstId != null">
+        process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="delegateTaskKey != null">
+        delegate_task_key = #{delegateTaskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="delegateTaskId != null">
+        delegate_task_id = #{delegateTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUserId != null">
+        apply_user_id = #{applyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUserName != null">
+        apply_user_name = #{applyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null">
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approveUserId != null">
+        approve_user_id = #{approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveUserName != null">
+        approve_user_name = #{approveUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null">
+        approve_time = #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completeTime != null">
+        complete_time = #{completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="currentState != null">
+        current_state = #{currentState,jdbcType=VARCHAR},
+      </if>
+      <if test="verifyState != null">
+        verify_state = #{verifyState,jdbcType=VARCHAR},
+      </if>
+      <if test="submitNode != null">
+        submit_node = #{submitNode,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskName != null">
+        tender_task_name = #{tenderTaskName,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskContent != null">
+        tender_task_content = #{tenderTaskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskSts != null">
+        tender_task_sts = #{tenderTaskSts,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isCanRecall != null">
+        is_can_recall = #{isCanRecall,jdbcType=VARCHAR},
+      </if>
+      <if test="createTaskDate != null">
+        create_task_date = #{createTaskDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTaskUserId != null">
+        create_task_user_id = #{createTaskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where tender_task_id = #{tenderTaskId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbTenderTaskEntity">
+    update tb_tender_task
+    set sort_num = #{sortNum,jdbcType=INTEGER},
+      department_id = #{departmentId,jdbcType=VARCHAR},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      delegate_task_key = #{delegateTaskKey,jdbcType=VARCHAR},
+      delegate_task_id = #{delegateTaskId,jdbcType=VARCHAR},
+      apply_user_id = #{applyUserId,jdbcType=VARCHAR},
+      apply_user_name = #{applyUserName,jdbcType=VARCHAR},
+      apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      approve_user_id = #{approveUserId,jdbcType=VARCHAR},
+      approve_user_name = #{approveUserName,jdbcType=VARCHAR},
+      approve_time = #{approveTime,jdbcType=TIMESTAMP},
+      complete_time = #{completeTime,jdbcType=TIMESTAMP},
+      current_state = #{currentState,jdbcType=VARCHAR},
+      verify_state = #{verifyState,jdbcType=VARCHAR},
+      submit_node = #{submitNode,jdbcType=VARCHAR},
+      tender_task_name = #{tenderTaskName,jdbcType=VARCHAR},
+      tender_task_content = #{tenderTaskContent,jdbcType=VARCHAR},
+      tender_task_sts = #{tenderTaskSts,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      is_can_recall = #{isCanRecall,jdbcType=VARCHAR},
+      create_task_date = #{createTaskDate,jdbcType=TIMESTAMP},
+      create_task_user_id = #{createTaskUserId,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where tender_task_id = #{tenderTaskId,jdbcType=VARCHAR}
+  </update>
+</mapper>

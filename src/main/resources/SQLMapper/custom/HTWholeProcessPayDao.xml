@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessPayDao">
+
+
+
+    <resultMap id="exportList" type="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+        <id column="treatyType" property="treatyType" />
+        <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+            <id column="undertakeType" property="undertakeType" />
+            <id column="tempTreatyType" property="treatyType" />
+            <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+                <id column="contractId" property="contractId"></id>
+                <result column="contractNum" property="contractNum"></result>
+                <result column="contractName" property="contractName"></result>
+                <result column="contractUnit" property="contractUnit"></result>
+                <result column="predictCloseValue" property="predictCloseValue"></result>
+                <result column="withTaxMoney" property="withTaxMoney"></result>
+                <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+                    <id column="payId" property="payId"></id>
+                    <result column="periodNum" property="periodNum"></result>
+                    <result column="currentValue" property="currentValue"></result>
+                    <result column="currentPayment" property="currentPayment"></result>
+                    <result column="editDate" property="editDate"></result>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询项目付款台账阶段列表-->
+    <select id="excSearchProPayPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProPayPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目付款台账阶段的总条数-->
+    <select id="excSearchProPayPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProPayPeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目付款台账阶段列表-->
+    <sql id="excSearchProPayPeriodListSql">
+        SELECT
+            tpc.contract_num         AS contractNum,
+            tpc.treaty_type          AS treatyType,
+            tpc.undertake_type       AS undertakeType,
+            tpc.contract_name        AS contractName,
+            tpc.contract_class       AS contractClass,
+            tpc.with_tax_money       AS withTaxMoney,
+            tpc.contract_unit        AS contractUnit,
+            tpc.predict_close_value  AS predictCloseValue,
+            tpp.pay_id               AS payId,
+            tpp.project_id           AS projectId,
+            tpp.contract_id          AS contractId,
+            tpp.period_num           AS periodNum,
+            tpp.current_value        AS currentValue,
+            tpp.current_payment      AS currentPayment,
+            tpp.edit_date            AS editDate
+        FROM
+          tb_pro_pay tpp
+        LEFT JOIN
+          tb_pro_contract tpc
+        ON
+          tpp.contract_id = tpc.contract_id
+        WHERE
+          tpc.is_del_flg = '0'
+        AND
+          tpc.project_id = #{projectId}
+        ORDER BY
+            tpc.treaty_type ASC,
+            tpc.undertake_type ASC,
+            tpc.contract_name ASC,
+            tpp.create_date DESC
+    </sql>
+
+    <!--查询项目付款台账信息详情-->
+    <select id="excSearchProPayPeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessPayBean">
+        SELECT
+            tpc.contract_num         AS contractNum,
+            tpc.treaty_type          AS treatyType,
+            tpc.undertake_type       AS undertakeType,
+            tpc.contract_name        AS contractName,
+            tpc.contract_class       AS contractClass,
+            tpc.with_tax_money       AS withTaxMoney,
+            tpc.contract_unit        AS contractUnit,
+            tpc.predict_close_value  AS predictCloseValue,
+            tpp.pay_id               AS payId,
+            tpp.project_id           AS projectId,
+            tpp.contract_id          AS contractId,
+            tpp.period_num           AS periodNum,
+            tpp.current_value        AS currentValue,
+            tpp.current_payment      AS currentPayment,
+            tpp.edit_date            AS editDate
+        FROM
+          tb_pro_pay tpp
+        LEFT JOIN
+          tb_pro_contract tpc
+        ON
+          tpp.contract_id = tpc.contract_id
+        WHERE
+          tpp.is_del_flg = '0'
+        AND
+          tpp.pay_id = #{payId}
+
+    </select>
+
+    <!--查询项目付款台账阶段数量信息-->
+    <select id="excSearchProPayPeriodCountByProperty"  resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+          tb_pro_pay tpp
+        WHERE
+          tpp.is_del_flg = '0'
+        AND
+          tpp.contract_id = #{contractId}
+        <if test="periodNum !=null and periodNum!= ''">
+            AND
+            tpp.period_num = #{periodNum}
+        </if>
+        <if test="payId !=null and payId!= ''">
+            AND
+            tpp.pay_id != #{payId}
+        </if>
+
+    </select>
+
+    <!--查询列表（导出）-->
+    <select id="excSearchProPayPeriodListForExport" resultMap="exportList">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProPayPeriodListSqlForExport" />) temp
+    </select>
+
+    <!--查询项目付款台账阶段列表-->
+    <sql id="excSearchProPayPeriodListSqlForExport">
+        SELECT
+            tpc.contract_num         AS contractNum,
+            tpc.treaty_type          AS treatyType,
+            tpc.treaty_type          AS tempTreatyType,
+            tpc.undertake_type       AS undertakeType,
+            tpc.contract_name        AS contractName,
+            tpc.contract_class       AS contractClass,
+            tpc.with_tax_money       AS withTaxMoney,
+            tpc.contract_unit        AS contractUnit,
+            tpc.predict_close_value  AS predictCloseValue,
+            tpp.pay_id               AS payId,
+            tpp.project_id           AS projectId,
+            tpp.contract_id          AS contractId,
+            tpp.period_num           AS periodNum,
+            tpp.current_value        AS currentValue,
+            tpp.current_payment      AS currentPayment,
+            tpp.edit_date            AS editDate
+        FROM
+          tb_pro_pay tpp
+        LEFT JOIN
+          tb_pro_contract tpc
+        ON
+          tpp.contract_id = tpc.contract_id
+        WHERE
+          tpc.is_del_flg = '0'
+        AND
+          tpc.project_id = #{projectId}
+        ORDER BY
+            tpc.treaty_type ASC,
+            tpc.undertake_type ASC,
+            tpc.contract_name ASC,
+            tpp.create_date DESC
+    </sql>
+
+
+    <!--查询所含期数-->
+    <select id="excSearchProPayPeriodNumListForExport" resultType="java.lang.String">
+        SELECT
+            DISTINCT tpp.period_num
+        FROM
+            tb_pro_pay tpp
+        LEFT JOIN
+          tb_pro_contract tpc
+        ON
+          tpp.contract_id = tpc.contract_id
+        WHERE
+          tpc.is_del_flg = '0'
+        AND
+          tpp.project_id = #{projectId}
+        ORDER BY
+          tpp.period_num+0 ASC
+    </select>
+</mapper>

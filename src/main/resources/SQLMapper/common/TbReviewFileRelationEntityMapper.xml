@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbReviewFileRelationEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbReviewFileRelationEntity">
+    <id column="file_id" jdbcType="VARCHAR" property="fileId" />
+    <result column="review_file_path" jdbcType="VARCHAR" property="reviewFilePath" />
+    <result column="review_file_name" jdbcType="VARCHAR" property="reviewFileName" />
+    <result column="business_id" jdbcType="VARCHAR" property="businessId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    file_id, review_file_path, review_file_name, business_id, create_date, create_user_id, 
+    update_date, update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbReviewFileRelationEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_review_file_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_review_file_relation
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_review_file_relation
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbReviewFileRelationEntityExample">
+    delete from tb_review_file_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbReviewFileRelationEntity">
+    <selectKey keyProperty="fileId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_review_file_relation (file_id, review_file_path, review_file_name, 
+      business_id, create_date, create_user_id, 
+      update_date, update_user_id, is_del_flg
+      )
+    values (#{fileId,jdbcType=VARCHAR}, #{reviewFilePath,jdbcType=VARCHAR}, #{reviewFileName,jdbcType=VARCHAR}, 
+      #{businessId,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbReviewFileRelationEntity">
+    <selectKey keyProperty="fileId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_review_file_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      file_id,
+      <if test="reviewFilePath != null">
+        review_file_path,
+      </if>
+      <if test="reviewFileName != null">
+        review_file_name,
+      </if>
+      <if test="businessId != null">
+        business_id,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{fileId,jdbcType=VARCHAR},
+      <if test="reviewFilePath != null">
+        #{reviewFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="reviewFileName != null">
+        #{reviewFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessId != null">
+        #{businessId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbReviewFileRelationEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_review_file_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_review_file_relation
+    <set>
+      <if test="record.fileId != null">
+        file_id = #{record.fileId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reviewFilePath != null">
+        review_file_path = #{record.reviewFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reviewFileName != null">
+        review_file_name = #{record.reviewFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.businessId != null">
+        business_id = #{record.businessId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_review_file_relation
+    set file_id = #{record.fileId,jdbcType=VARCHAR},
+      review_file_path = #{record.reviewFilePath,jdbcType=VARCHAR},
+      review_file_name = #{record.reviewFileName,jdbcType=VARCHAR},
+      business_id = #{record.businessId,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbReviewFileRelationEntity">
+    update tb_review_file_relation
+    <set>
+      <if test="reviewFilePath != null">
+        review_file_path = #{reviewFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="reviewFileName != null">
+        review_file_name = #{reviewFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessId != null">
+        business_id = #{businessId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbReviewFileRelationEntity">
+    update tb_review_file_relation
+    set review_file_path = #{reviewFilePath,jdbcType=VARCHAR},
+      review_file_name = #{reviewFileName,jdbcType=VARCHAR},
+      business_id = #{businessId,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,1826 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTaskDao">
+
+    <insert id="insertSelective" parameterType="com.hd.manager.dao.bean.HTFileConfirmOpinionRelationBean">
+        <selectKey keyProperty="confirmOpinionId" order="BEFORE" resultType="java.lang.String">
+            SELECT uuid()
+        </selectKey>
+        insert into tb_file_confirm_opinion_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            confirm_opinion_id,
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="tenderSumLimit != null">
+                tender_sum_limit,
+            </if>
+            <if test="purchaser != null">
+                purchaser,
+            </if>
+            <if test="agentOrg != null">
+                agent_org,
+            </if>
+            <if test="isAgree != null">
+                is_agree,
+            </if>
+            <if test="approveOpinion != null">
+                approve_opinion,
+            </if>
+            <if test="editDate != null">
+                edit_date,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{confirmOpinionId,jdbcType=VARCHAR},
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="tenderSumLimit != null">
+                #{tenderSumLimit,jdbcType=INTEGER},
+            </if>
+            <if test="purchaser != null">
+                #{purchaser,jdbcType=VARCHAR},
+            </if>
+            <if test="agentOrg != null">
+                #{agentOrg,jdbcType=VARCHAR},
+            </if>
+            <if test="isAgree != null">
+                #{isAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="approveOpinion != null">
+                #{approveOpinion,jdbcType=VARCHAR},
+            </if>
+            <if test="editDate != null">
+                #{editDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--为消息中心查询用户id-->
+    <select id="excSearchUserIdForMessage" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            distinct(tujr.user_id)    as userId,
+            tu.user_name              as userName,
+            tu.open_id                as openId
+        from
+            tb_user_job_relation tujr
+        left join
+            tb_user tu
+        on
+            tujr.user_id = tu.user_id
+        where
+            tujr.job_id in (select
+                                tj.job_id
+                            from
+                                tb_job tj
+                            where
+                                tj.job_name in (
+                                <foreach collection="list" item="item" index="index" separator=",">
+                                    #{item}
+                                </foreach>)
+                            and
+                                tj.involved_department = #{departmentId})
+    </select>
+
+    <!--查询落标通知书和任务关联表详情-->
+    <select id="excSearchFailTenderNoticeRelationDetail"
+            resultType="com.hd.manager.dao.bean.HTFailTenderNoticeRelationBean">
+        select
+            tftnr.notice_id          as noticeId
+            ,tftnr.task_id           as taskId
+            ,tftnr.tender_unit_name  as tenderUnitName
+            ,tftnr.agent_org         as agentOrg
+            ,tftnr.edit_date         as editDate
+            ,tp.project_num          as projectNum
+            ,tp.project_name         as projectName
+            ,tt.task_name            as taskName
+        from
+            tb_task tt
+        left join
+            tb_fail_tender_notice_relation tftnr on tt.task_id = tftnr.task_id
+        left join
+            tb_contract tc on tc.contract_id = tt.contract_id
+        left join
+            tb_project tp on tp.project_id = tc.project_id
+        where
+            tt.is_del_flg = 0
+        and
+            tt.task_id = #{taskId}
+    </select>
+
+    <!--查询招标文件确认意见表和任务的关联表详情-->
+    <select id="excSearchFileConfirmOpinionRelationDetail"
+            resultType="com.hd.manager.dao.bean.HTFileConfirmOpinionRelationBean">
+        select
+            tfcor.confirm_opinion_id as confirmOpinionId
+            ,tfcor.task_id            as taskId
+            ,tfcor.tender_sum_limit  as tenderSumLimit
+            ,tfcor.purchaser         as purchaser
+            ,tfcor.agent_org         as agentOrg
+            ,tfcor.is_agree          as isAgree
+            ,tfcor.approve_opinion   as approveOpinion
+            ,tfcor.edit_date         as editDate
+            ,tp.project_num          as projectNum
+            ,tp.project_name         as projectName
+            ,tt.task_name            as taskName
+        from
+            tb_task tt
+        left join
+            tb_file_confirm_opinion_relation tfcor on tt.task_id = tfcor.task_id
+        left join
+            tb_contract tc on tc.contract_id = tt.contract_id
+        left join
+            tb_project tp on tp.project_id = tc.project_id
+        where
+            tt.is_del_flg = 0
+        and
+            tt.task_id = #{taskId}
+    </select>
+
+    <!--查询专家论证意见表详情-->
+    <select id="excSearchExpertOpinionRelationDetail"
+            resultType="com.hd.manager.dao.bean.HTExpertOpinionRelationBean">
+        select
+            teor.expert_opinion_id  as expertOpinionId
+            ,teor.task_id           as taskId
+            ,teor.purchaser         as purchaser
+            ,teor.agent_org         as agentOrg
+            ,teor.purchaser_type    as purchaserType
+            ,teor.expert_opinion    as expertOpinion
+            ,teor.expert_sign       as expertSign
+            ,teor.remark            as remark
+            ,teor.prove_time        as proveTime
+            ,tp.project_num         as projectNum
+            ,tp.project_name        as projectName
+            ,tt.task_name           as taskName
+        from
+            tb_task tt
+        left join
+            tb_expert_opinion_relation teor on tt.task_id = teor.task_id
+        left join
+            tb_contract tc on tc.contract_id = tt.contract_id
+        left join
+            tb_project tp on tp.project_id = tc.project_id
+        where
+            tt.is_del_flg = 0
+        and
+            tt.task_id = #{taskId}
+    </select>
+
+    <!--通过任务id修改该任务所属的项目名称-->
+    <update id="excUpdateProjectNameByTaskId">
+        update
+            tb_contract
+        set
+            project_name = #{projectName}
+        where
+            is_del_flg = 0
+        and
+            contract_id in (
+                select
+                    t.contract_id
+                from (
+                    select
+                        tc.contract_id
+                    from
+                        tb_task tt
+                    left join
+                        tb_contract tc
+                    on
+                        tt.contract_id =  tc.contract_id
+                    where
+                        tt.is_del_flg = 0
+                    and
+                        tt.task_id = #{taskId}
+                ) t
+            )
+    </update>
+
+    <!--通过任务id查询审核阶段文件-->
+    <select id="excSearchMaterialByTaskPeriodId"
+            resultType="com.hd.manager.dao.bean.HTTaskPeriodMaterialBean">
+        select
+            ttpmr.relation_id             as relationId,
+            ttpmr.is_review               as isReview,
+            ttpmr.task_period_id          as taskPeriodId,
+            ttpmr.file_type               as fileType,
+            ttpmr.material_name           as materialName,
+            ttpmr.material_path           as materialPath,
+            ttpmr.create_user_id          as createUserId,
+            ttpr.task_id                  as taskId,
+            ttp.period_type               as periodType
+        from
+            tb_task_period_material_relation ttpmr
+        left join
+            tb_task_period_relation ttpr on ttpmr.task_period_id = ttpr.relation_id
+        left join
+            tb_task_period ttp on ttpr.period_id = ttp.period_id
+        where
+            ttpmr.is_del_flg = 0
+        and
+            ttp.period_type in (2,3)
+        and
+            ttpmr.task_period_id = #{taskPeriodId}
+    </select>
+
+    <!--通过任务id修改该任务下的审批中的档案编号-->
+    <update id="excUpdateFileNumberTaskId">
+        update
+            tb_task_archive
+        set
+            file_number = #{fileNumber},
+            update_date = #{updateDate},
+            update_user_id = #{updateUserId}
+        where
+            is_del_flg = 0
+        and
+            verify_state = 2
+        and
+            task_id = #{taskId}
+    </update>
+
+    <!--通过任务id修改该任务下的阶段文件提审状态-->
+    <update id="excUpdateIsReviewByTaskId">
+        update
+            tb_task_period_material_relation ttpmr
+        set
+            ttpmr.is_review = 1,
+            ttpmr.update_date = #{updateDate},
+            ttpmr.update_user_id = #{updateUserId}
+        where
+            ttpmr.is_del_flg = 0
+        and
+            ttpmr.is_review != 1
+        and
+            ttpmr.task_period_id in (
+                select
+                    ttpr.relation_id
+                from
+                    tb_task_period_relation ttpr
+                where
+                    ttpr.is_del_flg = 0
+                and
+                    ttpr.task_id = #{taskId}
+            )
+    </update>
+
+    <!--通过任务id查询任务归档详情-->
+    <select id="excSearchProjectStsByTaskId" resultType="com.hd.manager.dao.bean.HTProjectBean">
+        select
+            tp.project_sts as projectSts
+        from
+            tb_task tt
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tc.project_id = tp.project_id
+        where
+            tt.is_del_flg = 0
+        and
+            tt.task_id = #{item}
+    </select>
+
+    <!--查询重新编辑审核列表-->
+    <select id="excSearchTaskReeditHisTaskInst" resultMap="excSearchTaskReeditHisTaskInstSelectList">
+        select
+            ttrhti.task_key           as  parentTaskKey,
+            ttrhti.history_id         as  historyId,
+            ttrhti.task_reedit_id     as  taskReeditId,
+            ttrhti.process_inst_id    as  processInstId,
+            ttrhti.task_key           as  taskKey,
+            ttrhti.is_pass            as  isPass,
+            ttrhti.reject_reason      as  rejectReason,
+            ttrhti.approve_user_id    as  approveUserId,
+            tu.user_name              as  approveUserName,
+            ttrhti.approve_time       as  approveTime,
+            ttr.verify_state          as  verifyState
+        from
+            tb_task_reedit_his_task_inst ttrhti
+        left join
+            tb_task_reedit ttr
+        on
+            ttrhti.task_reedit_id = ttr.reedit_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttrhti.approve_user_id
+        where
+            ttrhti.is_del_flg != '1'
+        and
+            ttrhti.task_id = #{taskId}
+        order by
+            ttrhti.approve_time asc
+    </select>
+
+    <resultMap id="excSearchTaskReeditHisTaskInstSelectList" type="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        <id column="taskReeditId" property="taskReeditId" />
+        <result column="verifyState" property="verifyState" />
+        <collection property="HTTaskPeriodBeanList" ofType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+            <id column="historyId" property="historyId" />
+            <result column="taskReeditId" property="taskReeditId" />
+            <result column="taskKey" property="taskKey" />
+            <result column="approveUserId" property="approveUserId" />
+            <result column="approveUserName" property="approveUserName" />
+            <collection property="HTTaskPeriodBeanList" ofType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+                <id column="historyId" property="historyId" />
+                <result column="taskReeditId" property="taskReeditId" />
+                <result column="processInstId" property="processInstId" />
+                <result column="taskKey" property="taskKey" />
+                <result column="isPass" property="isPass" />
+                <result column="rejectReason" property="rejectReason" />
+                <result column="approveUserId" property="approveUserId" />
+                <result column="approveUserName" property="approveUserName" />
+                <result column="approveTime" property="approveTime" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询该任务下的所有提审的A3阶段信息-->
+    <select id="excSearchAllA3PeriodInfoByTaskId"  resultType="com.hd.common.entity.TbTaskPeriodRelationEntity">
+        select
+        ttpr.relation_id             as relationId,
+        ttpr.verify_state            as verifyState
+        from
+        tb_task_period_relation ttpr
+        left join
+        tb_task_period ttp
+        on
+        ttpr.period_id = ttp.period_id
+        where
+        ttpr.is_del_flg = 0
+        <if test="taskId !=null and taskId!= ''">
+            and ttpr.task_id = #{taskId}
+        </if>
+        and
+            ttpr.verify_state IS NOT NULL
+        and
+            ttp.period_type = 2
+        order by
+            ttpr.create_date desc
+    </select>
+
+    <!--查询阶段关联文件信息-->
+    <select id="excSearchTaskSaveMaterialListByProperty"  resultType="com.hd.manager.dao.bean.HTTaskSaveMaterialBean">
+        select
+            ttsmr.relation_id             as relationId,
+            ttsmr.task_id                 as taskId,
+            ttsmr.file_type               as fileType,
+            ttsmr.material_name           as materialName,
+            ttsmr.material_path           as materialPath,
+            ttsmr.create_user_id          as createUserId,
+            tu.user_name                  as userName
+        from
+            tb_task_save_material_relation ttsmr
+        left join
+            tb_user tu
+        on
+            ttsmr.create_user_id = tu.user_id
+        where
+            ttsmr.is_del_flg = 0
+        <if test="taskId !=null and taskId!= ''">
+            and ttsmr.task_id = #{taskId}
+        </if>
+        order by
+            ttsmr.create_date desc
+    </select>
+
+    <!--添加归档文件信息-->
+    <insert id="excInsertTaskSaveMaterialRelationInfo" parameterType="com.hd.common.entity.TbTaskSaveMaterialRelationEntity">
+        insert into tb_task_save_material_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                relation_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="materialPath != null">
+                material_path,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="fileType != null">
+                file_type,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                #{relationId,jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="materialPath != null">
+                #{materialPath,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                #{fileType,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--查询文件类别列表-->
+    <select id="searchMaterialTypeList" resultType="com.hd.manager.dao.bean.HTDictFileTypeBean">
+        SELECT
+            tdft.file_type_id   AS fileTypeId,
+            tdft.file_type_name AS fileTypeName
+        FROM
+            tb_dict_file_type tdft
+        WHERE
+            tdft.is_del_flg = 0
+    </select>
+
+    <!--查询任务关联成员-->
+    <select id="excSearchTaskUserListByTaskId" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            ttur.user_id      as userId,
+            ttur.is_main_duty as isMainDuty,
+            tu.user_name      as userName
+        from
+            tb_task_user_relation ttur
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttur.user_id
+        where
+            ttur.is_del_flg = 0
+        and
+            ttur.task_id = #{taskId}
+    </select>
+
+    <!--查询审核记录-->
+    <select id="excSearchHTTaskHisTaskInstInfoList" resultMap="selectList">
+        select
+            ttphti.task_key           as  parentTaskKey,
+            ttphti.history_id         as  historyId,
+            ttphti.task_period_id     as  taskPeriodId,
+            ttphti.process_inst_id    as  processInstId,
+            ttphti.task_key           as  taskKey,
+            ttphti.is_pass            as  isPass,
+            ttphti.reject_reason      as  rejectReason,
+            ttphti.approve_user_id    as  approveUserId,
+            ptu.user_name             as  approveUserName,
+            ptu.sign_path             as  signPath,
+            ttphti.approve_time       as  approveTime,
+            tuqrr.relation_id		  as  childRelationId,
+            tuqrr.record_id			  as  childRecordId,
+            tuqrr.user_id			  as  childUserId,
+            tu.user_name			  as  childUserName,
+            tuqrr.question_id		  as  childQuestionId,
+            tdq.question_name		  as  childQuestionName,
+            tuqrr.question_num	      as  childQuestionNum,
+            tuqrr.source_type		  as  childSourceType
+        from
+            tb_task_period_his_task_inst ttphti
+        left join
+            (select * from tb_user_question_record_relation where source_type = '1') tuqrr
+        on
+            tuqrr.record_id = ttphti.history_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = tuqrr.user_id
+        left join
+            tb_user ptu
+        on
+            ptu.user_id = ttphti.approve_user_id
+        left join
+            tb_dict_question tdq
+        on
+            tdq.question_id = tuqrr.question_id
+        where
+            ttphti.is_del_flg != '1'
+        <if test='null != taskPeriodId and "" != taskPeriodId'>
+            and ttphti.task_period_id = #{taskPeriodId}
+        </if>
+        order by
+            ttphti.approve_time asc
+    </select>
+
+    <resultMap id="selectList" type="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        <id column="parentTaskKey" property="taskKey" />
+        <collection property="HTTaskPeriodBeanList" ofType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+            <id column="historyId" property="historyId" />
+            <result column="taskPeriodId" property="taskPeriodId" />
+            <result column="processInstId" property="processInstId" />
+            <result column="taskKey" property="taskKey" />
+            <result column="isPass" property="isPass" />
+            <result column="rejectReason" property="rejectReason" />
+            <result column="approveUserId" property="approveUserId" />
+            <result column="approveUserName" property="approveUserName" />
+            <result column="signPath" property="signPath" />
+            <result column="approveTime" property="approveTime" />
+            <collection property="htUserQuestionRecordRelationBeanList" ofType="com.hd.manager.dao.bean.HTUserQuestionRecordRelationBean">
+                <id column="childRelationId" property="relationId"></id>
+                <result column="childRecordId" property="recordId"></result>
+                <result column="childUserId" property="userId"></result>
+                <result column="childUserName" property="userName"></result>
+                <result column="childQuestionId" property="questionId"></result>
+                <result column="childQuestionName" property="questionName"></result>
+                <result column="childQuestionNum" property="questionNum"></result>
+                <result column="childSourceType" property="sourceType"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--根据任务id查询部门id-->
+    <select id="excSearchDepartmentIdByTaskId" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        select
+            tc.department_id as departmentId
+        from
+            tb_task tt
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id
+        where
+            tt.is_del_flg = 0
+        <if test='null != taskId and "" != taskId'>
+            and tt.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--修改其审核状态-->
+    <update id="excUpdateIsReviewType">
+        update tb_task_period_material_relation set is_review = 1 where relation_id in
+        (<foreach collection="list" item="item" index="index" separator=",">
+            #{item}
+        </foreach>)
+    </update>
+
+    <!--通过任务id查询重新编辑申请列表-->
+    <select id="excSearchTaskReeditListByRelationId" resultType="com.hd.manager.dao.bean.HTTaskReeditBean">
+        select
+            ttr.task_id             AS taskId,
+            ttr.reedit_id           AS reeditId,
+            ttr.process_inst_id     AS processInstId,
+            ttr.delegate_task_key   AS delegateTaskKey,
+            ttr.delegate_task_id    AS delegateTaskId,
+            ttr.submit_node         AS submitNode,
+            ttr.apply_user_id       AS applyUserId,
+            ttr.apply_user_name     AS applyUserName,
+            ttr.approve_user_id     AS approveUserId,
+            ttr.approve_user_name   AS approveUserName,
+            ttr.approve_time        AS approveTime,
+            ttr.complete_time       AS completeTime,
+            ttr.verify_state        AS verifyState,
+            ttr.current_state       AS currentState,
+            ttr.is_can_recall       AS isCanRecall,
+            tc.department_id        AS departmentId
+        from
+            tb_task_reedit ttr
+        left join
+            tb_task tt
+        on
+            tt.task_id = ttr.task_id
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        where
+            1=1
+        <if test="taskId !=null and taskId != ''">
+            and ttr.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--通过任务id查询重新编辑申请详情-->
+    <select id="excSearchTaskReeditDetailInfoByRelationId" resultType="com.hd.manager.dao.bean.HTTaskReeditBean">
+        select
+            ttr.task_id             as taskId,
+            ttr.reedit_id           as reeditId,
+            ttr.process_inst_id     as processInstId,
+            ttr.delegate_task_key   as delegateTaskKey,
+            ttr.delegate_task_id    as delegateTaskId,
+            ttr.submit_node         as submitNode,
+            ttr.apply_user_id       as applyUserId,
+            ttr.apply_user_name     as applyUserName,
+            ttr.apply_time          as applyTime,
+            ttr.approve_user_id     as approveUserId,
+            ttr.approve_user_name   as approveUserName,
+            ttr.approve_time        as approveTime,
+            ttr.complete_time       as completeTime,
+            ttr.verify_state        as verifyState,
+            ttr.current_state       as currentState,
+            ttr.is_can_recall       as isCanRecall,
+            tc.department_id        as departmentId,
+            tp.project_sts          as projectIsClosed,
+            tp.project_num          as projectNum,
+            tp.project_id           as projectId,
+            tc.contract_num         as contractNum,
+            tt.task_name            as taskName,
+            tt.update_date          as updateDate,
+            tu.open_id              as openId
+        from
+            tb_task_reedit ttr
+        left join
+            tb_task tt
+        on
+            tt.task_id = ttr.task_id
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttr.apply_user_id
+        where
+            1=1
+        <if test="verifyState !=null and verifyState != ''">
+            AND ttr.verify_state = #{verifyState}
+        </if>
+        <if test="taskId !=null and taskId != ''">
+            and ttr.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--通过任务id查询任务归档详情-->
+    <select id="excSearchTaskArchiveDetailInfoByTaskId" resultType="com.hd.manager.dao.bean.HTTaskArchiveBean">
+        select
+            tta.task_archive_id     as taskArchiveId,
+            tta.task_id             as taskId,
+            tta.process_inst_id     as processInstId,
+            tta.delegate_task_key   as delegateTaskKey,
+            tta.delegate_task_id    as delegateTaskId,
+            tta.apply_user_id       as applyUserId,
+            tta.apply_user_name     as applyUserName,
+            tta.apply_time          as applyTime,
+            tta.approve_user_id     as approveUserId,
+            tta.approve_user_name   as approveUserName,
+            tta.approve_time        as approveTime,
+            tta.complete_time       as completeTime,
+            tta.current_state       as currentState,
+            tta.verify_state        as verifyState,
+            tta.submit_node         as submitNode,
+            tta.is_can_recall       as isCanRecall,
+            tta.create_date         as createDate,
+            tta.create_user_id      as createUserId,
+            tta.update_date         as updateDate,
+            tta.update_user_id      as updateUserId,
+            tta.is_del_flg          as isDelFlg,
+            tta.department_id       as departmentId,
+            tp.project_sts          as projectIsClosed,
+            tc.contract_num         as contractNum,
+            tp.project_id           as projectId,
+            tp.project_num          as projectNum,
+            tt.task_name            as taskName,
+            tu.open_id              as openId
+        from
+            tb_task_archive tta
+        left join tb_task tt on tt.task_id = tta.task_id
+        left join tb_contract tc on tt.contract_id = tc.contract_id
+        left join tb_project tp on tp.project_id = tc.project_id
+        left join tb_user tu on tu.user_id = tta.apply_user_id
+        where
+            tta.is_del_flg = 0
+        and
+            (tta.verify_state <![CDATA[<>]]> '1' or tta.verify_state IS NULL)
+        and
+            tta.task_id = #{item}
+    </select>
+
+    <!--通过任务id查询任务详情-->
+    <select id="excSearchTaskDetailInfoByTaskId" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_id             as taskId,
+            tt.process_inst_id     as processInstId,
+            tt.delegate_task_key   as delegateTaskKey,
+            tt.delegate_task_id    as delegateTaskId,
+            tt.apply_user_id       as applyUserId,
+            tt.apply_user_name     as applyUserName,
+            tt.apply_time          as applyTime,
+            tt.approve_user_id     as approveUserId,
+            tt.approve_user_name   as approveUserName,
+            tt.approve_time        as approveTime,
+            tt.complete_time       as completeTime,
+            tt.current_state       as currentState,
+            tt.verify_state        as verifyState,
+            tt.submit_node         as submitNode,
+            tt.is_can_recall       as isCanRecall,
+            tt.create_date         as createDate,
+            tt.create_user_id      as createUserId,
+            tt.update_date         as updateDate,
+            tt.update_user_id      as updateUserId,
+            tt.is_del_flg          as isDelFlg,
+            tt.is_submit_reedit    as isSubmitReedit,
+            tt.is_pass_reedit      as isPassReedit,
+            tt.file_number         as fileNumber,
+            tt.counsel_type_id     as counselTypeId,
+            tt.contract_id         as contractId,
+            tt.report_num          as reportNum,
+            tt.task_name           as taskName,
+            tc.department_id       as departmentId,
+            tp.project_id          as projectId
+        from
+            tb_task tt
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tc.project_id = tp.project_id
+        where
+            tt.is_del_flg = 0
+        and
+            tt.task_id = #{item}
+    </select>
+
+    <!--通过任务阶段id查询任务详情-->
+    <select id="excSearchTaskDetailInfoByRelationId" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_id             as taskId,
+            tt.process_inst_id     as processInstId,
+            tt.delegate_task_key   as delegateTaskKey,
+            tt.delegate_task_id    as delegateTaskId,
+            tt.apply_user_id       as applyUserId,
+            tt.apply_user_name     as applyUserName,
+            tt.apply_time          as applyTime,
+            tt.approve_user_id     as approveUserId,
+            tt.approve_user_name   as approveUserName,
+            tt.approve_time        as approveTime,
+            tt.complete_time       as completeTime,
+            tt.current_state       as currentState,
+            tt.verify_state        as verifyState,
+            tt.submit_node         as submitNode,
+            tt.is_can_recall       as isCanRecall,
+            tt.create_date         as createDate,
+            tt.create_user_id      as createUserId,
+            tt.update_date         as updateDate,
+            tt.update_user_id      as updateUserId,
+            tt.is_del_flg          as isDelFlg,
+            tt.is_submit_reedit    as isSubmitReedit,
+            tt.is_pass_reedit      as isPassReedit,
+            tt.file_number         as fileNumber,
+            tt.counsel_type_id     as counselTypeId,
+            tt.contract_id         as contractId,
+            tt.report_num          as reportNum,
+            tt.task_name           as taskName,
+            tc.department_id       as departmentId,
+            tp.project_id          as projectId,
+            tp.project_sts         as projectIsClosed,
+            tp.project_num         as projectNum,
+            tc.contract_num        as contractNum,
+            tc.project_name        as projectName,
+            tu.open_id             as openId
+        from
+            tb_task_period_relation ttpr
+        left join
+            tb_task tt
+        on
+            ttpr.task_id = tt.task_id
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = tt.apply_user_id
+        where
+            ttpr.is_del_flg = 0
+        and
+            ttpr.relation_id =#{item}
+    </select>
+
+    <!--通过任务阶段id查询任务阶段详情-->
+    <select id="excSearchTaskPeriodDetailInfoByRelationId" resultType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        select
+            ttpr.relation_id         as relationId,
+            ttpr.task_id             as taskId,
+            ttpr.period_id           as periodId,
+            ttpr.process_inst_id     as processInstId,
+            ttpr.delegate_task_key   as delegateTaskKey,
+            ttpr.delegate_task_id    as delegateTaskId,
+            ttpr.apply_user_id       as applyUserId,
+            ttpr.apply_user_name     as applyUserName,
+            ttpr.apply_time          as applyTime,
+            ttpr.approve_user_id     as approveUserId,
+            ttpr.approve_user_name   as approveUserName,
+            ttpr.approve_time        as approveTime,
+            ttpr.complete_time       as completeTime,
+            ttpr.current_state       as currentState,
+            ttpr.verify_state        as verifyState,
+            ttpr.submit_node         as submitNode,
+            ttpr.is_can_recall       as isCanRecall,
+            tt.process_inst_id       as taskProcessInstId,
+            tc.department_id         as departmentId,
+            ttpr.create_date         as createDate,
+            ttpr.create_user_id      as createUserId,
+            ttpr.update_date         as updateDate,
+            ttpr.update_user_id      as updateUserId,
+            ttpr.is_del_flg          as isDelFlg,
+            tt.is_submit_reedit      as isSubmitReedit,
+            tc.contract_num          as contractNum,
+            tp.project_num           as projectNum,
+            tt.task_name             as taskName,
+            ttp.period_name          as periodName,
+            tp.project_sts           as projectIsClosed,
+            tp.project_id            as projectId,
+            tu.open_id               as openId
+        from
+            tb_task_period_relation ttpr
+        left join
+            tb_task tt
+        on
+            ttpr.task_id = tt.task_id
+        left join
+            tb_contract tc
+        on
+            tt.contract_id = tc.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        left join
+            tb_task_period ttp
+        on
+            ttp.period_id = ttpr.period_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttpr.apply_user_id
+        where
+            ttpr.is_del_flg = 0
+        and
+            ttpr.relation_id = #{item}
+    </select>
+
+    <!--根据任务阶段id修改非自己任务阶段文件的审核状态-->
+    <update id="excUpdateIsReviewByRelationId">
+        update
+            tb_task_period_material_relation ttpmr2
+        set
+            ttpmr2.is_review = 0
+        where
+            ttpmr2.relation_id in
+                (
+                    select t.relation_id from
+                    (
+                        select
+                            ttpmr.relation_id,ttpmr.is_review
+                        from
+                            tb_task_period_material_relation ttpmr
+                        left join
+                            tb_user tu
+                        on
+                            ttpmr.create_user_id = tu.user_id
+                        where
+                            ttpmr.task_period_id in (
+                                select
+                                  ttpr2.relation_id
+                                from
+                                  tb_task_period_relation ttpr2
+                                where
+                                    ttpr2.task_id = (
+                                        select
+                                          ttpr.task_id
+                                        from
+                                          tb_task_period_relation ttpr
+                                        where
+                                          1=1
+                                        <if test="relationId !=null and relationId != ''">
+                                            and ttpr.relation_id =  #{relationId}
+                                        </if>
+                                        )
+                                    <if test="relationId !=null and relationId != ''">
+                                        and ttpr2.relation_id != #{relationId}
+                                    </if>
+                            )
+                    ) t
+                )
+    </update>
+
+    <!--根据任务阶段id查询非自己任务阶段的文件列表-->
+    <select id="excSearchTaskPeriodMaterialListByTaskPeriodId"  resultType="com.hd.manager.dao.bean.HTTaskPeriodMaterialBean">
+        select
+            ttpmr.relation_id             AS relationId,
+            ttpmr.is_review               AS isReview,
+            ttpmr.task_period_id          AS taskPeriodId,
+            ttpmr.file_type               AS fileType,
+            ttpmr.material_name           AS materialName,
+            ttpmr.material_path           AS materialPath,
+            ttpmr.create_user_id          AS createUserId,
+            tu.user_name                  AS userName
+        from
+            tb_task_period_material_relation ttpmr
+        left join
+            tb_user tu
+        on
+            ttpmr.create_user_id = tu.user_id
+        where
+            ttpmr.task_period_id in (
+                select
+                    ttpr2.relation_id
+                from
+                    tb_task_period_relation ttpr2
+                where
+                    ttpr2.task_id = (
+                        select
+                            ttpr.task_id
+                        from
+                            tb_task_period_relation ttpr
+                        where
+                            1=1
+                        <if test="taskPeriodId !=null and taskPeriodId != ''">
+                            and ttpr.relation_id = #{taskPeriodId}
+                        </if>
+                    )
+                    <if test="taskPeriodId !=null and taskPeriodId != ''">
+                        and ttpr2.relation_id != #{taskPeriodId}
+                    </if>
+            )
+        <if test="isReview !=null and isReview!= ''">
+            and ttpmr.is_review = #{isReview}
+        </if>
+        order by
+            ttpmr.create_date desc
+    </select>
+
+    <!--查询相关资料文件列表，当传入任务id的时候查询的是当前任务下的所有的相关资料，当传入任务阶段id的时候查询的是当前阶段的相关资料-->
+    <select id="excSearchIsReviewTaskPeriodMaterialList"  resultType="com.hd.manager.dao.bean.HTTaskPeriodMaterialBean">
+        select
+            ttpmr.relation_id             AS relationId,
+            ttpmr.is_review               AS isReview,
+            ttpmr.task_period_id          AS taskPeriodId,
+            ttpmr.file_type               AS fileType,
+            ttpmr.material_name           AS materialName,
+            ttpmr.material_path           AS materialPath,
+            ttpmr.create_user_id          AS createUserId,
+            tu.user_name                  AS userName
+        from tb_task_period_material_relation ttpmr
+        left join tb_user tu on ttpmr.create_user_id = tu.user_id
+        left join tb_task_period_relation ttpr on ttpr.relation_id = ttpmr.task_period_id
+        left join tb_task tt on tt.task_id = ttpr.task_id
+        where ttpmr.is_review = '1'
+        <if test="taskId != null and taskId!= ''">
+            and tt.task_id = #{taskId} and (ttpmr.is_result_file = 0 or ttpmr.is_result_file is null)
+        </if>
+        <if test="taskPeriodId != null and taskPeriodId!= ''">
+            and ttpmr.task_period_id = #{taskPeriodId} and ttpmr.is_result_file = 1
+        </if>
+        order by ttpmr.create_date desc
+    </select>
+
+    <!--查询阶段关联文件信息-->
+    <select id="excSearchTaskPeriodMaterialListByProperty"  resultType="com.hd.manager.dao.bean.HTTaskPeriodMaterialBean">
+        SELECT
+            ttpmr.relation_id             AS relationId,
+            ttpmr.is_review               AS isReview,
+            ttpmr.task_period_id          AS taskPeriodId,
+            ttpmr.file_type               AS fileType,
+            ttpmr.material_name           AS materialName,
+            ttpmr.material_path           AS materialPath,
+            ttpmr.create_user_id          AS createUserId,
+            tu.user_name                  AS userName
+        FROM
+            tb_task_period_material_relation ttpmr
+        LEFT JOIN
+            tb_task_period_relation ttpr
+        ON
+            ttpmr.task_period_id = ttpr.relation_id AND ttpr.is_del_flg = 0
+        LEFT JOIN
+            tb_task_period ttp
+        on
+            ttp.period_id = ttpr.period_id
+        LEFT JOIN
+            tb_user tu
+        ON
+            ttpmr.create_user_id = tu.user_id
+        WHERE
+            ttpmr.is_del_flg = 0
+        <if test="taskId !=null and taskId!= ''">
+            AND ttpr.task_id = #{taskId}
+            AND ttp.period_type not in ('2','3')
+        </if>
+        <if test="taskPeriodId !=null and taskPeriodId!= ''">
+            AND ttpmr.task_period_id = #{taskPeriodId}
+        </if>
+        <if test="isReview !=null and isReview!= ''">
+            AND ttpmr.is_review = #{isReview}
+        </if>
+        ORDER BY
+            ttpmr.create_date desc
+    </select>
+
+    <!--根据任务阶段id查询项目编号、合同编号和成果文件编号-->
+    <select id="excSearchProjectNumContractNumFileNumberByTaskPeriodId" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tp.project_name  as projectName,
+            tc.contract_num  as contractNum,
+            tt.report_num    as reportNum,
+            tp.project_num   as projectNum,
+            tt.task_name     as taskName
+        from
+            tb_task_period_relation ttpr
+        left join
+            tb_task tt
+        on
+            ttpr.task_id = tt.task_id
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id
+        where
+            ttpr.is_del_flg = 0
+        <if test='null != relationId and "" != relationId'>
+            and ttpr.relation_id = #{relationId}
+        </if>
+    </select>
+
+    <!--通过任务阶段id查询素材路径和关联id-->
+    <select id="excSearchMaterialPathByTaskPeriodId" resultType="com.hd.common.entity.TbTaskPeriodMaterialRelationEntity">
+        select
+            relation_id   as relationId,
+            material_path as materialPath
+        from
+            tb_task_period_material_relation
+        where
+            is_del_flg = 0
+        <if test='null != taskPeriodId and "" != taskPeriodId'>
+            and task_period_id = #{taskPeriodId}
+        </if>
+    </select>
+
+    <!--添加文件信息-->
+    <insert id="excInsertTaskPeriodMaterialRelationInfo" parameterType="com.hd.common.entity.TbTaskPeriodMaterialRelationEntity">
+        insert into tb_task_period_material_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                relation_id,
+            </if>
+            <if test="taskPeriodId != null">
+                task_period_id,
+            </if>
+            <if test="materialPath != null">
+                material_path,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="isReview != null">
+                is_review,
+            </if>
+            <if test="fileType != null">
+                file_type,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="num != null">
+                num,
+            </if>
+            <if test="copyFile != null">
+                copy_file,
+            </if>
+            <if test="recipient != null">
+                recipient,
+            </if>
+            <if test="recipientDate != null">
+                recipient_date,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                #{relationId,jdbcType=VARCHAR},
+            </if>
+            <if test="taskPeriodId != null">
+                #{taskPeriodId,jdbcType=VARCHAR},
+            </if>
+            <if test="materialPath != null">
+                #{materialPath,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="isReview != null">
+                #{isReview,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                #{fileType,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="num != null">
+                #{num,jdbcType=VARCHAR},
+            </if>
+            <if test="copyFile != null">
+                #{copyFile,jdbcType=VARCHAR},
+            </if>
+            <if test="recipient != null">
+                #{recipient,jdbcType=VARCHAR},
+            </if>
+            <if test="recipientDate != null">
+                #{recipientDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--工时列表数据的总条数-->
+    <select id="excSearchHourListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchHourListInfoSql" />) temp
+    </select>
+
+    <!--工时列表数据-->
+    <select id="excSearchHourListInfo" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchHourListInfoSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--工时列表sql-->
+    <sql id="excSearchHourListInfoSql">
+        select
+            tt.task_name         as taskName
+            ,tu.user_id          as userId
+            ,tu.user_name        as userName
+            ,ttur.end_date       as endDate
+            ,ttur.need_hour      as needHour
+            ,tusr.actualHourSum
+            ,ttur.relation_id    as relationId
+        from
+            tb_task tt
+        left join
+            tb_task_user_relation ttur
+        on
+            tt.task_id = ttur.task_id
+        inner join
+            (
+                select
+                    distinct tujr2.user_id
+                from
+                    tb_user_job_relation tujr
+                left join
+                    tb_job tj
+                on
+                    tj.parent_ids like concat(concat('%',tujr.job_id),'%')
+                left join
+                    tb_user_job_relation tujr2
+                on
+                    tujr2.job_id = tj.job_id
+                where 1=1
+                <if test='null != userId and "" != userId'>
+                    and tujr.user_id = #{userId}
+                </if>
+            ) tempInfo
+        on
+            ttur.user_id = tempInfo.user_id
+        left join
+            tb_user tu
+        on
+            tempInfo.user_id = tu.user_id
+        left join
+            (select
+                task_user_id,
+                sum(actual_hour) as actualHourSum
+            from
+                tb_user_schedule_record
+            where
+                is_del_flg = 0
+            group by
+                task_user_id) tusr
+        on
+            tusr.task_user_id = ttur.relation_id
+        where
+            1=1
+        <if test='null != taskName and "" != taskName'>
+            and tt.task_name like concat(concat('%',#{taskName}),'%')
+        </if>
+        <if test='null != userName and "" != userName'>
+            and tu.user_name like concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="createDate != null">
+            and date_format(ttur.create_date,'%Y-%m') = date_format(#{createDate},'%Y-%m')
+        </if>
+        UNION ALL
+        SELECT
+        T.task_name, T.user_id, T3.user_name, T.complete_time, T.predict_time, T.allocated_time, '' AS relation_id
+        FROM
+        tb_user_custom_time T
+        JOIN (
+        SELECT DISTINCT
+        tujr2.user_id
+        FROM
+        tb_user_job_relation tujr
+        LEFT JOIN tb_job tj ON tj.parent_ids LIKE concat( concat( '%', tujr.job_id ), '%' )
+        LEFT JOIN tb_user_job_relation tujr2 ON tujr2.job_id = tj.job_id
+        WHERE 1 = 1
+        <if test='null != userId and "" != userId'>
+            and tujr.user_id = #{userId}
+        </if>
+        ) T1 ON T.user_id = T1.user_id
+        JOIN (
+        SELECT
+        T.custom_task_id,
+        SUM( T.predict_time ) AS predict_time,
+        SUM( T.allocated_time ) AS allocated_time
+        FROM
+        tb_user_custom_time T
+        GROUP BY
+        T.custom_task_id
+        ) T2 ON T.custom_task_id = T2.custom_task_id
+        JOIN tb_user T3 ON T.user_id = T3.user_id
+        WHERE 1 = 1
+        <if test='null != taskName and "" != taskName'>
+            and T.task_name like concat(concat('%',#{taskName}),'%')
+        </if>
+        <if test='null != userName and "" != userName'>
+            and T3.user_name like concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="createDate != null">
+            and date_format(T.create_date,'%Y-%m') = date_format(#{createDate},'%Y-%m')
+        </if>
+        ORDER BY endDate DESC
+    </sql>
+
+    <!--查询是否存在今天的工时记录-->
+    <select id="excSearchTodayHourInfoCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_user_schedule_record tusr
+        where
+            tusr.is_del_flg = 0
+        <if test='null != taskUserId and "" != taskUserId'>
+            and tusr.task_user_id = #{taskUserId}
+        </if>
+        <if test='null != nowDate'>
+            and date_format(tusr.now_date,'%Y-%m-%d') = date_format(#{nowDate},'%Y-%m-%d')
+        </if>
+    </select>
+
+    <!--查询我的工时-->
+    <select id="excSearchMyHourListInfo" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_name          as taskName
+            ,ttur.relation_id     as taskUserId
+            ,ttur.end_date        as endDate
+            ,ttur.need_hour       as needHour
+            ,ttur.customize_hour  as customizeHour
+            ,ttur.hour_reason     as hourReason
+            ,tusr2.actual_hour    as actualHour
+            ,tusr.actualHourSum
+            ,tusr2.relation_id as relationId
+        from
+            tb_task_user_relation ttur
+        left join
+            tb_task tt
+        on
+            ttur.task_id = tt.task_id and tt.is_del_flg = 0
+        left join
+            (select
+            task_user_id,sum(actual_hour) as actualHourSum
+            from
+            tb_user_schedule_record
+            where
+            is_del_flg = 0
+            group by
+            task_user_id) tusr
+        on
+            tusr.task_user_id = ttur.relation_id
+        left join
+            tb_user_schedule_record tusr2
+        on
+            tusr2.task_user_id = ttur.relation_id and tusr2.is_del_flg = 0
+        <if test='null != nowDate'>
+            and date_format(tusr2.now_date,'%Y-%m-%d') = date_format(#{nowDate},'%Y-%m-%d')
+        </if>
+        where
+            ttur.is_del_flg = 0
+        <if test='null != userId and "" != userId'>
+            and ttur.user_id = #{userId}
+        </if>
+        <if test='null != nowDate'>
+            and date_format(ttur.end_date,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{nowDate},'%Y-%m-%d')
+        </if>
+    </select>
+
+    <!--查询任务内容-->
+    <select id="excSearchTaskContent" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            ttur.task_content         as taskContent
+            ,tc.contract_num          as contractNum
+            ,tt.task_name             as taskName
+            ,tt.create_date           as createDate
+            ,tp.project_num           as projectNum
+            ,tdct.counsel_type_name   as counselTypeName
+            ,ct.contract_type_name    as contractTypeName
+        from
+            tb_task tt
+        left join
+            tb_task_user_relation ttur
+        on
+            ttur.task_id = tt.task_id  and ttur.is_del_flg = 0
+        <if test='null != userId and "" != userId'>
+            and ttur.user_id = #{userId}
+        </if>
+        left join tb_contract tc on tc.contract_id = tt.contract_id
+        left join tb_project tp on tc.project_id = tp.project_id
+        left join tb_dict_counsel_type tdct on tdct.counsel_type_id = tt.counsel_type_id
+        left join tb_dict_contract_type ct on ct.contract_type_id = tdct.contract_type_id
+        where tt.is_del_flg = 0
+        <if test='null != taskId and "" != taskId'>
+            and tt.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--查询执行人信息-->
+    <select id="excSearchExecutorListInfo" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_id         as taskId
+            ,tu.user_id        as userId
+            ,tu.user_name      as userName
+            ,ttur.task_content as taskContent
+            ,ttur.end_date     as endDate
+            ,ttur.need_hour    as needHour
+        from
+            tb_task_user_relation ttur
+        left join
+            tb_task tt
+        on
+            ttur.task_id = tt.task_id  and tt.is_del_flg = 0
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttur.user_id and tu.is_del_flg = 0
+        where
+            ttur.is_del_flg = 0
+        and
+            ttur.is_main_duty = 0
+        <if test='null != taskId and "" != taskId'>
+            and ttur.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--删除用户每天实际完成工时记录信息-->
+    <delete id="excDeleteUserScheduleRecordInfo">
+        delete from
+          tb_user_schedule_record
+        where
+          task_user_id in (
+            select
+              relation_id
+            from
+              tb_task_user_relation
+            where
+              task_id = #{taskId}
+          )
+    </delete>
+
+    <!--查询任务详情（不包括执行人信息）-->
+    <select id="excSearchTaskInfo" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_id               as taskId
+            ,tt.task_name            as taskName
+            ,tt.contract_type_id     as contractTypeId
+            ,tt.counsel_type_id      as counselTypeId
+            ,tdct.contract_type_name as contractTypeName
+            ,tdct2.counsel_type_name as counselTypeName
+            ,tu.user_id              as userId
+            ,tu.user_name            as userName
+            ,ttur.task_content       as taskContent
+            ,ttur.end_date           as endDate
+            ,ttur.need_hour          as needHour
+            ,tt.contract_id          as contractId
+            ,tc.contract_num         as contractNum
+            ,tp.project_num          as projectNum
+            ,tc.project_name         as projectName
+            ,tt.task_type            as taskType
+            ,tt.formwork_type        as formworkType
+            ,tt.formwork_content     as formworkContent
+            ,tc.department_id        as departmentId
+            ,tt.is_draft_flg         as isDraftFlg
+            ,tt.add_draft_user_id    as addDraftUserId
+            ,tt.senior_executive     as seniorExecutive
+        from
+            tb_task tt
+        left join
+            tb_dict_contract_type tdct
+        on
+            tdct.contract_type_id = tt.contract_type_id and tdct.is_del_flg = 0
+        left join
+            tb_dict_counsel_type tdct2
+        on
+            tt.counsel_type_id = tdct2.counsel_type_id and tdct2.is_del_flg = 0
+        left join
+            tb_task_user_relation ttur
+        on
+            ttur.task_id = tt.task_id and ttur.is_main_duty = 1 and ttur.is_del_flg = 0
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttur.user_id and tu.is_del_flg = 0
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id and tc.is_del_flg = 0
+        left join
+            tb_project tp
+        on
+            tp.project_id = tc.project_id and tp.is_del_flg = 0
+        where
+            tt.is_del_flg = 0
+        <if test='null != taskId and "" != taskId'>
+            and tt.task_id = #{taskId}
+        </if>
+    </select>
+
+    <!--删除归档文件信息-->
+    <delete id="excDeleteSaveMaterialRelations">
+        delete from
+            tb_task_save_material_relation
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--删除任务信息-->
+    <delete id="excDeleteTaskInfo">
+        delete from
+            tb_task
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--删除任务阶段关联信息-->
+    <delete id="excDeleteTaskPeriodRelations">
+        delete from
+            tb_task_period_relation
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--删除任务和人员id关联信息-->
+    <delete id="excDeleteTaskUserRelations">
+        delete from
+            tb_task_user_relation
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--删除任务归档表数据信息-->
+    <delete id="excDeleteTaskArchiveInfo">
+        delete from
+            tb_task_archive
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--根据合同id查部门id-->
+    <select id="excSearchDepartmentIdByContractId" resultType="java.lang.String">
+        select
+            department_id      as departmentId
+        from
+            tb_contract
+        where
+            is_del_flg = 0
+        <if test='null != contractId and "" != contractId'>
+            and contract_id = #{contractId}
+        </if>
+    </select>
+
+    <!--添加任务阶段关联信息-->
+    <insert id="excInsertTaskPeriodRelations" parameterType="com.hd.manager.dao.bean.HTTaskBean">
+        insert into tb_task_period_relation(
+            relation_id
+            ,task_id
+            ,period_id
+            ,create_date
+            ,create_user_id
+            ,update_date
+            ,update_user_id
+            ,is_del_flg
+            ,is_result_file
+        )values
+        (
+                #{relationId}
+                ,#{taskId}
+                ,#{periodId}
+                ,#{createDate}
+                ,#{createUserId}
+                ,#{updateDate}
+                ,#{updateUserId}
+                ,#{isDelFlg}
+                ,#{isResultFile}
+            )
+    </insert>
+
+    <!--批量插入任务和人员id关联信息-->
+    <insert id="excInsertTaskUserRelations">
+        insert into tb_task_user_relation(
+            relation_id
+            ,task_id
+            ,user_id
+            ,is_main_duty
+            ,task_content
+            ,start_date
+            ,end_date
+            ,need_hour
+            ,is_del_flg
+            ,create_date
+            ,update_date
+            ,create_user_id
+            ,update_user_id
+        )values
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.relationId}
+                ,#{item.taskId}
+                ,#{item.userId}
+                ,#{item.isMainDuty}
+                ,#{item.taskContent}
+                ,#{item.startDate}
+                ,#{item.endDate}
+                ,#{item.needHour}
+                ,#{item.isDelFlg}
+                ,#{item.createDate}
+                ,#{item.updateDate}
+                ,#{item.createUserId}
+                ,#{item.updateUserId}
+            )
+        </foreach>
+    </insert>
+
+    <!--查询人员信息-->
+    <select id="excSearchUserInfo" resultType="com.hd.manager.dao.bean.HTTaskBean">
+        select
+            tt.task_name      as taskName
+            ,ttur.end_date    as endDate
+            ,ttur.need_hour   as needHour
+        from
+            tb_task_user_relation ttur
+        left join
+            tb_task tt
+        on
+            tt.task_id = ttur.task_id
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id
+        where
+            ttur.is_del_flg = 0
+        <if test='null != departmentId and "" != departmentId'>
+            and tc.department_id = #{departmentId}
+        </if>
+        <if test='null != userId and "" != userId'>
+            and ttur.user_id = #{userId}
+        </if>
+        <if test='null != endDate'>
+            and date_format(ttur.end_date,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{currentDate},'%Y-%m-%d')
+            and date_format(ttur.start_date,'%Y-%m-%d') <![CDATA[<=]]> date_format(#{endDate},'%Y-%m-%d')
+        </if>
+        <if test='null == endDate'>
+            and date_format(ttur.end_date,'%Y-%m-%d') <![CDATA[>=]]> date_format(#{currentDate},'%Y-%m-%d')
+        </if>
+        order by ttur.end_date
+    </select>
+
+     <!--查询拟定工作计划信息-->
+    <select id="excSearchTaskWorkPlanInfo" resultType="com.hd.manager.dao.bean.HTTableFiveRelationBean">
+        SELECT
+	      /*任务ID*/
+	      ttpr.task_id          AS taskId,
+	      /*主键ID*/
+	      ttfr.relation_id      AS relationId,
+	      /*咨询业务简述*/
+	      ttfr.counsel_desc     AS counselDesc,
+	      /*建设规模*/
+	      ttfr.construct_scale  AS constructScale,
+	      /*咨询内容与重点*/
+	      ttfr.counsel_content  AS counselContent,
+	      /*咨询业务小组分工*/
+	      ttfr.divide_work      AS divideWork,
+	      /*组长*/
+	      ttfr.counsel_group    AS counselGroup,
+	      /*组员*/
+	      group_info.userNames  AS counselGroupmem,
+	      /*专业负责人*/
+	      ttfr.counsel_duty     AS counselDuty,
+	      /*编制人*/
+	      tu.user_name          AS compileUserName,
+	      /*编制时间*/
+	      tt.apply_time         AS compileDate,
+	      /*投资额*/
+	      tc.invested_amount    AS investedAmount
+        FROM
+        	tb_task_period_relation ttpr
+        LEFT JOIN tb_table_five_relation ttfr ON ttfr.task_id = ttpr.task_id
+        AND ttfr.is_del_flg = 0
+        LEFT JOIN tb_task tt ON ttpr.task_id = tt.task_id
+        AND tt.is_del_flg = 0
+        LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+        AND tc.is_del_flg = 0
+        LEFT JOIN tb_user tu ON tt.apply_user_id = tu.user_id
+        AND tu.is_del_flg = 0
+        AND tu.is_incumbent = 1
+        LEFT JOIN(SELECT ttur.task_id,GROUP_CONCAT(tu.user_name) AS userNames  FROM tb_task_user_relation ttur LEFT JOIN tb_user tu ON tu.user_id = ttur.user_id GROUP BY ttur.task_id)group_info
+        ON group_info.task_id = tt.task_id
+        WHERE
+        	ttpr.is_del_flg = 0
+              and ttpr.relation_id = #{relationId}
+    </select>
+
+    <!--查询编制成果文件-A2信息-->
+    <select id="excSearchTaskCompileResultsFileA2" resultType="com.hd.manager.dao.bean.HTTableTwoRelationBean">
+        select
+          /*主键ID*/
+          tttr.relation_id                               as relationId,
+          /*任务ID*/
+          ttpr.task_id                                   as taskId,
+          /*成果文件编号*/
+          tttr.result_file_number                        as resultFileNumber,
+          /*项目概况*/
+          tttr.project_condition                         as projectCondition,
+          /*发包人*/
+          tttr.employer                                  as employer,
+          /*项目中标人*/
+          tttr.bid_person                                as bidPerson,
+          /*计划开始时间*/
+          tttr.plan_start_date                           as planStartDate,
+          /*计划完成时间*/
+          tttr.plan_end_date                             as planEndDate,
+          /*实际开始时间*/
+          tttr.actual_start_date                         as actualStartDate,
+          /*实际完成时间*/
+          tttr.actual_end_date                           as actualEndDate,
+          /*延迟原因*/
+          tttr.delay_reason                              as delayReason,
+          /*咨询主要结论*/
+          tttr.main_result                               as mainResult,
+          /*合同编号*/
+          tc.contract_num                                as contractNum,
+          /*项目名称*/
+          if(tp.project_name is null,tt.task_name,concat(concat(tp.project_name,'-'),tt.task_name)) as projectName,
+          /*项目委托单位*/
+          tc.truster_name                                as trusterName,
+          /*合同签订时间*/
+          tc.contract_date                               as contractDate,
+          /*项目类别*/
+          tc.counsel_business_type                       as counselBusinessType,
+          /*项目负责人*/
+          tc.duty_people                                 as dutyPeople,
+          /*项目负责人签字时间*/
+          ttphti.approve_time                            as approveTime,
+          /*成果文件编号*/
+          IFNULL(tttr.result_file_number, tt.report_num) as reportNum,
+          /*项目编号*/
+          tp.project_num                                 as projectNum,
+          /*提审时间*/
+          tt.apply_time                                  as applyTime,
+          /*提审人路径*/
+          tu1.sign_path                                  as applyUserSignPath,
+          /*创建人路径*/
+          tu2.sign_path                                  as createUserSignPath
+        from tb_task_period_relation ttpr
+        left join tb_table_two_relation tttr on tttr.task_id = ttpr.task_id and tttr.is_del_flg = 0
+        left join tb_task tt on ttpr.task_id = tt.task_id and tt.is_del_flg = 0
+        left join tb_user tu1 on tu1.user_id = tt.apply_user_id and tu1.is_del_flg = 0
+        left join tb_user tu2 on tu2.user_id = tt.create_user_id and tu2.is_del_flg = 0
+        left join tb_contract tc on tt.contract_id = tc.contract_id and tc.is_del_flg = 0
+        left join tb_project tp on tp.project_id = tc.project_id and tp.is_del_flg = 0
+        left join tb_task_period_his_task_inst ttphti on ttpr.task_id = ttphti.task_id and ttphti.is_pass = '1' and ttphti.task_key = 'Signer' and ttphti.is_del_flg = 0
+        WHERE ttpr.is_del_flg = 0
+        and ttpr.relation_id = #{relationId}
+    </select>
+
+    <!--通过合同ID查询所有任务-->
+    <select id="excSearchAllTaskIdByContractId" resultType="java.lang.String">
+        SELECT
+            tt.task_id AS taskId
+        FROM
+            tb_task tt
+        WHERE
+            tt.contract_id = #{ContractId}
+    </select>
+
+    <!--查询开标、评标信息-->
+    <select id="excSearchOpenBidInfoDetail" resultType="com.hd.manager.dao.bean.HTOpenBidBean">
+        SELECT
+          bid_id            AS bidId
+          ,task_id          AS taskId
+          ,bid_time         AS bidTime
+          ,evaluation_time  AS evaluationTime
+        FROM
+          tb_open_bid_relation
+        WHERE
+          task_id=#{taskId}
+    </select>
+</mapper>

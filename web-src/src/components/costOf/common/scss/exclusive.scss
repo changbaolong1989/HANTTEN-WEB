@@ -1,0 +1,22 @@
+
+.form-block {
+  .el-form-item {
+    margin-bottom: 5px;
+
+    .el-form-item__label,
+    .el-form-item__content {
+      font-size: 12px;
+      line-height: 30px;
+    }
+
+    .el-form-item__content {
+      .el-input {
+        font-size: 12px;
+      }
+    }
+  }
+  
+  .row--title{
+    margin:10px 0 0 0!important;
+  }
+}

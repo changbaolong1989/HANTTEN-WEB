@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTProcessNodeRelationDao">
+
+    <resultMap id="BaseResultMap" type="com.hd.manager.dao.bean.HTJobProcessNodeRelationBean">
+        <id column="node_id" jdbcType="VARCHAR" property="nodeId"/>
+        <id column="department_id" jdbcType="VARCHAR" property="departmentId"/>
+        <id column="department_name" jdbcType="VARCHAR" property="departmentName"/>
+        <id column="job_id" jdbcType="VARCHAR" property="jobId"/>
+        <id column="job_name" jdbcType="VARCHAR" property="jobName"/>
+        <result column="process_name" jdbcType="VARCHAR" property="processName"/>
+        <result column="node_name" jdbcType="VARCHAR" property="nodeName"/>
+        <result column="process_dict_id" jdbcType="VARCHAR" property="processDictId"/>
+        <result column="process_dict_name" jdbcType="VARCHAR" property="processDictName"/>
+    </resultMap>
+
+
+    <select id="getProcessNodeRelation" resultMap="BaseResultMap">
+        SELECT
+        T.*,
+        T1.job_name,
+        T2.department_name,
+        T3.process_dict_name
+        FROM
+        tb_job_processnode_relation T
+        LEFT JOIN tb_job T1 ON T.job_id = T1.job_id
+        LEFT JOIN tb_dict_department T2 ON T.department_id = T2.department_id
+        LEFT JOIN tb_dict_process T3 ON T.process_dict_id = T3.process_dict_id
+        WHERE 1=1
+        <if test="processDictId != null and processDictId != '' ">
+            AND T.process_dict_id = #{processDictId}
+        </if>
+        <if test="departmentId != null and departmentId != '' ">
+            AND T.department_id = #{departmentId}
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber} , #{pageSize}
+        </if>
+    </select>
+
+
+    <select id="countProcessNodeRelation" resultType="java.lang.Integer">
+        SELECT
+			count(1)
+		FROM
+			tb_job_processnode_relation T
+			LEFT JOIN tb_job T1 ON T.job_id = T1.job_id
+			LEFT JOIN tb_dict_department T2 ON T.department_id = T2.department_id
+			LEFT JOIN tb_dict_process T3 ON T.process_dict_id = T3.process_dict_id
+        WHERE 1=1
+        <if test="processDictId != null and processDictId != '' ">
+            AND T.process_dict_id = #{processDictId}
+        </if>
+        <if test="departmentId != null and departmentId != '' ">
+            AND T.department_id = #{departmentId}
+        </if>
+    </select>
+
+    <select id="getProcessSelect" resultType="java.util.Map">
+        SELECT DISTINCT
+            T.process_dict_id AS value,
+            T.process_dict_name AS text
+        FROM
+            tb_dict_process T
+        ORDER BY
+            T.process_dict_name
+    </select>
+
+    <select id="getDepartmentSelect" resultType="java.util.Map">
+        SELECT T.department_id AS value, T.department_name AS text FROM tb_dict_department T order by T.department_name
+    </select>
+
+    <select id="getJobSelect" resultType="java.util.Map">
+        SELECT T.job_id AS value, T.job_name AS text FROM tb_job T
+        WHERE 1=1
+        <if test="departmentId != null">
+            AND T.involved_department = #{departmentId}
+        </if>
+        ORDER BY T.sort
+    </select>
+
+    <select id="getNodeSelect" resultType="java.util.Map">
+        SELECT DISTINCT T.node_id AS value, T.node_name AS text FROM tb_dict_process_node T
+        WHERE 1=1
+        <if test="processDictId != null">
+            AND T.process_dict_id = #{processDictId}
+        </if>
+    </select>
+
+
+</mapper>

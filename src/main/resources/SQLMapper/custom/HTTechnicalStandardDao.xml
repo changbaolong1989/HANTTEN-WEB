@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTechnicalStandardDao">
+
+    <!--查询技术标准列表数据的总条数-->
+    <select id="excSearchTechnicalStandardListCount" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            (<include refid="excSearchTechnicalStandardListSql" />) temp
+    </select>
+
+    <!--查询技术标准列表数据-->
+    <select id="excSearchTechnicalStandardList" resultType="com.hd.manager.dao.bean.HTTechnicalStandardBean">
+        select
+            temp.*
+        from
+            (<include refid="excSearchTechnicalStandardListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--列表sql-->
+    <sql id="excSearchTechnicalStandardListSql">
+        select
+             tts.standard_id    as standardId
+            ,tts.standard_name  as standardName
+            ,tts.release_date   as releaseDate
+            ,tts.material_path  as materialPath
+            ,tts.material_name  as materialName
+            ,tu.user_name       as userName
+        from
+            tb_technical_standard tts
+        left join
+            tb_user tu
+        on
+            tts.release_people = tu.user_id and tu.is_del_flg = 0
+        where
+            tts.is_del_flg = 0
+        order by
+            tts.create_date desc
+    </sql>
+
+    <!--添加技术标准信息-->
+    <insert id="excInsertTechnicalStandardInfo" parameterType="com.hd.common.entity.TbTechnicalStandardEntity">
+        insert into tb_technical_standard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="standardId != null">
+                standard_id,
+            </if>
+            <if test="standardName != null">
+                standard_name,
+            </if>
+            <if test="releasePeople != null">
+                release_people,
+            </if>
+            <if test="releaseDate != null">
+                release_date,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="materialPath != null">
+                material_path,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{standardId,jdbcType=VARCHAR},
+            <if test="standardName != null">
+                #{standardName,jdbcType=VARCHAR},
+            </if>
+            <if test="releasePeople != null">
+                #{releasePeople,jdbcType=VARCHAR},
+            </if>
+            <if test="releaseDate != null">
+                #{releaseDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialPath != null">
+                #{materialPath,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--查询技术标准详情数据-->
+    <select id="excSearchTechnicalStandardInfo" resultType="com.hd.manager.dao.bean.HTTechnicalStandardBean">
+        select
+             standard_id      as standardId
+            ,standard_name    as standardname
+            ,material_name    as materialName
+            ,update_date      as updateDate
+        from
+            tb_technical_standard
+        where
+            is_del_flg = 0
+        <if test='null != standardId and "" != standardId'>
+            and standard_id = #{standardId}
+        </if>
+    </select>
+
+</mapper>

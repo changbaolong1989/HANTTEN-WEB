@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTDictQuestionDao">
+
+    <!--通过部门id查询问题类型-->
+    <select id="excSearchQuestionTypeByDeptId" resultType="com.hd.manager.dao.bean.HTDictQuestionBean">
+        select
+            question_id       as questionId,
+            question_name     as questionName,
+            examine_type_id   as examineTypeId,
+            examine_type_name as examineTypeName
+        from
+            tb_dict_question
+        where
+            is_del_flg = 0
+        <if test='null != departmentId and "" != departmentId'>
+            and department_id like concat('%', #{departmentId}, '%')
+        </if>
+        or department_id is null
+    </select>
+
+    <!--审核记录和人员和问题类型关联表-->
+    <insert id="excInsertUserQuestionRecordRelations">
+        INSERT INTO tb_user_question_record_relation(
+            relation_id
+            ,record_id
+            ,source_type
+            ,user_id
+            ,question_id
+            ,question_num
+            ,is_del_flg
+            ,create_date
+            ,update_date
+            ,create_user_id
+            ,update_user_id
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.relationId}
+                ,#{item.recordId}
+                ,#{item.sourceType}
+                ,#{item.userId}
+                ,#{item.questionId}
+                ,#{item.questionNum}
+                ,#{item.isDelFlg}
+                ,#{item.createDate}
+                ,#{item.updateDate}
+                ,#{item.createUserId}
+                ,#{item.updateUserId}
+            )
+        </foreach>
+
+    </insert>
+
+</mapper>

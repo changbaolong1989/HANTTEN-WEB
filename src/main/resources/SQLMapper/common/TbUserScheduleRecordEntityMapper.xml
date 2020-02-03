@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbUserScheduleRecordEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbUserScheduleRecordEntity">
+    <id column="relation_id" jdbcType="VARCHAR" property="relationId" />
+    <result column="task_user_id" jdbcType="VARCHAR" property="taskUserId" />
+    <result column="now_date" jdbcType="TIMESTAMP" property="nowDate" />
+    <result column="actual_hour" jdbcType="INTEGER" property="actualHour" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    relation_id, task_user_id, now_date, actual_hour, create_date, create_user_id, update_date, 
+    update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbUserScheduleRecordEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_user_schedule_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_user_schedule_record
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_user_schedule_record
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbUserScheduleRecordEntityExample">
+    delete from tb_user_schedule_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbUserScheduleRecordEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_user_schedule_record (relation_id, task_user_id, now_date, 
+      actual_hour, create_date, create_user_id, 
+      update_date, update_user_id, is_del_flg
+      )
+    values (#{relationId,jdbcType=VARCHAR}, #{taskUserId,jdbcType=VARCHAR}, #{nowDate,jdbcType=TIMESTAMP}, 
+      #{actualHour,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbUserScheduleRecordEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_user_schedule_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      relation_id,
+      <if test="taskUserId != null">
+        task_user_id,
+      </if>
+      <if test="nowDate != null">
+        now_date,
+      </if>
+      <if test="actualHour != null">
+        actual_hour,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{relationId,jdbcType=VARCHAR},
+      <if test="taskUserId != null">
+        #{taskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="nowDate != null">
+        #{nowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualHour != null">
+        #{actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbUserScheduleRecordEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_user_schedule_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_user_schedule_record
+    <set>
+      <if test="record.relationId != null">
+        relation_id = #{record.relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskUserId != null">
+        task_user_id = #{record.taskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nowDate != null">
+        now_date = #{record.nowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.actualHour != null">
+        actual_hour = #{record.actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_user_schedule_record
+    set relation_id = #{record.relationId,jdbcType=VARCHAR},
+      task_user_id = #{record.taskUserId,jdbcType=VARCHAR},
+      now_date = #{record.nowDate,jdbcType=TIMESTAMP},
+      actual_hour = #{record.actualHour,jdbcType=INTEGER},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbUserScheduleRecordEntity">
+    update tb_user_schedule_record
+    <set>
+      <if test="taskUserId != null">
+        task_user_id = #{taskUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="nowDate != null">
+        now_date = #{nowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualHour != null">
+        actual_hour = #{actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbUserScheduleRecordEntity">
+    update tb_user_schedule_record
+    set task_user_id = #{taskUserId,jdbcType=VARCHAR},
+      now_date = #{nowDate,jdbcType=TIMESTAMP},
+      actual_hour = #{actualHour,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

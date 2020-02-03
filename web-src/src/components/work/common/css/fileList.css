@@ -1,0 +1,28 @@
+@charset "UTF-8";
+.m-work {
+  /* 文件列表 */
+}
+.m-work .file-list .el-upload-list__item {
+  width: 94%;
+  margin: auto;
+  padding-right: 50px;
+  display: flex;
+  /* 第一个文件项 */
+}
+.m-work .file-list .el-upload-list__item:first-child {
+  margin-top: 0;
+}
+.m-work .file-list .el-upload-list__item .el-icon-download {
+  display: none;
+  position: absolute;
+  right: 25px;
+  bottom: 5px;
+  cursor: pointer;
+  opacity: 0.75;
+  color: #606266;
+}
+.m-work .file-list .el-upload-list__item:hover .el-icon-download {
+  display: inline-block;
+}
+
+/*# sourceMappingURL=fileList.css.map */

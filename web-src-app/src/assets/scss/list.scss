@@ -1,0 +1,119 @@
+.search {
+  width: 100%;
+  background-color: #fff;
+  padding: 25px 0 15px;
+  position: relative;
+  span {
+    position: absolute;
+    top: 43px;
+    left: 70px;
+    font-size: 28px;
+    color: #b1b1b1;
+  }
+  .input {
+    display: block;
+    width: 86%;
+    margin: 0 auto;
+    border: 2px solid #c9c9c9;
+    border-radius: 10px;
+    background-color: #f8f9fb;
+    height: 60px;
+    line-height: 60px;
+    padding-left: 65px;
+    font-size: 28px;
+  }
+}
+.Atitle{
+  padding: 20px 20px 0;
+  font-size: 28px;
+  color: #333;
+}
+.tabList {
+  width: 90%;
+  margin: 0px auto 50px;
+  li {
+    background-color: #fff;
+    border-radius: 10px;
+    margin: 30px 0;
+    div {
+      padding: 28px 32px;
+      font-size: 28px;
+      line-height: 36px;
+      display: flex;
+      .overflow {
+        max-width: 70%;
+        display: inline-block;
+      }
+      .state {
+        color: #06a1ee;
+      }
+    }
+    .top {
+      justify-content: space-between;
+    }
+    .top,
+    .middle {
+      border-bottom: 2px solid #e5e5e5;
+      color: #333333;
+    }
+    .bottom {
+      justify-content: space-between;
+      color: #808080;
+    }
+  }
+}
+  .contentlist {
+    background-color: #fff;
+    width: 94%;
+    margin: 30px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    li {
+      margin: 30px;
+      display: flex;
+      justify-content: space-between;
+      span {
+        font-size: 28px;
+        &:first-child {
+          color: #808080;
+        }
+        &:last-child {
+          color: #666666;
+        }
+      }
+    }
+    .router {
+      border-top: 2px solid #e5e5e5;
+      &>span{
+         margin: 30px 0 0;
+      }
+      div{
+        margin: 30px 0 0;
+        span{
+          color: #06a1ee !important;
+
+        }
+      }
+    }
+  }
+  .worklist {
+    background-color: #fff;
+    width: 94%;
+    margin: 30px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    li {
+      margin: 30px;
+      span {
+        display: block;
+        line-height: 40px;
+        font-size: 28px;
+        &:first-child {
+          color: #808080;
+        }
+        &:last-child {
+          color: #666666;
+        }
+      }
+    }
+  }

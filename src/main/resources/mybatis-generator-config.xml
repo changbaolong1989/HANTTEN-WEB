@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <context id="mybatisGen" targetRuntime="Mybatis3" defaultModelType="flat">
+
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <!--            <property name="searchString" value="Example$" />
+                        <property name="replaceString" value="Criteria" />-->
+        </plugin>
+
+        <!--<plugin type="plugins.oracle.OraclePaginationPlugin" />-->
+        <plugin type="com.hd.mybatisGen.plugins.mysql.MySQLPaginationPlugin"/>
+
+        <!-- XML 取消Merge -->
+        <plugin type="com.hd.mybatisGen.plugins.OverwritePlugin"/>
+
+        <commentGenerator type="com.hd.mybatisGen.plugins.CustomComment">
+            <property name="suppressAllComments" value="false"/>
+            <!-- 时间戳 -->
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+
+        <!-- RowBounds pagination -->
+        <!--        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
+                <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin" />
+                <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />-->
+
+
+        <!-- jdbc连接 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.1.124:3306/hantten" userId="hantten_test"
+                        password="xmkj2019"/>
+
+        <javaModelGenerator targetPackage="com.hd.common.entity" targetProject="src/main/java">
+            <!-- 是否针对string类型的字段在set的时候进行trim调用 -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="common" targetProject="src/main/resources/SQLMapper"/>
+        <javaClientGenerator targetPackage="com.hd.common.dao" targetProject="src/main/java" type="XMLMAPPER"/>
+
+
+        <!--&lt;!&ndash; 请章记录表 &ndash;&gt;-->
+        <!--<table tableName="tb_apply_seal_record" domainObjectName="TbApplySealRecordEntity"/>-->
+
+        <!--&lt;!&ndash; 部门字典表 &ndash;&gt;-->
+        <!--<table tableName="tb_dict_department" domainObjectName="TbDictDepartmentEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="department_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;公司表&ndash;&gt;-->
+        <!--<table tableName="tb_company" domainObjectName="TbCompanyEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="company_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;章类型字典表&ndash;&gt;-->
+        <!--<table tableName="tb_dict_seal" domainObjectName="TbDictSealEntity">-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash; 教育程度表 &ndash;&gt;-->
+        <!--<table tableName="tb_education" domainObjectName="TbEducationEntity"/>-->
+
+        <!--&lt;!&ndash; 职位表 &ndash;&gt;-->
+        <!--<table tableName="tb_job" domainObjectName="TbJobEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="job_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash; 职位节点关系表 &ndash;&gt;-->
+        <!--<table tableName="tb_job_processnode_relation" domainObjectName="TbJobProcessNodeRelationEntity"/>-->
+
+        <!--&lt;!&ndash;公告表&ndash;&gt;-->
+        <!--<table tableName="tb_public_notice" domainObjectName="TbPublicNoticeEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="notice_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;角色表&ndash;&gt;-->
+        <!--<table tableName="tb_role" domainObjectName="TbRoleEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="role_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;技术标准表&ndash;&gt;-->
+        <!--<table tableName="tb_technical_standard" domainObjectName="TbTechnicalStandardEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="standard_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!-- 投标任务表 -->
+        <!--<table tableName="tb_tender_task" domainObjectName="TbTenderTaskEntity">
+            &lt;!&ndash; UUID&ndash;&gt;
+            <generatedKey column="tender_task_id" sqlStatement="SELECT uuid()"/>
+        </table>-->
+
+        <!--&lt;!&ndash; 投标任务历史流程任务实例表 &ndash;&gt;-->
+        <!--<table tableName="tb_tender_task_his_taskinst" domainObjectName="TbTenderTaskHisTaskInstEntity">-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash; 用户表 &ndash;&gt;-->
+        <!--<table tableName="tb_user" domainObjectName="TbUserEntity">-->
+        <!--<generatedKey column="user_id" sqlStatement="SELECT UUID()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash; 用户职位关系表 &ndash;&gt;-->
+        <!--<table tableName="tb_user_job_relation" domainObjectName="TbUserJobRelation"/>-->
+
+        <!--&lt;!&ndash;角色表&ndash;&gt;-->
+        <!--<table tableName="tb_tender_task" domainObjectName="TbTenderTaskEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="tender_task_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;合同表&ndash;&gt;-->
+        <table tableName="tb_pro_pay" domainObjectName="TbProcessPay">
+            <!-- UUID-->
+            <generatedKey column="pay_id" sqlStatement="SELECT uuid()"/>
+        </table>
+
+        <!--合同表-->
+        <!--<table tableName="tb_table_eight_zbdl_expand" domainObjectName="TbTableEightZbdlExpandEntity">
+            &lt;!&ndash; UUID&ndash;&gt;
+            <generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>
+        </table>-->
+
+        <!--任务表-->
+        <!-- <table tableName="tb_task" domainObjectName="TbTaskEntity">
+             &lt;!&ndash; UUID&ndash;&gt;
+             <generatedKey column="task_id" sqlStatement="SELECT uuid()"/>
+         </table>-->
+
+        <!--&lt;!&ndash;用户每天实际完成工时记录表&ndash;&gt;-->
+        <!--<table tableName="tb_user_schedule_record" domainObjectName="TbUserScheduleRecordEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;用户每天实际完成工时记录表&ndash;&gt;-->
+        <!--<table tableName="tb_task_user_relation" domainObjectName="TbTaskUserRelationEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;用户每天实际完成工时记录表&ndash;&gt;-->
+        <!--<table tableName="tb_task_period_material_relation" domainObjectName="TbTaskPeriodMaterialRelationEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;合同和归档文件关联表&ndash;&gt;-->
+        <!--<table tableName="tb_contract_save_material_relation" domainObjectName="TbContractSaveMaterialRelationEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;请款单表&ndash;&gt;-->
+        <!--<table tableName="tb_request_menu" domainObjectName="TbRequestMenuEntity">
+            &lt;!&ndash; UUID&ndash;&gt;
+            <generatedKey column="request_menu_id" sqlStatement="SELECT uuid()"/>
+        </table>-->
+
+        <!--&lt;!&ndash;项目表&ndash;&gt;-->
+        <!--<table tableName="tb_project" domainObjectName="TbProjectEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="project_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+        <!--&lt;!&ndash;任务和归档文件关联表&ndash;&gt;-->
+        <!--<table tableName="tb_task_save_material_relation" domainObjectName="TbTaskSaveMaterialRelationEntity">-->
+        <!--&lt;!&ndash; UUID&ndash;&gt;-->
+        <!--<generatedKey column="relation_id" sqlStatement="SELECT uuid()"/>-->
+        <!--</table>-->
+
+    </context>
+</generatorConfiguration>

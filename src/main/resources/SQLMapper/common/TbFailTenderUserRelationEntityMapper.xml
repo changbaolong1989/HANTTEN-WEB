@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbFailTenderUserRelationEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbFailTenderUserRelationEntity">
+    <id column="relation_id" jdbcType="VARCHAR" property="relationId" />
+    <result column="notice_id" jdbcType="VARCHAR" property="noticeId" />
+    <result column="tender_user_name" jdbcType="VARCHAR" property="tenderUserName" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+    <result column="bid_score" jdbcType="VARCHAR" property="bidScore" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    relation_id, notice_id, tender_user_name, sort, bid_score, create_date, create_user_id, 
+    update_date, update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_fail_tender_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_fail_tender_user_relation
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_fail_tender_user_relation
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntityExample">
+    delete from tb_fail_tender_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_fail_tender_user_relation (relation_id, notice_id, tender_user_name, 
+      sort, bid_score, create_date, 
+      create_user_id, update_date, update_user_id, 
+      is_del_flg)
+    values (#{relationId,jdbcType=VARCHAR}, #{noticeId,jdbcType=VARCHAR}, #{tenderUserName,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=VARCHAR}, #{bidScore,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{isDelFlg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_fail_tender_user_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      relation_id,
+      <if test="noticeId != null">
+        notice_id,
+      </if>
+      <if test="tenderUserName != null">
+        tender_user_name,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="bidScore != null">
+        bid_score,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{relationId,jdbcType=VARCHAR},
+      <if test="noticeId != null">
+        #{noticeId,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderUserName != null">
+        #{tenderUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="bidScore != null">
+        #{bidScore,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_fail_tender_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_fail_tender_user_relation
+    <set>
+      <if test="record.relationId != null">
+        relation_id = #{record.relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.noticeId != null">
+        notice_id = #{record.noticeId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderUserName != null">
+        tender_user_name = #{record.tenderUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null">
+        sort = #{record.sort,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bidScore != null">
+        bid_score = #{record.bidScore,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_fail_tender_user_relation
+    set relation_id = #{record.relationId,jdbcType=VARCHAR},
+      notice_id = #{record.noticeId,jdbcType=VARCHAR},
+      tender_user_name = #{record.tenderUserName,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=VARCHAR},
+      bid_score = #{record.bidScore,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntity">
+    update tb_fail_tender_user_relation
+    <set>
+      <if test="noticeId != null">
+        notice_id = #{noticeId,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderUserName != null">
+        tender_user_name = #{tenderUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="bidScore != null">
+        bid_score = #{bidScore,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbFailTenderUserRelationEntity">
+    update tb_fail_tender_user_relation
+    set notice_id = #{noticeId,jdbcType=VARCHAR},
+      tender_user_name = #{tenderUserName,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=VARCHAR},
+      bid_score = #{bidScore,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

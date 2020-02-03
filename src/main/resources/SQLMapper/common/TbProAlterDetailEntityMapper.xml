@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbProAlterDetailEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbProAlterDetailEntity">
+    <id column="alter_id" jdbcType="VARCHAR" property="alterId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="contract_id" jdbcType="VARCHAR" property="contractId" />
+    <result column="alter_name" jdbcType="VARCHAR" property="alterName" />
+    <result column="professional_id" jdbcType="VARCHAR" property="professionalId" />
+    <result column="content_summary" jdbcType="VARCHAR" property="contentSummary" />
+    <result column="talk_date" jdbcType="TIMESTAMP" property="talkDate" />
+    <result column="receive_date" jdbcType="TIMESTAMP" property="receiveDate" />
+    <result column="sts" jdbcType="VARCHAR" property="sts" />
+    <result column="declare_amount" jdbcType="DOUBLE" property="declareAmount" />
+    <result column="audit_amount" jdbcType="DOUBLE" property="auditAmount" />
+    <result column="hantten_amount" jdbcType="DOUBLE" property="hanttenAmount" />
+    <result column="owner_amount" jdbcType="DOUBLE" property="ownerAmount" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="alter_analyse" jdbcType="VARCHAR" property="alterAnalyse" />
+    <result column="singel" jdbcType="VARCHAR" property="singel" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    alter_id, project_id, contract_id, alter_name, professional_id, content_summary, 
+    talk_date, receive_date, sts, declare_amount, audit_amount, hantten_amount, owner_amount, 
+    symbol, alter_analyse, singel, remark, create_date, create_user_id, update_date, 
+    update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbProAlterDetailEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_pro_alter_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_pro_alter_detail
+    where alter_id = #{alterId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_pro_alter_detail
+    where alter_id = #{alterId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbProAlterDetailEntityExample">
+    delete from tb_pro_alter_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbProAlterDetailEntity">
+    insert into tb_pro_alter_detail (alter_id, project_id, contract_id, 
+      alter_name, professional_id, content_summary, 
+      talk_date, receive_date, sts, 
+      declare_amount, audit_amount, hantten_amount, 
+      owner_amount, symbol, alter_analyse, 
+      singel, remark, create_date, 
+      create_user_id, update_date, update_user_id, 
+      is_del_flg)
+    values (#{alterId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{contractId,jdbcType=VARCHAR}, 
+      #{alterName,jdbcType=VARCHAR}, #{professionalId,jdbcType=VARCHAR}, #{contentSummary,jdbcType=VARCHAR}, 
+      #{talkDate,jdbcType=TIMESTAMP}, #{receiveDate,jdbcType=TIMESTAMP}, #{sts,jdbcType=VARCHAR}, 
+      #{declareAmount,jdbcType=DOUBLE}, #{auditAmount,jdbcType=DOUBLE}, #{hanttenAmount,jdbcType=DOUBLE}, 
+      #{ownerAmount,jdbcType=DOUBLE}, #{symbol,jdbcType=VARCHAR}, #{alterAnalyse,jdbcType=VARCHAR}, 
+      #{singel,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{isDelFlg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbProAlterDetailEntity">
+    insert into tb_pro_alter_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="alterId != null">
+        alter_id,
+      </if>
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="contractId != null">
+        contract_id,
+      </if>
+      <if test="alterName != null">
+        alter_name,
+      </if>
+      <if test="professionalId != null">
+        professional_id,
+      </if>
+      <if test="contentSummary != null">
+        content_summary,
+      </if>
+      <if test="talkDate != null">
+        talk_date,
+      </if>
+      <if test="receiveDate != null">
+        receive_date,
+      </if>
+      <if test="sts != null">
+        sts,
+      </if>
+      <if test="declareAmount != null">
+        declare_amount,
+      </if>
+      <if test="auditAmount != null">
+        audit_amount,
+      </if>
+      <if test="hanttenAmount != null">
+        hantten_amount,
+      </if>
+      <if test="ownerAmount != null">
+        owner_amount,
+      </if>
+      <if test="symbol != null">
+        symbol,
+      </if>
+      <if test="alterAnalyse != null">
+        alter_analyse,
+      </if>
+      <if test="singel != null">
+        singel,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="alterId != null">
+        #{alterId,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractId != null">
+        #{contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="alterName != null">
+        #{alterName,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalId != null">
+        #{professionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="contentSummary != null">
+        #{contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="talkDate != null">
+        #{talkDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveDate != null">
+        #{receiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sts != null">
+        #{sts,jdbcType=VARCHAR},
+      </if>
+      <if test="declareAmount != null">
+        #{declareAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="auditAmount != null">
+        #{auditAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="hanttenAmount != null">
+        #{hanttenAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="ownerAmount != null">
+        #{ownerAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="symbol != null">
+        #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="alterAnalyse != null">
+        #{alterAnalyse,jdbcType=VARCHAR},
+      </if>
+      <if test="singel != null">
+        #{singel,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbProAlterDetailEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_pro_alter_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_pro_alter_detail
+    <set>
+      <if test="record.alterId != null">
+        alter_id = #{record.alterId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractId != null">
+        contract_id = #{record.contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alterName != null">
+        alter_name = #{record.alterName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.professionalId != null">
+        professional_id = #{record.professionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contentSummary != null">
+        content_summary = #{record.contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="record.talkDate != null">
+        talk_date = #{record.talkDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.receiveDate != null">
+        receive_date = #{record.receiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.sts != null">
+        sts = #{record.sts,jdbcType=VARCHAR},
+      </if>
+      <if test="record.declareAmount != null">
+        declare_amount = #{record.declareAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.auditAmount != null">
+        audit_amount = #{record.auditAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.hanttenAmount != null">
+        hantten_amount = #{record.hanttenAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.ownerAmount != null">
+        owner_amount = #{record.ownerAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.symbol != null">
+        symbol = #{record.symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alterAnalyse != null">
+        alter_analyse = #{record.alterAnalyse,jdbcType=VARCHAR},
+      </if>
+      <if test="record.singel != null">
+        singel = #{record.singel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_pro_alter_detail
+    set alter_id = #{record.alterId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      contract_id = #{record.contractId,jdbcType=VARCHAR},
+      alter_name = #{record.alterName,jdbcType=VARCHAR},
+      professional_id = #{record.professionalId,jdbcType=VARCHAR},
+      content_summary = #{record.contentSummary,jdbcType=VARCHAR},
+      talk_date = #{record.talkDate,jdbcType=TIMESTAMP},
+      receive_date = #{record.receiveDate,jdbcType=TIMESTAMP},
+      sts = #{record.sts,jdbcType=VARCHAR},
+      declare_amount = #{record.declareAmount,jdbcType=DOUBLE},
+      audit_amount = #{record.auditAmount,jdbcType=DOUBLE},
+      hantten_amount = #{record.hanttenAmount,jdbcType=DOUBLE},
+      owner_amount = #{record.ownerAmount,jdbcType=DOUBLE},
+      symbol = #{record.symbol,jdbcType=VARCHAR},
+      alter_analyse = #{record.alterAnalyse,jdbcType=VARCHAR},
+      singel = #{record.singel,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbProAlterDetailEntity">
+    update tb_pro_alter_detail
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractId != null">
+        contract_id = #{contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="alterName != null">
+        alter_name = #{alterName,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalId != null">
+        professional_id = #{professionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="contentSummary != null">
+        content_summary = #{contentSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="talkDate != null">
+        talk_date = #{talkDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveDate != null">
+        receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sts != null">
+        sts = #{sts,jdbcType=VARCHAR},
+      </if>
+      <if test="declareAmount != null">
+        declare_amount = #{declareAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="auditAmount != null">
+        audit_amount = #{auditAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="hanttenAmount != null">
+        hantten_amount = #{hanttenAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="ownerAmount != null">
+        owner_amount = #{ownerAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="symbol != null">
+        symbol = #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="alterAnalyse != null">
+        alter_analyse = #{alterAnalyse,jdbcType=VARCHAR},
+      </if>
+      <if test="singel != null">
+        singel = #{singel,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where alter_id = #{alterId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbProAlterDetailEntity">
+    update tb_pro_alter_detail
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      contract_id = #{contractId,jdbcType=VARCHAR},
+      alter_name = #{alterName,jdbcType=VARCHAR},
+      professional_id = #{professionalId,jdbcType=VARCHAR},
+      content_summary = #{contentSummary,jdbcType=VARCHAR},
+      talk_date = #{talkDate,jdbcType=TIMESTAMP},
+      receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+      sts = #{sts,jdbcType=VARCHAR},
+      declare_amount = #{declareAmount,jdbcType=DOUBLE},
+      audit_amount = #{auditAmount,jdbcType=DOUBLE},
+      hantten_amount = #{hanttenAmount,jdbcType=DOUBLE},
+      owner_amount = #{ownerAmount,jdbcType=DOUBLE},
+      symbol = #{symbol,jdbcType=VARCHAR},
+      alter_analyse = #{alterAnalyse,jdbcType=VARCHAR},
+      singel = #{singel,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where alter_id = #{alterId,jdbcType=VARCHAR}
+  </update>
+</mapper>

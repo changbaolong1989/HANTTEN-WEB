@@ -1,0 +1,208 @@
+@charset "UTF-8";
+.m-work {
+  /* 自定义样式 */
+  /* 折叠面板 */
+}
+.m-work .width-94 {
+  width: 94%;
+  margin: auto;
+}
+.m-work .nested-panel {
+  width: 94%;
+  margin: auto;
+  border: 1px solid #DCDFE6;
+  border-radius: 5px !important;
+}
+.m-work .nested-panel .el-collapse-item__header {
+  border: 1px;
+}
+.m-work .el-collapse {
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  border-bottom: none;
+  /* 隐藏上传按钮,有的地方只需要文件列表,添加该class可以隐藏上传按钮 */
+  /* 徽章 */
+  /* 标题 */
+  /* 内容 */
+  /* 一级折叠面板 */
+  /* 二级折叠面板 */
+}
+.m-work .el-collapse .hide-upload-container .el-upload--text {
+  display: none;
+}
+.m-work .el-collapse .badge {
+  height: 12px;
+  border-radius: 6px;
+  color: white;
+  line-height: 10px;
+  text-align: center;
+  padding: 2px 5px;
+  display: inline-block;
+}
+.m-work .el-collapse .el-collapse-item__header {
+  display: block;
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 80px 0 20px;
+  border-bottom: 1px solid #ebeef5;
+  color: #333333;
+  position: relative;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  /* 上传文件图标(按钮) */
+  /* 箭头 */
+  /* 徽章 */
+}
+.m-work .el-collapse .el-collapse-item__header > .el-icon-plus {
+  color: white;
+  padding: 2px 6px;
+  border-radius: 5px;
+  position: absolute;
+  right: 40px;
+  top: 7px;
+}
+.m-work .el-collapse .el-collapse-item__header .el-collapse-item__arrow {
+  position: absolute;
+  right: 10px;
+  top: 9px;
+}
+.m-work .el-collapse .el-collapse-item__header > .badge.error {
+  margin-left: 5px !important;
+  background-color: #F15A24 !important;
+}
+.m-work .el-collapse .el-collapse-item__content {
+  padding: 10px 0;
+  /* 徽章 */
+}
+.m-work .el-collapse .el-collapse-item__content .badge.error {
+  background-color: #ffaebc;
+  margin-left: 0;
+  margin-right: 5px;
+}
+.m-work .el-collapse .el-collapse-item__content .content {
+  padding: 0;
+  width: 94%;
+  margin: 3px auto 3px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #808080;
+}
+.m-work .el-collapse.level1 {
+  /* 折叠面板项 */
+}
+.m-work .el-collapse.level1 > .el-collapse-item {
+  /* 标题包装 */
+  /* 内容包装 */
+}
+.m-work .el-collapse.level1 > .el-collapse-item > div[role='tab'] {
+  border-bottom: 1px solid #ebeef5;
+}
+.m-work .el-collapse.level1 > .el-collapse-item > [role='tabpanel'] {
+  /* 内容 */
+}
+.m-work .el-collapse.level1 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content {
+  position: relative;
+  background-color: #f1f5f8;
+  padding: 10px 0;
+  background: #fff;
+  box-shadow: 0 0 5px #efeff2 inset;
+}
+.m-work .el-collapse.level2 {
+  border: none;
+  /* 折叠面板项 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item {
+  /* 激活面板项 */
+  /* 标题包装 */
+  /* 第一个面板项 */
+  /* 内容包装 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item.is-active {
+  /* 标题包装 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item.is-active > div[role='tab'] {
+  /* 标题 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item.is-active > div[role='tab'] > .el-collapse-item__header {
+  box-shadow: 0 0 5px #c9d3da;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > div[role='tab'] {
+  position: relative;
+  z-index: 10;
+  /* 标题 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header {
+  padding: 0 20px;
+  width: 94%;
+  margin: 5px auto 0px;
+  border-radius: 5px;
+  background-color: #e8f4f9;
+  position: relative;
+  /* 名称 */
+  /* 时间 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .name {
+  display: inline-block;
+  width: 66px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .time {
+  margin-left: 10px;
+  vertical-align: middle;
+}
+.m-work .el-collapse.level2 > .el-collapse-item:first-child > div[role='tab'] {
+  /* 标题 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item:first-child > div[role='tab'] > .el-collapse-item__header {
+  margin-top: 0;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] {
+  border-bottom: 0;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content {
+  padding: 0;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content {
+  padding: 0 20px 0 20px;
+  width: 94%;
+  margin: -3px auto 3px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #808080;
+  /* 意见 */
+  /* 装饰 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .opinion {
+  padding: 10px 20px;
+  background-color: #E8ECEF;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .decoration {
+  background-color: #f2f3f4;
+  margin: 0 -20px;
+  padding: 0 20px;
+  /* 装饰线 */
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .decoration .line {
+  border: 1px solid #E7E8E8;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul {
+  border-radius: 0 0 5px 5px;
+  background-color: #f2f3f4;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 10px 20px;
+}
+.m-work .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul li i.point {
+  display: inline-block;
+  transform: scale(0.2);
+  vertical-align: middle;
+}
+
+/*# sourceMappingURL=foldedPanel.css.map */

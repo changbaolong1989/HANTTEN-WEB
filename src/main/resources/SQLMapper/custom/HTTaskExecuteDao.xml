@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTaskExecuteDao">
+
+    <resultMap id="selectA7ZJList" type="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        <id column="relationId" property="relationId" />
+        <result column="engineeingType" property="engineeingType" />
+        <result column="contractPrice" property="contractPrice" />
+        <result column="settlePrice" property="settlePrice" />
+        <result column="settleReason" property="settleReason" />
+        <result column="startDate" property="startDate" />
+        <result column="endDate" property="endDate" />
+        <collection property="htTaskExecuteList" ofType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+            <id column="expandId" property="expandId" />
+            <result column="sortNum" property="sortNum" />
+            <result column="unitName" property="unitName" />
+            <result column="constructScale" property="constructScale" />
+            <result column="constructCost" property="constructCost" />
+            <result column="unitCost" property="unitCost" />
+            <result column="costRatio" property="costRatio" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="selectA7ZBList" type="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        <id column="relationId" property="relationId" />
+        <result column="tenderTypeContent" property="tenderTypeContent" />
+        <result column="lastStartDate" property="startDate" />
+        <result column="lastEndDate" property="endDate" />
+        <collection property="htTaskExecuteList" ofType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+            <id column="expandId" property="expandId" />
+            <result column="sortNum" property="sortNum" />
+            <result column="workflow" property="workflow" />
+            <result column="startDate" property="startDate" />
+            <result column="endDate" property="endDate" />
+            <result column="days" property="days" />
+            <result column="involvedDepartment" property="involvedDepartment" />
+            <result column="remark" property="remark" />
+        </collection>
+    </resultMap>
+
+    <select id="getTaskExecuteDetailInfo" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+
+        select
+            /*合同 start*/
+            tc.contract_num               as contractNum,
+            tc.counsel_business_type      as counselBusinessType,
+            if(tp.project_name is null,tt.task_name,concat(concat(tp.project_name,'-'),tt.task_name)) as projectName,
+            tc.contract_date              as contractDate,
+            tc.truster_name               as trusterName,
+            tc.duty_people                as dutyPeople,
+            tc.truster_duty_user          as trusterDutyUser,
+            tc.invested_amount            as investedAmount,
+            tc.contract_amount            as contractAmount,
+            tc.department_id              as departmentId,
+            /*合同 end*/
+            /*项目 start*/
+            tp.project_num                as projectNum,
+            /*项目 end*/
+            /*任务 start*/
+            tdct.contract_type_name               as contractTypeName,
+            /*任务 end*/
+            /* A1  start*/
+            IFNULL(ttor.result_file_number,tt.report_num) as reportNumA1,
+            tt.report_copies              as reportCopies,
+            tu.sign_path                  as signPathBZ,
+            tt.apply_time                 as applyTimeBZ,
+            manager_user_info.sign_path   as signPathSH,
+            ttphti.approve_time           as approveTimeSH,
+            quality_user_info.sign_path   as signPathZL,
+            ttphti2.approve_time          as approveTimeZL,
+            generManager_user_info.sign_path    as signPathSD,
+            ttphti3.approve_time          as approveTimeSD,
+            signer_user_info.sign_path    as signPathZJL,
+            ttphti4.approve_time          as approveTimeZJL,
+            tu3.sign_path                 as signPathCD,
+            zj.sign_path                  as signPathZJ,
+            ttphti5.approve_time          as approveTimeZJ,
+            /* A1  end*/
+            /* A2  start*/
+            IFNULL(tttr.result_file_number,tt.report_num) as reportNumA2,
+            tttr.project_condition         as projectCondition,
+            tttr.employer                  as employerA2,
+            tttr.bid_person                as bidPerson,
+            tttr.plan_start_date           as planStartDate,
+            tttr.plan_end_date             as planEndDate,
+            tt.create_date                 as actualStartDate,
+            ttphti3.approve_time           as actualEndDate,
+            tttr.delay_reason              as delayReason,
+            tttr.main_result               as mainResult,
+            tu.user_name                   as applyUserNameA2,
+            tu4.sign_path                   as createUserSignPathA2,
+            /* A2  end*/
+            /*A3 start*/
+            tt.report_num                  as reportNumA3,
+            /*A3 end*/
+            /*A4 start*/
+            tu2.user_name                  as operatorName,
+            /*A4 end */
+            /*A5 start*/
+            ttfr.counsel_desc              as counselDesc,
+            ttfr.construct_scale           as constructScale,
+            ttfr.counsel_content           as counselContent,
+            /*ttfr.counsel_group             as counselGroup,*/
+            ttfr.counsel_duty              as counselDuty,
+            ttfr.divide_work               as divideWork,
+            member_info.memberList         as  memberList, /* 成员 */
+            tu4.user_name                  as counselGroup,
+            /*A5 end*/
+            /*A8 start*/
+            tter.consensus_time            as consensusTime,
+            tter.employer                  as employerA8,
+            tter.contractor                as contractor,
+            tter.supervisor                as supervisor,
+            tter.prospect_record           as prospectRecord,
+            tter.relation_id               as relationId,
+            tt2.apply_time                 as applyTimeCD
+            /*A8 end*/
+        from
+            tb_task tt
+        left join
+            tb_dict_contract_type tdct
+        on
+            tdct.contract_type_id = tt.contract_type_id
+        left join
+            tb_contract tc
+        on
+            tc.contract_id = tt.contract_id
+        left join
+            tb_project tp
+        on
+            tc.project_id = tp.project_id
+        left join
+            tb_table_one_relation ttor
+        on
+            ttor.task_id = tt.task_id
+        left join
+            tb_user tu
+        on
+            tu.user_id = tt.apply_user_id
+        left join
+            tb_user tu4
+        on
+            tu4.user_id = tt.create_user_id
+        left join
+            tb_task_period_relation ttpr
+        on
+            (ttpr.task_id = tt.task_id and ttpr.is_result_file = 1)
+        left join
+            tb_task_period_his_task_inst ttphti
+        on
+            (ttphti.task_period_id = ttpr.relation_id and ttphti.is_pass=1 and ttphti.task_key='ManagerVerify' and ttphti.is_del_flg = 0)
+        left join
+            tb_user manager_user_info
+        on
+            manager_user_info.user_id = ttphti.approve_user_id
+        left join
+            tb_task_period_his_task_inst ttphti2
+        on
+            (ttphti2.task_period_id = ttpr.relation_id and ttphti2.is_pass=1 and ttphti2.task_key='QualityVerify' and ttphti2.is_del_flg = 0)
+        left join
+            tb_user quality_user_info
+        on
+            quality_user_info.user_id = ttphti2.approve_user_id
+        left join
+            tb_task_period_his_task_inst ttphti3
+        on
+            (ttphti3.task_period_id = ttpr.relation_id and ttphti3.is_pass=1 and ttphti3.task_key='GenerManagerVerify' and ttphti3.is_del_flg = 0)
+        left join
+            tb_user generManager_user_info
+        on
+            generManager_user_info.user_id = ttphti3.approve_user_id
+        left join
+            tb_task_period_his_task_inst ttphti4
+        on
+            (ttphti4.task_period_id = ttpr.relation_id and ttphti4.is_pass=1 and ttphti4.task_key='Signer' and ttphti4.is_del_flg = 0)
+        left join
+            tb_user signer_user_info
+        on
+            signer_user_info.user_id = ttphti4.approve_user_id
+        left join
+            tb_task_period_his_task_inst ttphti5
+        on
+            (ttphti5.task_period_id = ttpr.relation_id and ttphti5.is_pass=1 and ttphti5.task_key='ArchiveVerify' and ttphti5.is_del_flg = 0)
+        left join
+            tb_user zj
+        on
+            zj.user_id = ttphti5.approve_user_id
+        left join
+            tb_table_two_relation tttr
+        on
+            tttr.task_id = tt.task_id
+        left join
+            tb_task_user_relation ttur
+        on
+            (ttur.task_id = tt.task_id and ttur.is_main_duty = 1)
+
+        left join
+            tb_user tu2
+        on
+            tu2.user_id = ttur.user_id
+        left join
+            tb_table_five_relation ttfr
+        on
+            ttfr.task_id = tt.task_id
+
+        left join (
+                    select
+                        ttur2.task_id,
+                        group_concat(distinct tu3.user_name) AS memberList
+                    from
+                        tb_task_user_relation ttur2
+                    left join
+                        tb_user tu3
+                    on
+                        tu3.user_id = ttur2.user_id
+                    where
+                        ttur2.is_del_flg = 0
+                    group by
+                        ttur2.task_id
+
+                ) member_info
+        on member_info.task_id = tt.task_id
+
+        left join
+            tb_table_eight_relation tter
+        on
+            tter.task_id = tt.task_id
+        left join
+            tb_task tt2
+        on
+            tt.task_id = tt2.task_id and (tt.current_state = 7 or tt.current_state = 8 or tt.current_state = 9)
+        left join
+            tb_user tu3
+        on
+            tu3.user_id = tt.apply_user_id and (tt.current_state = 7 or tt.current_state = 8 or tt.current_state = 9)
+        WHERE
+            tt.task_id = #{taskId}
+
+    </select>
+
+    <!--查询A4 收集资料文件列表-->
+    <select id="searchA4MaterialInfo" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            ttpmr.relation_id    as relationId,
+            ttpmr.material_name  as materialName,
+            ttpmr.material_path  as materialPath,
+            ttpmr.remark         as remark,
+            ttpmr.create_date    as createDate,
+            tu.user_name         as userName,
+            tdft.file_type_name  as fileTypeName,
+            ttpmr.copy_file      as copyFile,
+            ttpmr.num            as num,
+            ttpmr.recipient      as recipient,
+            ttpmr.recipient_date as recipientDate
+        from
+            tb_task_period_material_relation ttpmr
+        left join
+            tb_user tu
+        on
+            tu.user_id = ttpmr.create_user_id
+        left join
+            tb_dict_file_type tdft
+        on
+            ttpmr.file_type = tdft.file_type_id
+        where
+            ttpmr.task_period_id = #{relationId}
+        and
+            ttpmr.is_del_flg = 0
+        order by
+            ttpmr.create_date desc
+    </select>
+
+    <!--查询A6 造价 咨询记录列表-->
+    <select id="searchA6ConsultRecordInfoZJ" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            ttsr.sort_num         as sortNum,
+            ttsr.counsel_advise  as counselAdvise,
+            ttsr.response_advise as responseAdvise
+        from
+            tb_table_six_relation ttsr
+        where
+            ttsr.task_id = #{taskId}
+        and
+            is_del_flg = 0
+        order by
+            ttsr.sort_num
+    </select>
+
+    <!--查询A6 招标 咨询记录列表-->
+    <select id="searchA6ConsultRecordInfoZB" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            sort_num             as sortNum,
+            engineering_name    as engineeringName,
+            tender_method        as tenderMethod,
+            tender_type          as tenderType,
+            tender_platform      as tenderPlatform,
+            investor_require     as investorRequire
+        from
+            tb_table_six_relation ttsr
+        where
+            task_id = #{taskId}
+        and
+            is_del_flg = 0
+        order by
+            sort_num
+    </select>
+
+    <!--查询A7 造价 成果文件 单元工程造价指标 信息-->
+    <select id="searchA7AchievementInfoZJ" resultMap="selectA7ZJList">
+        select
+            ttsr.relation_id                as relationId,
+            ttsr.engineeing_type           as engineeingType,
+            ttsr.contract_amount           as contractPrice,
+            ttsr.settle_price              as settlePrice,
+            ttsr.settle_reason             as settleReason,
+            ttsr.start_date                 as startDate,
+            ttsr.end_date                   as endDate,
+            ttsze.sort_num                  as sortNum,
+            ttsze.unit_name                 as unitName,
+            ttsze.construct_scale          as constructScale,
+            ttsze.construct_cost           as constructCost,
+            ttsze.unit_cost                 as unitCost,
+            ttsze.cost_ratio                as costRatio,
+            ttsze.expand_id                 as expandId
+        from
+            tb_table_seven_relation ttsr
+        left join
+            tb_table_seven_zbdl_expand  ttsze
+        on
+            ttsze.relation_id = ttsr.relation_id
+        where
+            ttsr.task_id = #{taskId}
+        and
+            ttsr.is_del_flg = 0
+        order by
+            ttsr.relation_id,
+            ttsze.sort_num
+
+    </select>
+
+    <!--查询A7 招标 成果文件 咨询记录 集合-->
+    <select id="searchA7ConsultRecordInfoZB" resultMap="selectA7ZBList">
+        select
+            ttsr.relation_id                as relationId,
+            ttsr.tender_type_content       as tenderTypeContent,
+            ttsr.start_date                as lastStartDate,
+            ttsr.end_date                  as lastEndDate,
+            ttsze.sort_num                  as sortNum,
+            ttsze.start_date                 as startDate,
+            ttsze.end_date                   as endDate,
+            ttsze.workflow                  as workflow,
+            ttsze.days                       as days,
+            ttsze.involved_department      as involvedDepartment,
+            ttsze.remark                     as remark,
+            ttsze.expand_id                 as expandId
+        from
+            tb_table_seven_relation ttsr
+        left join
+            tb_table_seven_zbdl_expand ttsze
+        on
+            ttsze.relation_id = ttsr.relation_id
+        where
+            ttsr.task_id = #{taskId}
+        and
+            ttsr.is_del_flg = 0
+
+        order by
+            ttsr.relation_id,
+            ttsze.sort_num
+
+    </select>
+
+    <!--查询A8 招标 踏勘现场 咨询记录列表-->
+    <select id="searchA8ConsultRecordZB" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            sort_num             as sortNum,
+            counsel_advise      as counselAdvise,
+            answer_advise       as answerAdvise
+        from
+            tb_table_eight_zbdl_expand
+        where
+            relation_id in (
+               select relation_id
+                  from tb_table_eight_relation
+                  where task_id = #{taskId}
+            )
+        and
+            is_del_flg = 0
+        order by
+             sort_num
+    </select>
+
+
+    <!--查询A6列表-->
+    <select id="searchA6Record" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+        sort_num              as sortNum,
+        counsel_advise        as counselAdvise,
+        response_advise       as responseAdvise,
+        engineering_name      as engineeringName,
+        tender_method         as tenderMethod,
+        tender_type           as tenderType,
+        tender_platform       as tenderPlatform,
+        investor_require      as investorRequire
+        from
+        tb_table_six_relation
+        where
+        task_id = #{taskId}
+        and
+        is_del_flg = 0
+        order by
+        sort_num
+    </select>
+
+    <!--通过relationId获取taskId-->
+    <select id="searchTaskIdByRelationId" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            ttpr.relation_id     as relationId,
+            ttpr.task_id         as taskId,
+            tt.contract_id       as contractId
+        from
+            tb_task_period_relation ttpr
+        left join
+            tb_task tt
+        on
+            tt.task_id = ttpr.task_id
+        where
+            ttpr.relation_id = #{relationId}
+        and
+            ttpr.is_del_flg = 0
+    </select>
+
+    <!--通过taskId删除任务阶段和A7的关联表-->
+    <delete id="deleteSevenRelationByTaskId">
+        delete
+        from
+            tb_table_seven_relation
+        where
+            task_id = #{taskId}
+    </delete>
+
+    <!--通过taskId删除任务阶段和A8的关联表-->
+    <delete id="deleteEightRelationByTaskId">
+        delete
+        from
+        tb_table_eight_relation
+        where
+        task_id = #{taskId}
+    </delete>
+
+    <!--通过taskId删除招标代理部A7的扩展表-->
+    <delete id="deleteSevenZbdlRelationByTaskId">
+        delete
+        from
+            tb_table_seven_zbdl_expand
+        where
+            relation_id in
+            (
+                select
+                    relation_id
+                from
+                    tb_table_seven_relation
+                where
+                    task_id = #{taskId}
+            )
+    </delete>
+
+    <!--通过taskId删除招标代理部A8的扩展表-->
+    <delete id="deleteEightZbdlRelationByTaskId">
+        delete
+        from
+        tb_table_eight_zbdl_expand
+        where
+        relation_id in
+        (
+        select
+        relation_id
+        from
+        tb_table_eight_relation
+        where
+        task_id = #{taskId}
+        )
+    </delete>
+
+    <!--通过taskId删除A5关联表-->
+    <delete id="deleteFiveRelationByTaskId">
+        delete
+        from
+        tb_table_five_relation
+        where
+        task_id = #{taskId}
+    </delete>
+
+    <!--通过taskId删除A6关联表-->
+    <delete id="deleteSixRelationByTaskId">
+        delete
+        from
+        tb_table_six_relation
+        where
+        task_id = #{taskId}
+    </delete>
+
+    <!--批量插入任务阶段和A7的关联表-->
+    <insert id="insertSevenRelationList">
+        INSERT INTO
+            tb_table_seven_relation
+            (
+                relation_id,
+                task_id,
+                tender_type_content,
+                start_date,
+                end_date,
+                create_date,
+                create_user_id,
+                is_del_flg
+            )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.relationId},
+                #{item.taskId},
+                #{item.tenderTypeContent},
+                #{item.startDate},
+                #{item.endDate},
+                #{item.createDate},
+                #{item.createUserId},
+                #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量插入招标代理部A7的扩展表-->
+    <insert id="insertSevenZbdlRelationList">
+        INSERT INTO
+        tb_table_seven_zbdl_expand
+        (
+        expand_id,
+        relation_id,
+        sort_num,
+        workflow,
+        start_date,
+        end_date,
+        involved_department,
+        days,
+        remark,
+        create_date,
+        create_user_id,
+        is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.expandId},
+            #{item.relationId},
+            #{item.sortNum},
+            #{item.workflow},
+            #{item.startDate},
+            #{item.endDate},
+            #{item.involvedDepartment},
+            #{item.days},
+            #{item.remark},
+            #{item.createDate},
+            #{item.createUserId},
+            #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量插入招标代理部A8的扩展表-->
+    <insert id="insertEightZbdlRelationList">
+        INSERT INTO
+        tb_table_eight_zbdl_expand
+        (
+        expand_id,
+        relation_id,
+        sort_num,
+        counsel_advise,
+        answer_advise,
+        create_date,
+        create_user_id,
+        is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.expandId},
+            #{item.relationId},
+            #{item.sortNum},
+            #{item.counselAdvise},
+            #{item.answerAdvise},
+            #{item.createDate},
+            #{item.createUserId},
+            #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量插入A6关联表-->
+    <insert id="insertSixRelationList">
+        INSERT INTO
+        tb_table_six_relation
+        (
+        relation_id,
+        task_id,
+        sort_num,
+        counsel_advise,
+        response_advise,
+        create_date,
+        create_user_id,
+        is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.relationId},
+            #{item.taskId},
+            #{item.sortNum},
+            #{item.counselAdvise},
+            #{item.responseAdvise},
+            #{item.createDate},
+            #{item.createUserId},
+            #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量插入A6关联表-->
+    <insert id="insertSixZbdlRelationList">
+        INSERT INTO
+        tb_table_six_relation
+        (
+        relation_id,
+        task_id,
+        sort_num,
+        engineering_name,
+        tender_method,
+        tender_type,
+        tender_platform,
+        investor_require,
+        create_date,
+        create_user_id,
+        is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.relationId},
+            #{item.taskId},
+            #{item.sortNum},
+            #{item.engineeringName},
+            #{item.tenderMethod},
+            #{item.tenderType},
+            #{item.tenderPlatform},
+            #{item.investorRequire},
+            #{item.createDate},
+            #{item.createUserId},
+            #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量插入招标代理部A8的关联表-->
+    <insert id="insertEightRelation">
+        INSERT INTO
+        tb_table_eight_relation
+        (
+        relation_id,
+        task_id,
+        consensus_time,
+        create_date,
+        create_user_id,
+        is_del_flg
+        )
+        values
+            (
+            #{relationId},
+            #{taskId},
+            #{consensusTime},
+            #{createDate},
+            #{createUserId},
+            #{isDelFlg}
+            )
+    </insert>
+
+
+    <!--批量插入成果文件A7的扩展表-->
+    <insert id="insertSevenZJRelationList">
+        INSERT INTO
+            tb_table_seven_zbdl_expand
+            (
+                expand_id,
+                relation_id,
+                sort_num,
+                unit_name,
+                construct_scale,
+                construct_cost,
+                unit_cost,
+                cost_ratio,
+                create_date,
+                create_user_id,
+                is_del_flg
+            )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.expandId},
+                #{item.relationId},
+                #{item.sortNum},
+                #{item.unitName},
+                #{item.constructScale},
+                #{item.constructCost},
+                #{item.unitCost},
+                #{item.costRatio},
+                #{item.createDate},
+                #{item.createUserId},
+                #{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--查询A7咨询记录集合-->
+    <select id="searchA7ZbdlInfo" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select
+            ttsr.relation_id                as relationId,
+            ttsr.tender_type_content        as tenderTypeContent,
+            ttsze.sort_num                  as sortNum,
+            ttsze.start_date                as startDate,
+            ttsze.end_date                  as endDate,
+            ttsze.workflow                  as workflow,
+            ttsze.days                      as days,
+            ttsze.involved_department       as involvedDepartment,
+            ttsze.remark                    as remark,
+            ttsze.expand_id                 as expandId
+        from
+            tb_table_seven_relation ttsr
+        left join
+            tb_table_seven_zbdl_expand ttsze
+        on
+            ttsze.relation_id = ttsr.relation_id
+        where
+            ttsr.task_id = #{taskId}
+        and
+            ttsr.is_del_flg = 0
+        order by
+            ttsr.relation_id,
+            ttsze.sort_num
+    </select>
+
+    <!--插入成果文件A7表-->
+    <insert id="insertSevenRelationInfo">
+        INSERT INTO
+            tb_table_seven_relation
+        (
+            relation_id,
+            task_id,
+            engineeing_type,
+            contract_amount,
+            settle_price,
+            settle_reason,
+            create_date,
+            create_user_id,
+            is_del_flg
+        )
+        values
+        (
+            #{relationId},
+            #{taskId},
+            #{engineeingType},
+            #{contractAmount},
+            #{settlePrice},
+            #{settleReason},
+            #{createDate},
+            #{createUserId},
+            #{isDelFlg}
+        )
+    </insert>
+
+    <!--修改合同金额-->
+    <insert id="updateContractAmount">
+        update
+            tb_contract
+        set
+            contract_amount = #{contractAmount},
+            update_user_id = #{updateUserId},
+            update_date = #{updateDate}
+        where
+            contract_id = #{contractId}
+        and
+            is_del_flg = 0
+    </insert>
+
+    <!--查询任务历史流程(审核记录)-->
+    <select id="excSearchHTTaskHisTaskInstInfoList" resultMap="selectA3AuditRecordList">
+        select
+            ttphti.task_period_id     as taskPeriodId,
+            ttp.period_name            as periodName,
+            ttphti.task_key           as  taskKey,
+            ttphti.is_pass            as  isPass,
+            ttphti.reject_reason      as  rejectReason,
+            ttphti.approve_user_id    as  approveUserId,
+            ptu.user_name             as  approveUserName,
+            ptu.sign_path             as signPath,
+            ttphti.approve_time       as  approveTime
+        from
+            tb_task_period_his_task_inst ttphti
+        left join
+            tb_user ptu
+        on
+            ptu.user_id = ttphti.approve_user_id
+        left join
+            tb_task_period_relation ttpr
+        on
+            ttpr.relation_id = ttphti.task_period_id
+        left join
+            tb_task_period ttp
+        on
+            ttpr.period_id = ttp.period_id
+        where
+            ttphti.task_id = #{taskId}
+        and
+            ttpr.is_result_file = #{isResultFile}
+        and
+            ttphti.task_key <![CDATA[ <> ]]>  'Signer'
+        and
+           ttphti.is_del_flg = 0
+        order by
+            ttphti.task_period_id,
+            ttphti.approve_time
+
+    </select>
+
+    <select id="getRelationByTaskId" resultType="com.hd.manager.dao.bean.HTTaskExecuteBean">
+        select relation_id AS relationId from tb_task_period_relation ttpr where ttpr.task_id = #{taskId} and ttpr.period_id = #{periodId}
+    </select>
+
+    <resultMap id="selectA3AuditRecordList" type="com.hd.manager.dao.bean.HTTaskPeriodBean">
+        <id column="taskPeriodId" property="taskPeriodId" />
+        <result column="periodName" property="periodName" />
+        <collection property="htTaskPeriodAuditLevelList" ofType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+            <id column="taskKey" property="taskKey" />
+            <collection property="HTTaskPeriodBeanList" ofType="com.hd.manager.dao.bean.HTTaskPeriodBean">
+                <result column="isPass" property="isPass"/>
+                <result column="rejectReason" property="rejectReason"/>
+                <result column="approveUserId" property="approveUserId"/>
+                <result column="approveUserName" property="approveUserName"/>
+                <result column="signPath" property="signPath"/>
+                <result column="approveTime" property="approveTime"/>
+            </collection>
+        </collection>
+    </resultMap>
+</mapper>

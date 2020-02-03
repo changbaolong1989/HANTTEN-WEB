@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbTaskUserRelationEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbTaskUserRelationEntity">
+    <id column="relation_id" jdbcType="VARCHAR" property="relationId" />
+    <result column="task_id" jdbcType="VARCHAR" property="taskId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="is_main_duty" jdbcType="VARCHAR" property="isMainDuty" />
+    <result column="task_content" jdbcType="VARCHAR" property="taskContent" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="need_hour" jdbcType="INTEGER" property="needHour" />
+    <result column="execute_date" jdbcType="TIMESTAMP" property="executeDate" />
+    <result column="actual_hour" jdbcType="INTEGER" property="actualHour" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+    <result column="is_done" jdbcType="VARCHAR" property="isDone" />
+    <result column="customize_hour" jdbcType="INTEGER" property="customizeHour" />
+    <result column="hour_reason" jdbcType="VARCHAR" property="hourReason" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    relation_id, task_id, user_id, is_main_duty, task_content, start_date, end_date, 
+    need_hour, execute_date, actual_hour, remarks, create_date, create_user_id, update_date, 
+    update_user_id, is_del_flg, is_done, customize_hour, hour_reason
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbTaskUserRelationEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_task_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_task_user_relation
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_task_user_relation
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbTaskUserRelationEntityExample">
+    delete from tb_task_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbTaskUserRelationEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_task_user_relation (relation_id, task_id, user_id, 
+      is_main_duty, task_content, start_date, 
+      end_date, need_hour, execute_date, 
+      actual_hour, remarks, create_date, 
+      create_user_id, update_date, update_user_id, 
+      is_del_flg, is_done, customize_hour, 
+      hour_reason)
+    values (#{relationId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{isMainDuty,jdbcType=VARCHAR}, #{taskContent,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, 
+      #{endDate,jdbcType=TIMESTAMP}, #{needHour,jdbcType=INTEGER}, #{executeDate,jdbcType=TIMESTAMP}, 
+      #{actualHour,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{isDelFlg,jdbcType=VARCHAR}, #{isDone,jdbcType=VARCHAR}, #{customizeHour,jdbcType=INTEGER}, 
+      #{hourReason,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbTaskUserRelationEntity">
+    <selectKey keyProperty="relationId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_task_user_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      relation_id,
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="isMainDuty != null">
+        is_main_duty,
+      </if>
+      <if test="taskContent != null">
+        task_content,
+      </if>
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="needHour != null">
+        need_hour,
+      </if>
+      <if test="executeDate != null">
+        execute_date,
+      </if>
+      <if test="actualHour != null">
+        actual_hour,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+      <if test="isDone != null">
+        is_done,
+      </if>
+      <if test="customizeHour != null">
+        customize_hour,
+      </if>
+      <if test="hourReason != null">
+        hour_reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{relationId,jdbcType=VARCHAR},
+      <if test="taskId != null">
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="isMainDuty != null">
+        #{isMainDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="taskContent != null">
+        #{taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="needHour != null">
+        #{needHour,jdbcType=INTEGER},
+      </if>
+      <if test="executeDate != null">
+        #{executeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualHour != null">
+        #{actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="isDone != null">
+        #{isDone,jdbcType=VARCHAR},
+      </if>
+      <if test="customizeHour != null">
+        #{customizeHour,jdbcType=INTEGER},
+      </if>
+      <if test="hourReason != null">
+        #{hourReason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbTaskUserRelationEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_task_user_relation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_task_user_relation
+    <set>
+      <if test="record.relationId != null">
+        relation_id = #{record.relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskId != null">
+        task_id = #{record.taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isMainDuty != null">
+        is_main_duty = #{record.isMainDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskContent != null">
+        task_content = #{record.taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.startDate != null">
+        start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endDate != null">
+        end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.needHour != null">
+        need_hour = #{record.needHour,jdbcType=INTEGER},
+      </if>
+      <if test="record.executeDate != null">
+        execute_date = #{record.executeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.actualHour != null">
+        actual_hour = #{record.actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="record.remarks != null">
+        remarks = #{record.remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDone != null">
+        is_done = #{record.isDone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customizeHour != null">
+        customize_hour = #{record.customizeHour,jdbcType=INTEGER},
+      </if>
+      <if test="record.hourReason != null">
+        hour_reason = #{record.hourReason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_task_user_relation
+    set relation_id = #{record.relationId,jdbcType=VARCHAR},
+      task_id = #{record.taskId,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      is_main_duty = #{record.isMainDuty,jdbcType=VARCHAR},
+      task_content = #{record.taskContent,jdbcType=VARCHAR},
+      start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      need_hour = #{record.needHour,jdbcType=INTEGER},
+      execute_date = #{record.executeDate,jdbcType=TIMESTAMP},
+      actual_hour = #{record.actualHour,jdbcType=INTEGER},
+      remarks = #{record.remarks,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      is_done = #{record.isDone,jdbcType=VARCHAR},
+      customize_hour = #{record.customizeHour,jdbcType=INTEGER},
+      hour_reason = #{record.hourReason,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbTaskUserRelationEntity">
+    update tb_task_user_relation
+    <set>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="isMainDuty != null">
+        is_main_duty = #{isMainDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="taskContent != null">
+        task_content = #{taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="needHour != null">
+        need_hour = #{needHour,jdbcType=INTEGER},
+      </if>
+      <if test="executeDate != null">
+        execute_date = #{executeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actualHour != null">
+        actual_hour = #{actualHour,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="isDone != null">
+        is_done = #{isDone,jdbcType=VARCHAR},
+      </if>
+      <if test="customizeHour != null">
+        customize_hour = #{customizeHour,jdbcType=INTEGER},
+      </if>
+      <if test="hourReason != null">
+        hour_reason = #{hourReason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbTaskUserRelationEntity">
+    update tb_task_user_relation
+    set task_id = #{taskId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      is_main_duty = #{isMainDuty,jdbcType=VARCHAR},
+      task_content = #{taskContent,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      need_hour = #{needHour,jdbcType=INTEGER},
+      execute_date = #{executeDate,jdbcType=TIMESTAMP},
+      actual_hour = #{actualHour,jdbcType=INTEGER},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      is_done = #{isDone,jdbcType=VARCHAR},
+      customize_hour = #{customizeHour,jdbcType=INTEGER},
+      hour_reason = #{hourReason,jdbcType=VARCHAR}
+    where relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

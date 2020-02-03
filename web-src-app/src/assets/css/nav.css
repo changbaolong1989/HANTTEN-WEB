@@ -1,0 +1,32 @@
+.mint-navbar {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.125);
+  z-index: 9; }
+  .mint-navbar .mint-tab-item {
+    padding: 27px 0;
+    font-size: 28px;
+    line-height: 27px;
+    color: #999999; }
+  .mint-navbar .mint-tab-item-label {
+    font-size: 28px; }
+  .mint-navbar .is-selected {
+    background-image: linear-gradient(90deg, #06a1ee 0%, #4cc2fc 100%), linear-gradient(#ffffff, #ffffff);
+    color: #fff !important;
+    border-bottom: 0 !important;
+    position: relative;
+    margin-bottom: 5px; }
+    .mint-navbar .is-selected::before {
+      content: '';
+      width: 0;
+      height: 0;
+      position: absolute;
+      bottom: -2px;
+      left: calc(50% - 20px);
+      left: -webkit-calc(50% - 20px);
+      left: -moz-calc(50% - 20px);
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid #fff;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent; }

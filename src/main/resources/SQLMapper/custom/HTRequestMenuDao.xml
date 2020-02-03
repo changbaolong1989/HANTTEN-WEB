@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTRequestMenuDao">
+
+
+    <select id="excSearchRequestMenuListByProperty" resultType="com.hd.manager.dao.bean.HTRequestMenuBean">
+        select
+        temp.*
+        from
+        (<include refid="SearchRequestMenuListByPropertySql" />) temp
+    </select>
+
+    <select id="excSearchRequestMenuListCountByProperty" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="SearchRequestMenuListByPropertySql" />) temp
+    </select>
+
+    <select id="excCheckRequestMenuListCountByProperty" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            tb_request_menu trm
+        where
+          1=1
+        <if test="requestMenuName !=null and requestMenuName!= ''">
+            AND trm.request_menu_name = #{requestMenuName}
+        </if>
+        <if test="requestMenuNum !=null and requestMenuNum!= ''">
+            AND trm.request_menu_num = #{requestMenuNum}
+        </if>
+        <if test="requestMenuId !=null and requestMenuId!= ''">
+            AND trm.request_menu_id != #{requestMenuId}
+        </if>
+    </select>
+
+    <select id="excSearchRequestMenuInfoById" resultType="com.hd.manager.dao.bean.HTRequestMenuBean">
+        SELECT
+            trm.request_menu_id  			AS	requestMenuId,
+            trm.request_menu_name			AS	requestMenuName,
+            trm.request_menu_num			AS	requestMenuNum,
+            trm.contract_id					AS	contractId,
+            tc.contract_num					AS	contractNum,
+			tp.project_num					AS	projectNum,
+			tp.project_id					AS	projectId,
+			tp.project_sts					AS	projectIsClosed,
+            trm.start_date					AS	startDate,
+            trm.end_date					AS	endDate,
+            trm.request_amount				AS	requestAmount,
+            trm.process_inst_id				AS	processInstId,
+            trm.delegate_task_key			AS	delegateTaskKey,
+            trm.delegate_task_id			AS	delegateTaskId,
+            trm.apply_user_id				AS	applyUserId,
+            trm.apply_user_name				AS	applyUserName,
+            trm.apply_time				    AS	applyTime,
+            trm.approve_user_id				AS	approveUserId,
+            trm.approve_user_name			AS	approveUserName,
+            trm.approve_time				AS	approveTime,
+            trm.complete_time				AS	completeTime,
+            trm.verify_state				AS	verifyState,
+            trm.current_state				AS	currentState,
+            trm.submit_node					AS	submitNode,
+            trm.is_can_recall				AS	isCanRecall,
+            trm.create_task_date			AS	createTaskDate,
+            trm.create_task_user_id		    AS	createTaskUserId,
+            trm.senior_manager_id			AS	seniorManagerId,
+            trm.create_user_id				AS	createUserId,
+            tu.user_name                    AS  createUserName,
+            trm.create_date					AS	createDate,
+            trm.update_user_id				AS	updateUserId,
+            trm.update_date					AS	updateDate,
+            trm.is_del_flg					AS	isDelFlg,
+            trm.request_type				AS	requestType,
+            trm.framework_type				AS	frameworkType,
+            trm.framework_content			AS	frameworkContent,
+            trm.request_file_path			AS	requestFilePath,
+            trm.request_file_name			AS	requestFileName,
+            trm.request_note_file_path		AS	requestNoteFilePath,
+            trm.request_note_file_name		AS	requestNoteFileName,
+            trm.invoice_file_path			AS	invoiceFilePath,
+            trm.invoice_file_name			AS	invoiceFileName,
+            trm.payment_file_path			AS	paymentFilePath,
+            trm.payment_file_name			AS	paymentFileName,
+            trm.invoice_amount              AS	invoiceAmount,
+            trm.department_id               AS  departmentId,
+            trm.payment_amount              AS	paymentAmount,
+            trm.request_invoice_path        AS	requestInvoicePath,
+            trm.request_invoice_name        AS	requestInvoiceName,
+            trm.request_note_remark         AS  invoiceApplyRemark,
+            tu2.open_id                     AS  openId
+        FROM
+            tb_request_menu trm
+        LEFT JOIN
+            tb_user tu
+            ON trm.create_user_id = tu.user_id
+        LEFT JOIN
+            tb_contract tc
+            ON trm.contract_id = tc.contract_id
+        LEFT JOIN
+            tb_project tp
+            ON tc.project_id = tp.project_id
+        LEFT JOIN
+            tb_user tu2
+            ON trm.apply_user_id = tu2.user_id
+        WHERE
+            trm.is_del_flg = '0'
+            AND trm.request_menu_id = #{requestMenuId}
+    </select>
+
+    <sql id="SearchRequestMenuListByPropertySql">
+        SELECT
+            trm.request_menu_id  			AS	requestMenuId,
+            trm.request_menu_name			AS	requestMenuName,
+            trm.request_menu_num			AS	requestMenuNum,
+            trm.contract_id					AS	contractId,
+            trm.start_date					AS	startDate,
+            trm.end_date					AS	endDate,
+            trm.request_amount				AS	requestAmount,
+            trm.process_inst_id				AS	processInstId,
+            trm.delegate_task_key			AS	delegateTaskKey,
+            trm.delegate_task_id			AS	delegateTaskId,
+            trm.apply_user_id				AS	applyUserId,
+            trm.apply_user_name				AS	applyUserName,
+            trm.approve_user_id				AS	approveUserId,
+            trm.approve_user_name			AS	approveUserName,
+            trm.approve_time				AS	approveTime,
+            trm.complete_time				AS	completeTime,
+            trm.verify_state				AS	verifyState,
+            trm.submit_node					AS	submitNode,
+            trm.is_can_recall				AS	isCanRecall,
+            trm.create_task_date			AS	createTaskDate,
+            trm.create_task_user_id		    AS	createTaskUserId,
+            trm.senior_manager_id			AS	seniorManagerId,
+            trm.create_user_id				AS	createUserId,
+            trm.create_date					AS	createDate,
+            trm.update_user_id				AS	updateUserId,
+            trm.update_date					AS	updateDate,
+            trm.is_del_flg					AS	isDelFlg,
+            trm.request_type				AS	requestType,
+            trm.framework_type				AS	frameworkType,
+            trm.framework_content			AS	frameworkContent,
+            trm.request_file_path			AS	requestFilePath,
+            trm.request_file_name			AS	requestFileName
+
+        FROM
+            tb_request_menu trm
+        WHERE
+            trm.is_del_flg = '0'
+        <if test="requestMenuName !=null and requestMenuName!= ''">
+            AND trm.request_menu_name = #{requestMenuName}
+        </if>
+        <if test="requestMenuNum !=null and requestMenuNum!= ''">
+            AND trm.request_menu_num = #{requestMenuNum}
+        </if>
+        <if test="requestMenuId !=null and requestMenuId!= ''">
+            AND trm.request_menu_id = #{requestMenuId}
+        </if>
+        <if test="contractId !=null and contractId!= ''">
+            AND trm.contract_id = #{contractId}
+        </if>
+        ORDER BY trm.create_date desc
+    </sql>
+
+    <!--通过合同ID查询请款单-->
+    <select id="excSearchRequestMenuIdByContractId" resultType="java.lang.String">
+        SELECT
+            trm.request_menu_id AS requestMenuId
+        FROM
+            tb_request_menu trm
+        WHERE
+            trm.contract_id = #{ContractId}
+    </select>
+</mapper>

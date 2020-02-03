@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTRoleDao">
+    <!--新增角色-->
+    <insert id="insertRoleInfo">
+        INSERT INTO
+          tb_role(
+            role_id, role_name, create_date, create_user_id, update_date, update_user_id, is_del_flg
+          )
+        values (
+          #{roleId},#{roleName},#{createDate},#{createUserId},#{updateDate},#{updateUserId},0
+        )
+    </insert>
+    <!--修改角色-->
+    <update id="updateRoleInfo">
+        UPDATE
+          tb_role
+        SET
+        <if test="roleName !=null and roleName!= ''">
+          role_name = #{roleName},
+        </if>
+        <if test="updateDate !=null and updateDate!= ''">
+          update_date = #{updateDate},
+        </if>
+        <if test="updateUserId !=null and updateUserId!= ''">
+          update_user_id = #{updateUserId}
+        </if>
+        WHERE
+          role_id = #{roleId}
+    </update>
+    <!--删除角色-->
+    <update id="deleteRoleInfo">
+        UPDATE
+          tb_role
+        SET
+          is_del_flg = 1
+        WHERE
+          role_id = #{roleId}
+    </update>
+    <!--查询角色列表-->
+    <select id="findRoleList" resultType="com.hd.manager.dao.bean.HTRoleBean">
+        SELECT
+        tr.role_id       AS roleId,
+        tr.role_name     AS roleName,
+        tu.user_name     AS createUserName,
+        (
+        SELECT
+        GROUP_CONCAT( tm.menu_name )
+        FROM
+        tb_role_menu_relation trmr
+        LEFT JOIN tb_menu tm ON trmr.menu_id = tm.menu_id
+        WHERE
+        trmr.role_id = tr.role_id
+        ) AS menuNames
+        FROM
+        tb_role tr
+        LEFT JOIN
+        tb_user tu
+        ON
+        tr.create_user_id = tu.user_id
+        WHERE
+        tr.is_del_flg = 0
+        <if test="roleName !=null and roleName!= ''">
+            AND
+            tr.role_name like concat(concat('%',#{roleName}),'%')
+        </if>
+        <if test="createUserName !=null and createUserName!= ''">
+            AND
+            tu.user_name like concat(concat('%',#{createUserName}),'%')
+        </if>
+        ORDER BY
+          tr.create_date desc
+        limit ${pageNumber}, ${pageSize}
+
+    </select>
+    <!--查询角色列表总数-->
+    <select id="findAllRoleListCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        tb_role tr
+        LEFT JOIN
+        tb_user tu
+        ON
+        tr.create_user_id = tu.user_id
+        WHERE
+        tr.is_del_flg = 0
+        <if test="roleName !=null">
+            AND
+            tr.role_name like  concat(concat('%',#{roleName}),'%')
+        </if>
+        <if test="createUserName !=null">
+            AND
+            tu.user_name like concat(concat('%',#{createUserName}),'%')
+        </if>
+    </select>
+
+    <!--查询角色名是否重复-->
+    <select id="findRoleCountByRoleName" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        tb_role tr
+        WHERE
+        tr.is_del_flg = 0
+        AND
+        tr.role_name = #{roleName}
+        <if test="roleId !=null and roleId!= ''">
+          AND
+          tr.role_id != #{roleId}
+        </if>
+    </select>
+    <!--查询角色信息-->
+    <select id="findRoleInfo" resultType="com.hd.manager.dao.bean.HTRoleBean">
+        SELECT
+            tr.role_id AS roleId,
+            tr.role_name AS roleName,
+            tu.user_name AS userName,
+            tr.update_date AS updateDate
+        FROM
+            tb_role tr
+            LEFT JOIN tb_user tu ON tr.create_user_id = tu.user_id
+        WHERE
+            tr.is_del_flg = 0
+        AND
+          tr.role_id = #{roleId}
+    </select>
+    <!--查询角色列表总数-->
+    <select id="searchRoleAndUserRelationCountByRoleId" resultType="java.lang.Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          tb_user_role
+        where
+          is_del_flg = 0
+        AND
+          role_id = #{roleId}
+    </select>
+</mapper>

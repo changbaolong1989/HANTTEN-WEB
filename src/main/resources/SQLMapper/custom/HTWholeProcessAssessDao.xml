@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessAssessDao">
+
+    <!--查询项目估算阶段列表-->
+    <select id="excSearchProAssessPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessAssessBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProAssessPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目估算阶段的总条数-->
+    <select id="excSearchProAssessPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProAssessPeriodListSql" />) temp
+    </select>
+
+    <!--查询项目估算阶段列表(供导出excel使用)-->
+    <select id="excSearchProAssessPeriodListForExport"  resultType="com.hd.manager.dao.bean.HTWholeProcessAssessBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProAssessPeriodListSql" />) temp
+    </select>
+    <!--查询项目估算阶段列表-->
+    <sql id="excSearchProAssessPeriodListSql">
+        SELECT
+            tpa.assess_id				AS	assessId,
+            tpa.project_id				AS	projectId,
+            tpa.compile_date			AS	compileDate,
+            tpa.assess_name				AS	assessName,
+            tpa.floor_space				AS	floorSpace,
+            tpa.estimated_cost			AS	estimatedCost,
+            tpa.estimation_ex_parte		AS	estimationExParte,
+            tpa.cost_range				AS	costRange,
+            tpa.remark					AS	remark,
+            tpa.assess_file_path		AS	assessFilePath,
+            tpa.assess_file_name		AS	assessFileName,
+            tpa.create_date				AS	createDate,
+            tpa.create_user_id			AS	createUserId,
+            tpa.update_date				AS	updateDate,
+            tpa.update_user_id			AS	updateUserId,
+            tpa.is_del_flg				AS	isDelFlg
+        FROM
+            tb_pro_assess tpa
+        WHERE
+            tpa.is_del_flg = '0'
+        AND
+            tpa.project_id = #{projectId}
+        ORDER BY
+            tpa.compile_date DESC
+    </sql>
+
+    <!--查询项目估算信息详情-->
+    <select id="excSearchProAssessPeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessAssessBean">
+        SELECT
+            tpa.assess_id				AS	assessId,
+            tpa.project_id				AS	projectId,
+            tpa.compile_date			AS	compileDate,
+            tpa.assess_name				AS	assessName,
+            tpa.floor_space				AS	floorSpace,
+            tpa.estimated_cost			AS	estimatedCost,
+            tpa.estimation_ex_parte		AS	estimationExParte,
+            tpa.cost_range				AS	costRange,
+            tpa.remark					AS	remark,
+            tpa.assess_file_path		AS	assessFilePath,
+            tpa.assess_file_name		AS	assessFileName,
+            tpa.create_date				AS	createDate,
+            tpa.create_user_id			AS	createUserId,
+            tpa.update_date				AS	updateDate,
+            tpa.update_user_id			AS	updateUserId,
+            tpa.is_del_flg				AS	isDelFlg
+        FROM
+            tb_pro_assess tpa
+        WHERE
+            tpa.is_del_flg = '0'
+        AND
+            tpa.assess_id = #{assessId}
+
+    </select>
+</mapper>

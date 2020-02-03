@@ -1,0 +1,41 @@
+@charset "utf-8";
+.m-work{
+	/* 表单样式 */
+  .form-block {
+    margin-top: 10px;
+    background-color: #edf1f4;
+    border-radius: 5px;
+    padding: 20px 20px 20px 10px;
+
+    &:first-child{
+      margin-top: 0;
+    }
+    &.form-block__row--auto-width{
+      .el-row{
+         max-width: unset!important;
+      }
+    }
+
+    .btn-upload {
+      height: 30px !important;
+    }
+
+    .el-row {
+      margin-right: 0 !important;
+      margin-left: 0 !important;
+      margin-bottom: 5px;
+
+      .el-col {
+        padding-right: 0 !important;
+      }
+    }
+  }
+  .is-disabled{
+    .el-input__inner,&+span.el-radio__label{
+      color:#606266!important;
+      &::placeholder{
+         color:#606266!important;
+      }
+    }
+  }
+}

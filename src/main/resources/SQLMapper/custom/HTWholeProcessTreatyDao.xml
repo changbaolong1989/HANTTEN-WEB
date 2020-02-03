@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessTreatyDao">
+
+
+    <resultMap id="selectList" type="com.hd.manager.dao.bean.HTWholeProcessTreatyBean">
+        <id column="treatyType" property="treatyType" />
+            <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessTreatyBean">
+                <id column="undertakeType" property="undertakeType" />
+                <id column="tempTreatyType" property="treatyType" />
+                <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessTreatyBean">
+                    <id column="childTreatyId" property="treatyId"></id>
+                    <result column="childTreatyNum" property="treatyNum"></result>
+                    <result column="childTreatyName" property="treatyName"></result>
+                    <result column="childTreatyContent" property="treatyContent"></result>
+                    <result column="childTargetCost" property="targetCost"></result>
+                    <result column="childContractType" property="contractType"></result>
+                    <result column="childContractWay" property="contractWay"></result>
+                    <result column="childPurchaserWay" property="purchaserWay"></result>
+                    <result column="childRemark" property="remark"></result>
+                </collection>
+            </collection>
+    </resultMap>
+
+
+    <!--查询项目合约规划阶段列表-->
+    <select id="excSearchProTreatyPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessTreatyBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProTreatyPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目合约规划阶段的总条数-->
+    <select id="excSearchProTreatyPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProTreatyPeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目合约规划阶段列表-->
+    <sql id="excSearchProTreatyPeriodListSql">
+        SELECT
+            tpt.treaty_id       AS treatyId,
+            tpt.project_id      AS projectId,
+            tpt.treaty_num      AS treatyNum,
+            tpt.treaty_type     AS treatyType,
+            tpt.undertake_type  AS undertakeType,
+            tpt.treaty_name     AS treatyName,
+            tpt.treaty_content  AS treatyContent,
+            tpt.target_cost     AS targetCost,
+            tpt.contract_type   AS contractType,
+            tpt.contract_way    AS contractWay,
+            tpt.purchaser_way   AS purchaserWay,
+            tpt.remark          AS remark,
+            tpt.create_date     AS createDate,
+            tpt.create_user_id  AS createUserId,
+            tpt.update_date     AS updateDate,
+            tpt.update_user_id  AS updateUserId,
+            tpt.is_del_flg      AS isDelFlg
+        FROM
+            tb_pro_treaty tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.project_id = #{projectId}
+        ORDER BY
+            tpt.treaty_type ASC,
+            tpt.undertake_type ASC,
+            tpt.treaty_name ASC,
+            tpt.create_date DESC
+    </sql>
+
+    <!--查询项目合约规划信息详情-->
+    <select id="excSearchProTreatyPeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessTreatyBean">
+        SELECT
+            tpt.treaty_id       AS treatyId,
+            tpt.project_id      AS projectId,
+            tpt.treaty_num      AS treatyNum,
+            tpt.treaty_type     AS treatyType,
+            tpt.undertake_type  AS undertakeType,
+            tpt.treaty_name     AS treatyName,
+            tpt.treaty_content  AS treatyContent,
+            tpt.target_cost     AS targetCost,
+            tpt.contract_type   AS contractType,
+            tpt.contract_way    AS contractWay,
+            tpt.purchaser_way   AS purchaserWay,
+            tpt.remark          AS remark,
+            tpt.create_date     AS createDate,
+            tpt.create_user_id  AS createUserId,
+            tpt.update_date     AS updateDate,
+            tpt.update_user_id  AS updateUserId,
+            tpt.is_del_flg      AS isDelFlg
+        FROM
+            tb_pro_treaty tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.treaty_id = #{treatyId}
+
+    </select>
+
+    <!--查询列表（导出）-->
+    <select id="excSearchProTreatyPeriodListForExport" resultMap="selectList">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProTreatyPeriodListSqlForExport" />) temp
+    </select>
+
+    <!--查询项目合约规划阶段列表-->
+    <sql id="excSearchProTreatyPeriodListSqlForExport">
+        SELECT
+            tpt.treaty_id       AS childTreatyId,
+            tpt.project_id      AS projectId,
+            tpt.treaty_num      AS childTreatyNum,
+            tpt.treaty_type     AS treatyType,
+            tpt.treaty_type     AS tempTreatyType,
+            tpt.undertake_type  AS undertakeType,
+            tpt.treaty_name     AS childTreatyName,
+            tpt.treaty_content  AS childTreatyContent,
+            tpt.target_cost     AS childTargetCost,
+            tpt.contract_type   AS childContractType,
+            tpt.contract_way    AS childContractWay,
+            tpt.purchaser_way   AS childPurchaserWay,
+            tpt.remark          AS childRemark,
+            tpt.create_date     AS createDate,
+            tpt.create_user_id  AS createUserId,
+            tpt.update_date     AS updateDate,
+            tpt.update_user_id  AS updateUserId,
+            tpt.is_del_flg      AS isDelFlg
+        FROM
+            tb_pro_treaty tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.project_id = #{projectId}
+        ORDER BY
+            tpt.treaty_type ASC,
+            tpt.undertake_type ASC,
+            tpt.treaty_num ASC,
+            tpt.create_date DESC
+    </sql>
+</mapper>

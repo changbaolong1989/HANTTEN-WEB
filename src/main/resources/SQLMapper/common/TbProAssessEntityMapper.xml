@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbProcessAssessMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbProAssessEntity">
+    <id column="assess_id" jdbcType="VARCHAR" property="assessId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="compile_date" jdbcType="TIMESTAMP" property="compileDate" />
+    <result column="assess_name" jdbcType="VARCHAR" property="assessName" />
+    <result column="floor_space" jdbcType="DOUBLE" property="floorSpace" />
+    <result column="estimated_cost" jdbcType="DOUBLE" property="estimatedCost" />
+    <result column="estimation_ex_parte" jdbcType="DOUBLE" property="estimationExParte" />
+    <result column="cost_range" jdbcType="VARCHAR" property="costRange" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="assess_file_path" jdbcType="VARCHAR" property="assessFilePath" />
+    <result column="assess_file_name" jdbcType="VARCHAR" property="assessFileName" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    assess_id, project_id, compile_date, assess_name, floor_space, estimated_cost, estimation_ex_parte, 
+    cost_range, remark, assess_file_path, assess_file_name, create_date, create_user_id, 
+    update_date, update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbProAssessEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_pro_assess
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_pro_assess
+    where assess_id = #{assessId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_pro_assess
+    where assess_id = #{assessId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbProAssessEntityExample">
+    delete from tb_pro_assess
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbProAssessEntity">
+    <selectKey keyProperty="assessId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_assess (assess_id, project_id, compile_date, 
+      assess_name, floor_space, estimated_cost, 
+      estimation_ex_parte, cost_range, remark, 
+      assess_file_path, assess_file_name, create_date, 
+      create_user_id, update_date, update_user_id, 
+      is_del_flg)
+    values (#{assessId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{compileDate,jdbcType=TIMESTAMP}, 
+      #{assessName,jdbcType=VARCHAR}, #{floorSpace,jdbcType=DOUBLE}, #{estimatedCost,jdbcType=DOUBLE}, 
+      #{estimationExParte,jdbcType=DOUBLE}, #{costRange,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{assessFilePath,jdbcType=VARCHAR}, #{assessFileName,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{isDelFlg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbProAssessEntity">
+    <selectKey keyProperty="assessId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_assess
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      assess_id,
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="compileDate != null">
+        compile_date,
+      </if>
+      <if test="assessName != null">
+        assess_name,
+      </if>
+      <if test="floorSpace != null">
+        floor_space,
+      </if>
+      <if test="estimatedCost != null">
+        estimated_cost,
+      </if>
+      <if test="estimationExParte != null">
+        estimation_ex_parte,
+      </if>
+      <if test="costRange != null">
+        cost_range,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="assessFilePath != null">
+        assess_file_path,
+      </if>
+      <if test="assessFileName != null">
+        assess_file_name,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{assessId,jdbcType=VARCHAR},
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="compileDate != null">
+        #{compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assessName != null">
+        #{assessName,jdbcType=VARCHAR},
+      </if>
+      <if test="floorSpace != null">
+        #{floorSpace,jdbcType=DOUBLE},
+      </if>
+      <if test="estimatedCost != null">
+        #{estimatedCost,jdbcType=DOUBLE},
+      </if>
+      <if test="estimationExParte != null">
+        #{estimationExParte,jdbcType=DOUBLE},
+      </if>
+      <if test="costRange != null">
+        #{costRange,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="assessFilePath != null">
+        #{assessFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="assessFileName != null">
+        #{assessFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbProAssessEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_pro_assess
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_pro_assess
+    <set>
+      <if test="record.assessId != null">
+        assess_id = #{record.assessId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.compileDate != null">
+        compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.assessName != null">
+        assess_name = #{record.assessName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.floorSpace != null">
+        floor_space = #{record.floorSpace,jdbcType=DOUBLE},
+      </if>
+      <if test="record.estimatedCost != null">
+        estimated_cost = #{record.estimatedCost,jdbcType=DOUBLE},
+      </if>
+      <if test="record.estimationExParte != null">
+        estimation_ex_parte = #{record.estimationExParte,jdbcType=DOUBLE},
+      </if>
+      <if test="record.costRange != null">
+        cost_range = #{record.costRange,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assessFilePath != null">
+        assess_file_path = #{record.assessFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assessFileName != null">
+        assess_file_name = #{record.assessFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_pro_assess
+    set assess_id = #{record.assessId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      assess_name = #{record.assessName,jdbcType=VARCHAR},
+      floor_space = #{record.floorSpace,jdbcType=DOUBLE},
+      estimated_cost = #{record.estimatedCost,jdbcType=DOUBLE},
+      estimation_ex_parte = #{record.estimationExParte,jdbcType=DOUBLE},
+      cost_range = #{record.costRange,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      assess_file_path = #{record.assessFilePath,jdbcType=VARCHAR},
+      assess_file_name = #{record.assessFileName,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbProAssessEntity">
+    update tb_pro_assess
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="compileDate != null">
+        compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assessName != null">
+        assess_name = #{assessName,jdbcType=VARCHAR},
+      </if>
+      <if test="floorSpace != null">
+        floor_space = #{floorSpace,jdbcType=DOUBLE},
+      </if>
+      <if test="estimatedCost != null">
+        estimated_cost = #{estimatedCost,jdbcType=DOUBLE},
+      </if>
+      <if test="estimationExParte != null">
+        estimation_ex_parte = #{estimationExParte,jdbcType=DOUBLE},
+      </if>
+      <if test="costRange != null">
+        cost_range = #{costRange,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="assessFilePath != null">
+        assess_file_path = #{assessFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="assessFileName != null">
+        assess_file_name = #{assessFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where assess_id = #{assessId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbProAssessEntity">
+    update tb_pro_assess
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      assess_name = #{assessName,jdbcType=VARCHAR},
+      floor_space = #{floorSpace,jdbcType=DOUBLE},
+      estimated_cost = #{estimatedCost,jdbcType=DOUBLE},
+      estimation_ex_parte = #{estimationExParte,jdbcType=DOUBLE},
+      cost_range = #{costRange,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      assess_file_path = #{assessFilePath,jdbcType=VARCHAR},
+      assess_file_name = #{assessFileName,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where assess_id = #{assessId,jdbcType=VARCHAR}
+  </update>
+</mapper>

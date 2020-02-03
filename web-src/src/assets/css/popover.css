@@ -1,0 +1,148 @@
+@charset "UTF-8";
+/* vue-photo-preview */
+.pswp__bg {
+  /* 遮罩层 */
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 弹窗 */
+.item-open {
+  position: absolute !important;
+  top: 0;
+  right: 20px;
+}
+
+.item-tab-chuang {
+  font-size: 14px;
+  margin: 15px;
+  color: #06A1EE;
+  cursor: pointer;
+}
+
+.item-tab-chuang span {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+.el-dialog {
+  border-radius: 10px !important;
+}
+.el-dialog .el-form {
+  text-align: left;
+}
+
+.el-dialog .el-dialog__header {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -moz-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -ms-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -webkit-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  text-align: center;
+}
+
+.el-dialog .el-dialog__header span {
+  color: #fff;
+  font-size: 14px;
+}
+
+.el-date-editor.el-input i {
+  line-height: 30px;
+}
+
+.el-dialog .el-dialog__header .el-dialog__headerbtn {
+  top: 10px;
+}
+
+.el-dialog .el-dialog__header .el-dialog__close {
+  color: #fff !important;
+  font-size: 14px;
+}
+
+.el-dialog .el-dialog__header .el-icon-close:before {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.el-dialog .el-input__icon {
+  line-height: 30px !important;
+}
+
+/* MessageBox 弹框 */
+.el-message-box {
+  width: 480px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.el-message-box .el-message-box__header {
+  padding: 0 !important;
+  background: linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -moz-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -ms-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -webkit-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+}
+
+.el-message-box .el-message-box__header .el-message-box__title {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+}
+
+.el-message-box .el-message-box__header .el-message-box__headerbtn {
+  width: 20px;
+  height: 20px !important;
+  line-height: 20px;
+  border: 1px solid white;
+  border-radius: 10px !important;
+}
+
+.el-message-box .el-message-box__header .el-message-box__headerbtn i {
+  vertical-align: super;
+  color: white;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+.el-message-box .el-message-box__content {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.el-message-box .el-message-box__btns {
+  position: relative;
+  height: 40px;
+  padding-top: 10px !important;
+  border-top: 1px solid #E7E7E7;
+}
+
+.el-message-box .el-message-box__btns button:last-child {
+  background: linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -moz-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -ms-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+  background: -webkit-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+}
+
+/* 对话框的字体大小 */
+.el-dialog__body {
+  font-size: 12px;
+}
+.el-dialog__body .el-form-item__label,
+.el-dialog__body .el-form-item__content,
+.el-dialog__body .el-col {
+  font-size: 12px;
+}
+
+/*# sourceMappingURL=popover.css.map */

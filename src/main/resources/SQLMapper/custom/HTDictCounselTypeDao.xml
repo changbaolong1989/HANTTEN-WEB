@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTDictCounselTypeDao">
+
+
+    <!--根据合同类型ID查询咨询类别状态列表-->
+    <select id="findDictCounselTypeListByContractTypeId" resultType="com.hd.manager.dao.bean.HTDictCounselTypeBean">
+        SELECT
+            tdct.counsel_type_id AS counselTypeId,
+            tdct.counsel_type_name AS counselTypeName,
+            tdct.contract_type_id AS contractTypeId
+        FROM
+            tb_dict_counsel_type tdct
+        WHERE
+            tdct.contract_type_id = #{item}
+    </select>
+
+    <!--根据部门ID查询任务阶段信息-->
+    <select id="excSearchTaskPeriodListByDepartmentId" resultType="com.hd.manager.dao.bean.HTDictCounselTypeBean">
+        SELECT
+            counsel_type_id     as counselTypeId
+            ,contract_type_id   as contractTypeId
+            ,period_id          as periodId
+            ,parent_period_id   as parentPeriodId
+            ,period_name        as periodName
+            ,contract_type_id   as contractTypeId
+            ,counsel_type_id    as counselTypeId
+            ,dict_department_id as dictDepartmentId
+            ,period_level       as periodLevel
+            ,period_desc        as periodDesc
+            ,period_type        as periodType
+            ,sort               as sort
+            ,page_content       as pageContent
+        FROM
+            tb_task_period
+        WHERE
+            is_del_flg = 0
+        and
+            dict_department_id = #{dictDepartmentId}
+        <if test='"1" == seniorExecutive'>
+            and period_id not in(
+            <!--咨询记录-->
+            '033aec1d-9e6e-11e9-a036-0e411fd5cf38',
+            <!--文件签收单-->
+            '033aec1d-9e6e-11e9-a036-0e411fd5cf40',
+            <!--专家意见表-->
+            '033aec1d-9e6e-11e9-a036-0e411fd5cf77',
+            <!--磋商文件确认文件意见-->
+            '033aec1d-9e6e-11e9-a036-0e411fd5cf78',
+            <!--未成交通知书-->
+            '033aec1d-9e6e-11e9-a036-0e411fd5cf79')
+        </if>
+    </select>
+
+</mapper>

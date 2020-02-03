@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbContractBaseInfoEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbContractBaseInfoEntity">
+    <id column="base_id" jdbcType="VARCHAR" property="baseId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="contract_id" jdbcType="VARCHAR" property="contractId" />
+    <result column="contract_amount" jdbcType="VARCHAR" property="contractAmount" />
+    <result column="duty_people" jdbcType="VARCHAR" property="dutyPeople" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="counsel_business_type" jdbcType="VARCHAR" property="counselBusinessType" />
+    <result column="counsel_type_period" jdbcType="VARCHAR" property="counselTypePeriod" />
+    <result column="project_address" jdbcType="VARCHAR" property="projectAddress" />
+    <result column="project_type" jdbcType="VARCHAR" property="projectType" />
+    <result column="truster_name" jdbcType="VARCHAR" property="trusterName" />
+    <result column="truster_type" jdbcType="VARCHAR" property="trusterType" />
+    <result column="invested_amount" jdbcType="VARCHAR" property="investedAmount" />
+    <result column="is_provisional" jdbcType="VARCHAR" property="isProvisional" />
+    <result column="truster_duty_user" jdbcType="VARCHAR" property="trusterDutyUser" />
+    <result column="truster_duty_phone" jdbcType="VARCHAR" property="trusterDutyPhone" />
+    <result column="consult_user" jdbcType="VARCHAR" property="consultUser" />
+    <result column="third_party" jdbcType="VARCHAR" property="thirdParty" />
+    <result column="planner" jdbcType="VARCHAR" property="planner" />
+    <result column="contract_nature" jdbcType="VARCHAR" property="contractNature" />
+    <result column="determinate_method" jdbcType="VARCHAR" property="determinateMethod" />
+    <result column="contract_date" jdbcType="TIMESTAMP" property="contractDate" />
+    <result column="is_value_provisional" jdbcType="VARCHAR" property="isValueProvisional" />
+    <result column="other_things" jdbcType="VARCHAR" property="otherThings" />
+    <result column="predict_total" jdbcType="DOUBLE" property="predictTotal" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+    <result column="title_page_consultant" jdbcType="VARCHAR" property="titlePageConsultant" />
+    <result column="legal_opinion" jdbcType="VARCHAR" property="legalOpinion" />
+    <result column="contract_seal_type" jdbcType="VARCHAR" property="contractSealType" />
+    <result column="cooperate_company" jdbcType="VARCHAR" property="cooperateCompany" />
+    <result column="contract_type" jdbcType="VARCHAR" property="contractType" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    base_id, project_id, contract_id, contract_amount, duty_people, start_date, end_date, 
+    project_name, counsel_business_type, counsel_type_period, project_address, project_type, 
+    truster_name, truster_type, invested_amount, is_provisional, truster_duty_user, truster_duty_phone, 
+    consult_user, third_party, planner, contract_nature, determinate_method, contract_date, 
+    is_value_provisional, other_things, predict_total, create_date, create_user_id, update_date, 
+    update_user_id, is_del_flg, title_page_consultant, legal_opinion, contract_seal_type, 
+    cooperate_company, contract_type
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbContractBaseInfoEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_contract_base_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_contract_base_info
+    where base_id = #{baseId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_contract_base_info
+    where base_id = #{baseId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbContractBaseInfoEntityExample">
+    delete from tb_contract_base_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbContractBaseInfoEntity">
+    <selectKey keyProperty="baseId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_contract_base_info (base_id, project_id, contract_id, 
+      contract_amount, duty_people, start_date, 
+      end_date, project_name, counsel_business_type, 
+      counsel_type_period, project_address, project_type, 
+      truster_name, truster_type, invested_amount, 
+      is_provisional, truster_duty_user, truster_duty_phone, 
+      consult_user, third_party, planner, 
+      contract_nature, determinate_method, contract_date, 
+      is_value_provisional, other_things, predict_total, 
+      create_date, create_user_id, update_date, 
+      update_user_id, is_del_flg, title_page_consultant, 
+      legal_opinion, contract_seal_type, cooperate_company, 
+      contract_type)
+    values (#{baseId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{contractId,jdbcType=VARCHAR}, 
+      #{contractAmount,jdbcType=VARCHAR}, #{dutyPeople,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, 
+      #{endDate,jdbcType=TIMESTAMP}, #{projectName,jdbcType=VARCHAR}, #{counselBusinessType,jdbcType=VARCHAR}, 
+      #{counselTypePeriod,jdbcType=VARCHAR}, #{projectAddress,jdbcType=VARCHAR}, #{projectType,jdbcType=VARCHAR}, 
+      #{trusterName,jdbcType=VARCHAR}, #{trusterType,jdbcType=VARCHAR}, #{investedAmount,jdbcType=VARCHAR}, 
+      #{isProvisional,jdbcType=VARCHAR}, #{trusterDutyUser,jdbcType=VARCHAR}, #{trusterDutyPhone,jdbcType=VARCHAR}, 
+      #{consultUser,jdbcType=VARCHAR}, #{thirdParty,jdbcType=VARCHAR}, #{planner,jdbcType=VARCHAR}, 
+      #{contractNature,jdbcType=VARCHAR}, #{determinateMethod,jdbcType=VARCHAR}, #{contractDate,jdbcType=TIMESTAMP}, 
+      #{isValueProvisional,jdbcType=VARCHAR}, #{otherThings,jdbcType=VARCHAR}, #{predictTotal,jdbcType=DOUBLE}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}, #{titlePageConsultant,jdbcType=VARCHAR}, 
+      #{legalOpinion,jdbcType=VARCHAR}, #{contractSealType,jdbcType=VARCHAR}, #{cooperateCompany,jdbcType=VARCHAR}, 
+      #{contractType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbContractBaseInfoEntity">
+    <selectKey keyProperty="baseId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_contract_base_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      base_id,
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="contractId != null">
+        contract_id,
+      </if>
+      <if test="contractAmount != null">
+        contract_amount,
+      </if>
+      <if test="dutyPeople != null">
+        duty_people,
+      </if>
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="projectName != null">
+        project_name,
+      </if>
+      <if test="counselBusinessType != null">
+        counsel_business_type,
+      </if>
+      <if test="counselTypePeriod != null">
+        counsel_type_period,
+      </if>
+      <if test="projectAddress != null">
+        project_address,
+      </if>
+      <if test="projectType != null">
+        project_type,
+      </if>
+      <if test="trusterName != null">
+        truster_name,
+      </if>
+      <if test="trusterType != null">
+        truster_type,
+      </if>
+      <if test="investedAmount != null">
+        invested_amount,
+      </if>
+      <if test="isProvisional != null">
+        is_provisional,
+      </if>
+      <if test="trusterDutyUser != null">
+        truster_duty_user,
+      </if>
+      <if test="trusterDutyPhone != null">
+        truster_duty_phone,
+      </if>
+      <if test="consultUser != null">
+        consult_user,
+      </if>
+      <if test="thirdParty != null">
+        third_party,
+      </if>
+      <if test="planner != null">
+        planner,
+      </if>
+      <if test="contractNature != null">
+        contract_nature,
+      </if>
+      <if test="determinateMethod != null">
+        determinate_method,
+      </if>
+      <if test="contractDate != null">
+        contract_date,
+      </if>
+      <if test="isValueProvisional != null">
+        is_value_provisional,
+      </if>
+      <if test="otherThings != null">
+        other_things,
+      </if>
+      <if test="predictTotal != null">
+        predict_total,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+      <if test="titlePageConsultant != null">
+        title_page_consultant,
+      </if>
+      <if test="legalOpinion != null">
+        legal_opinion,
+      </if>
+      <if test="contractSealType != null">
+        contract_seal_type,
+      </if>
+      <if test="cooperateCompany != null">
+        cooperate_company,
+      </if>
+      <if test="contractType != null">
+        contract_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{baseId,jdbcType=VARCHAR},
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractId != null">
+        #{contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractAmount != null">
+        #{contractAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyPeople != null">
+        #{dutyPeople,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="projectName != null">
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="counselBusinessType != null">
+        #{counselBusinessType,jdbcType=VARCHAR},
+      </if>
+      <if test="counselTypePeriod != null">
+        #{counselTypePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="projectAddress != null">
+        #{projectAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="projectType != null">
+        #{projectType,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterName != null">
+        #{trusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterType != null">
+        #{trusterType,jdbcType=VARCHAR},
+      </if>
+      <if test="investedAmount != null">
+        #{investedAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="isProvisional != null">
+        #{isProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterDutyUser != null">
+        #{trusterDutyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterDutyPhone != null">
+        #{trusterDutyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consultUser != null">
+        #{consultUser,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdParty != null">
+        #{thirdParty,jdbcType=VARCHAR},
+      </if>
+      <if test="planner != null">
+        #{planner,jdbcType=VARCHAR},
+      </if>
+      <if test="contractNature != null">
+        #{contractNature,jdbcType=VARCHAR},
+      </if>
+      <if test="determinateMethod != null">
+        #{determinateMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="contractDate != null">
+        #{contractDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isValueProvisional != null">
+        #{isValueProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="otherThings != null">
+        #{otherThings,jdbcType=VARCHAR},
+      </if>
+      <if test="predictTotal != null">
+        #{predictTotal,jdbcType=DOUBLE},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="titlePageConsultant != null">
+        #{titlePageConsultant,jdbcType=VARCHAR},
+      </if>
+      <if test="legalOpinion != null">
+        #{legalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="contractSealType != null">
+        #{contractSealType,jdbcType=VARCHAR},
+      </if>
+      <if test="cooperateCompany != null">
+        #{cooperateCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="contractType != null">
+        #{contractType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbContractBaseInfoEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_contract_base_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_contract_base_info
+    <set>
+      <if test="record.baseId != null">
+        base_id = #{record.baseId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractId != null">
+        contract_id = #{record.contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractAmount != null">
+        contract_amount = #{record.contractAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dutyPeople != null">
+        duty_people = #{record.dutyPeople,jdbcType=VARCHAR},
+      </if>
+      <if test="record.startDate != null">
+        start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endDate != null">
+        end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.projectName != null">
+        project_name = #{record.projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.counselBusinessType != null">
+        counsel_business_type = #{record.counselBusinessType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.counselTypePeriod != null">
+        counsel_type_period = #{record.counselTypePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectAddress != null">
+        project_address = #{record.projectAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectType != null">
+        project_type = #{record.projectType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trusterName != null">
+        truster_name = #{record.trusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trusterType != null">
+        truster_type = #{record.trusterType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.investedAmount != null">
+        invested_amount = #{record.investedAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isProvisional != null">
+        is_provisional = #{record.isProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trusterDutyUser != null">
+        truster_duty_user = #{record.trusterDutyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trusterDutyPhone != null">
+        truster_duty_phone = #{record.trusterDutyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.consultUser != null">
+        consult_user = #{record.consultUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thirdParty != null">
+        third_party = #{record.thirdParty,jdbcType=VARCHAR},
+      </if>
+      <if test="record.planner != null">
+        planner = #{record.planner,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractNature != null">
+        contract_nature = #{record.contractNature,jdbcType=VARCHAR},
+      </if>
+      <if test="record.determinateMethod != null">
+        determinate_method = #{record.determinateMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractDate != null">
+        contract_date = #{record.contractDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isValueProvisional != null">
+        is_value_provisional = #{record.isValueProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="record.otherThings != null">
+        other_things = #{record.otherThings,jdbcType=VARCHAR},
+      </if>
+      <if test="record.predictTotal != null">
+        predict_total = #{record.predictTotal,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.titlePageConsultant != null">
+        title_page_consultant = #{record.titlePageConsultant,jdbcType=VARCHAR},
+      </if>
+      <if test="record.legalOpinion != null">
+        legal_opinion = #{record.legalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractSealType != null">
+        contract_seal_type = #{record.contractSealType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cooperateCompany != null">
+        cooperate_company = #{record.cooperateCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractType != null">
+        contract_type = #{record.contractType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_contract_base_info
+    set base_id = #{record.baseId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      contract_id = #{record.contractId,jdbcType=VARCHAR},
+      contract_amount = #{record.contractAmount,jdbcType=VARCHAR},
+      duty_people = #{record.dutyPeople,jdbcType=VARCHAR},
+      start_date = #{record.startDate,jdbcType=TIMESTAMP},
+      end_date = #{record.endDate,jdbcType=TIMESTAMP},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
+      counsel_business_type = #{record.counselBusinessType,jdbcType=VARCHAR},
+      counsel_type_period = #{record.counselTypePeriod,jdbcType=VARCHAR},
+      project_address = #{record.projectAddress,jdbcType=VARCHAR},
+      project_type = #{record.projectType,jdbcType=VARCHAR},
+      truster_name = #{record.trusterName,jdbcType=VARCHAR},
+      truster_type = #{record.trusterType,jdbcType=VARCHAR},
+      invested_amount = #{record.investedAmount,jdbcType=VARCHAR},
+      is_provisional = #{record.isProvisional,jdbcType=VARCHAR},
+      truster_duty_user = #{record.trusterDutyUser,jdbcType=VARCHAR},
+      truster_duty_phone = #{record.trusterDutyPhone,jdbcType=VARCHAR},
+      consult_user = #{record.consultUser,jdbcType=VARCHAR},
+      third_party = #{record.thirdParty,jdbcType=VARCHAR},
+      planner = #{record.planner,jdbcType=VARCHAR},
+      contract_nature = #{record.contractNature,jdbcType=VARCHAR},
+      determinate_method = #{record.determinateMethod,jdbcType=VARCHAR},
+      contract_date = #{record.contractDate,jdbcType=TIMESTAMP},
+      is_value_provisional = #{record.isValueProvisional,jdbcType=VARCHAR},
+      other_things = #{record.otherThings,jdbcType=VARCHAR},
+      predict_total = #{record.predictTotal,jdbcType=DOUBLE},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      title_page_consultant = #{record.titlePageConsultant,jdbcType=VARCHAR},
+      legal_opinion = #{record.legalOpinion,jdbcType=VARCHAR},
+      contract_seal_type = #{record.contractSealType,jdbcType=VARCHAR},
+      cooperate_company = #{record.cooperateCompany,jdbcType=VARCHAR},
+      contract_type = #{record.contractType,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbContractBaseInfoEntity">
+    update tb_contract_base_info
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractId != null">
+        contract_id = #{contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="contractAmount != null">
+        contract_amount = #{contractAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyPeople != null">
+        duty_people = #{dutyPeople,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="projectName != null">
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="counselBusinessType != null">
+        counsel_business_type = #{counselBusinessType,jdbcType=VARCHAR},
+      </if>
+      <if test="counselTypePeriod != null">
+        counsel_type_period = #{counselTypePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="projectAddress != null">
+        project_address = #{projectAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="projectType != null">
+        project_type = #{projectType,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterName != null">
+        truster_name = #{trusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterType != null">
+        truster_type = #{trusterType,jdbcType=VARCHAR},
+      </if>
+      <if test="investedAmount != null">
+        invested_amount = #{investedAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="isProvisional != null">
+        is_provisional = #{isProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterDutyUser != null">
+        truster_duty_user = #{trusterDutyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="trusterDutyPhone != null">
+        truster_duty_phone = #{trusterDutyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consultUser != null">
+        consult_user = #{consultUser,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdParty != null">
+        third_party = #{thirdParty,jdbcType=VARCHAR},
+      </if>
+      <if test="planner != null">
+        planner = #{planner,jdbcType=VARCHAR},
+      </if>
+      <if test="contractNature != null">
+        contract_nature = #{contractNature,jdbcType=VARCHAR},
+      </if>
+      <if test="determinateMethod != null">
+        determinate_method = #{determinateMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="contractDate != null">
+        contract_date = #{contractDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isValueProvisional != null">
+        is_value_provisional = #{isValueProvisional,jdbcType=VARCHAR},
+      </if>
+      <if test="otherThings != null">
+        other_things = #{otherThings,jdbcType=VARCHAR},
+      </if>
+      <if test="predictTotal != null">
+        predict_total = #{predictTotal,jdbcType=DOUBLE},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="titlePageConsultant != null">
+        title_page_consultant = #{titlePageConsultant,jdbcType=VARCHAR},
+      </if>
+      <if test="legalOpinion != null">
+        legal_opinion = #{legalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="contractSealType != null">
+        contract_seal_type = #{contractSealType,jdbcType=VARCHAR},
+      </if>
+      <if test="cooperateCompany != null">
+        cooperate_company = #{cooperateCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="contractType != null">
+        contract_type = #{contractType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where base_id = #{baseId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbContractBaseInfoEntity">
+    update tb_contract_base_info
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      contract_id = #{contractId,jdbcType=VARCHAR},
+      contract_amount = #{contractAmount,jdbcType=VARCHAR},
+      duty_people = #{dutyPeople,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      project_name = #{projectName,jdbcType=VARCHAR},
+      counsel_business_type = #{counselBusinessType,jdbcType=VARCHAR},
+      counsel_type_period = #{counselTypePeriod,jdbcType=VARCHAR},
+      project_address = #{projectAddress,jdbcType=VARCHAR},
+      project_type = #{projectType,jdbcType=VARCHAR},
+      truster_name = #{trusterName,jdbcType=VARCHAR},
+      truster_type = #{trusterType,jdbcType=VARCHAR},
+      invested_amount = #{investedAmount,jdbcType=VARCHAR},
+      is_provisional = #{isProvisional,jdbcType=VARCHAR},
+      truster_duty_user = #{trusterDutyUser,jdbcType=VARCHAR},
+      truster_duty_phone = #{trusterDutyPhone,jdbcType=VARCHAR},
+      consult_user = #{consultUser,jdbcType=VARCHAR},
+      third_party = #{thirdParty,jdbcType=VARCHAR},
+      planner = #{planner,jdbcType=VARCHAR},
+      contract_nature = #{contractNature,jdbcType=VARCHAR},
+      determinate_method = #{determinateMethod,jdbcType=VARCHAR},
+      contract_date = #{contractDate,jdbcType=TIMESTAMP},
+      is_value_provisional = #{isValueProvisional,jdbcType=VARCHAR},
+      other_things = #{otherThings,jdbcType=VARCHAR},
+      predict_total = #{predictTotal,jdbcType=DOUBLE},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      title_page_consultant = #{titlePageConsultant,jdbcType=VARCHAR},
+      legal_opinion = #{legalOpinion,jdbcType=VARCHAR},
+      contract_seal_type = #{contractSealType,jdbcType=VARCHAR},
+      cooperate_company = #{cooperateCompany,jdbcType=VARCHAR},
+      contract_type = #{contractType,jdbcType=VARCHAR}
+    where base_id = #{baseId,jdbcType=VARCHAR}
+  </update>
+</mapper>

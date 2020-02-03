@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTReviewFileRelationDao">
+
+    <!--通过业务ID查询审核意见文件-->
+    <select id="excSearchReviewFileRelationInfoByBusinessId" resultType="com.hd.manager.dao.bean.HTReviewFileRelationBean">
+        SELECT
+            file_id  AS	fileId,
+            review_file_path  AS reviewFilePath,
+            review_file_name  AS reviewFileName,
+            business_id  AS businessId,
+            create_date  AS createDate,
+            create_user_id  AS createUserId,
+            update_date  AS updateDate,
+            update_user_id  AS updateUserId,
+            is_del_flg  AS isDelFlg
+
+        FROM
+            tb_review_file_relation trfr
+        WHERE
+            trfr.is_del_flg = 0
+            AND trfr.business_id = #{businessId}
+        ORDER BY
+            trfr.create_date DESC
+    </select>
+
+
+    <!--通过业务ID删除审核意见文件-->
+    <delete id="excDeleteReviewFileRelationInfoByBusinessId">
+        DELETE
+        FROM
+            tb_review_file_relation
+        WHERE
+            business_id = #{businessId}
+    </delete>
+
+</mapper>

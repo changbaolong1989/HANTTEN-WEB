@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* 自定义样式 */
+.margin0 {
+	margin: 0;
+}
+
+.text-align-center {
+	text-align: center;
+}
+
+.text-align-left {
+	text-align: left;
+}
+
+.text-align-right {
+	text-align: right;
+}
+
+.icon {
+	background: url(../image/com-icon.png) no-repeat;
+	display: inline-block;
+}
+
+.el-badge.error .el-badge__content {
+	background-color: #ff688b;
+}
+
+.el-badge.warning .el-badge__content {
+	background-color: #f38e4a;
+}
+
+.el-badge.normal .el-badge__content {
+	background-color: #0099e5;
+}
+
+.linear {
+	background: linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+	background: -moz-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+	background: -ms-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+	background: -webkit-linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+}
+
+.linear.win {
+	background: linear-gradient(to right, #fe9158 0, #ff819f 100%) !important;
+	background: -moz-linear-gradient(to right, #fe9158 0, #ff819f 100%) !important;
+	background: -ms-linear-gradient(to right, #fe9158 0, #ff819f 100%) !important;
+	background: -webkit-linear-gradient(to right, #fe9158 0, #ff819f 100%) !important;
+}
+.hide{
+	display: none!important;
+}
+
+/* 文字超出显示...省略号 */
+.text-overflow-ellipsis{
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
+}
+
+/* 按钮样式 */
+.btn-plus{
+  color: white;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #06a1ee 0, #4cc2fc 100%) !important;
+}

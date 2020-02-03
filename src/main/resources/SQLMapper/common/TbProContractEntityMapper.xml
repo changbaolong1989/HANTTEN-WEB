@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbProContractEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbProContractEntity">
+    <id column="contract_id" jdbcType="VARCHAR" property="contractId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="tender_id" jdbcType="VARCHAR" property="tenderId" />
+    <result column="treaty_type" jdbcType="VARCHAR" property="treatyType" />
+    <result column="undertake_type" jdbcType="VARCHAR" property="undertakeType" />
+    <result column="contract_name" jdbcType="VARCHAR" property="contractName" />
+    <result column="contract_num" jdbcType="VARCHAR" property="contractNum" />
+    <result column="contract_unit" jdbcType="VARCHAR" property="contractUnit" />
+    <result column="plan_date" jdbcType="VARCHAR" property="planDate" />
+    <result column="contract_class" jdbcType="VARCHAR" property="contractClass" />
+    <result column="measure_sts" jdbcType="VARCHAR" property="measureSts" />
+    <result column="target_cost" jdbcType="DOUBLE" property="targetCost" />
+    <result column="excise_money" jdbcType="DOUBLE" property="exciseMoney" />
+    <result column="tax_ratio" jdbcType="DOUBLE" property="taxRatio" />
+    <result column="tax_money" jdbcType="DOUBLE" property="taxMoney" />
+    <result column="with_tax_money" jdbcType="DOUBLE" property="withTaxMoney" />
+    <result column="dynamic_remark" jdbcType="VARCHAR" property="dynamicRemark" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+    <result column="uncalibrated_price" jdbcType="DOUBLE" property="uncalibratedPrice" />
+    <result column="temporary_amount" jdbcType="DOUBLE" property="temporaryAmount" />
+    <result column="alter_value" jdbcType="DOUBLE" property="alterValue" />
+    <result column="drawing_adjust" jdbcType="DOUBLE" property="drawingAdjust" />
+    <result column="signel_adjust" jdbcType="DOUBLE" property="signelAdjust" />
+    <result column="material_adjust" jdbcType="DOUBLE" property="materialAdjust" />
+    <result column="people_adjust" jdbcType="DOUBLE" property="peopleAdjust" />
+    <result column="other_thing" jdbcType="DOUBLE" property="otherThing" />
+    <result column="tax_adjust" jdbcType="DOUBLE" property="taxAdjust" />
+    <result column="total_price" jdbcType="DOUBLE" property="totalPrice" />
+    <result column="predict_close_value" jdbcType="DOUBLE" property="predictCloseValue" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    contract_id, project_id, tender_id, treaty_type, undertake_type, contract_name, contract_num, 
+    contract_unit, plan_date, contract_class, measure_sts, target_cost, excise_money, 
+    tax_ratio, tax_money, with_tax_money, dynamic_remark, remark, create_date, create_user_id, 
+    update_date, update_user_id, is_del_flg, uncalibrated_price, temporary_amount, alter_value, 
+    drawing_adjust, signel_adjust, material_adjust, people_adjust, other_thing, tax_adjust, 
+    total_price, predict_close_value
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbProContractEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_pro_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_pro_contract
+    where contract_id = #{contractId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_pro_contract
+    where contract_id = #{contractId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbProContractEntityExample">
+    delete from tb_pro_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbProContractEntity">
+    <selectKey keyProperty="contractId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_contract (contract_id, project_id, tender_id, 
+      treaty_type, undertake_type, contract_name, 
+      contract_num, contract_unit, plan_date, 
+      contract_class, measure_sts, target_cost, 
+      excise_money, tax_ratio, tax_money, 
+      with_tax_money, dynamic_remark, remark, 
+      create_date, create_user_id, update_date, 
+      update_user_id, is_del_flg, uncalibrated_price, 
+      temporary_amount, alter_value, drawing_adjust, 
+      signel_adjust, material_adjust, people_adjust, 
+      other_thing, tax_adjust, total_price, 
+      predict_close_value)
+    values (#{contractId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{tenderId,jdbcType=VARCHAR}, 
+      #{treatyType,jdbcType=VARCHAR}, #{undertakeType,jdbcType=VARCHAR}, #{contractName,jdbcType=VARCHAR}, 
+      #{contractNum,jdbcType=VARCHAR}, #{contractUnit,jdbcType=VARCHAR}, #{planDate,jdbcType=VARCHAR}, 
+      #{contractClass,jdbcType=VARCHAR}, #{measureSts,jdbcType=VARCHAR}, #{targetCost,jdbcType=DOUBLE}, 
+      #{exciseMoney,jdbcType=DOUBLE}, #{taxRatio,jdbcType=DOUBLE}, #{taxMoney,jdbcType=DOUBLE}, 
+      #{withTaxMoney,jdbcType=DOUBLE}, #{dynamicRemark,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}, #{uncalibratedPrice,jdbcType=DOUBLE}, 
+      #{temporaryAmount,jdbcType=DOUBLE}, #{alterValue,jdbcType=DOUBLE}, #{drawingAdjust,jdbcType=DOUBLE}, 
+      #{signelAdjust,jdbcType=DOUBLE}, #{materialAdjust,jdbcType=DOUBLE}, #{peopleAdjust,jdbcType=DOUBLE}, 
+      #{otherThing,jdbcType=DOUBLE}, #{taxAdjust,jdbcType=DOUBLE}, #{totalPrice,jdbcType=DOUBLE}, 
+      #{predictCloseValue,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbProContractEntity">
+    <selectKey keyProperty="contractId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      contract_id,
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="tenderId != null">
+        tender_id,
+      </if>
+      <if test="treatyType != null">
+        treaty_type,
+      </if>
+      <if test="undertakeType != null">
+        undertake_type,
+      </if>
+      <if test="contractName != null">
+        contract_name,
+      </if>
+      <if test="contractNum != null">
+        contract_num,
+      </if>
+      <if test="contractUnit != null">
+        contract_unit,
+      </if>
+      <if test="planDate != null">
+        plan_date,
+      </if>
+      <if test="contractClass != null">
+        contract_class,
+      </if>
+      <if test="measureSts != null">
+        measure_sts,
+      </if>
+      <if test="targetCost != null">
+        target_cost,
+      </if>
+      <if test="exciseMoney != null">
+        excise_money,
+      </if>
+      <if test="taxRatio != null">
+        tax_ratio,
+      </if>
+      <if test="taxMoney != null">
+        tax_money,
+      </if>
+      <if test="withTaxMoney != null">
+        with_tax_money,
+      </if>
+      <if test="dynamicRemark != null">
+        dynamic_remark,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+      <if test="uncalibratedPrice != null">
+        uncalibrated_price,
+      </if>
+      <if test="temporaryAmount != null">
+        temporary_amount,
+      </if>
+      <if test="alterValue != null">
+        alter_value,
+      </if>
+      <if test="drawingAdjust != null">
+        drawing_adjust,
+      </if>
+      <if test="signelAdjust != null">
+        signel_adjust,
+      </if>
+      <if test="materialAdjust != null">
+        material_adjust,
+      </if>
+      <if test="peopleAdjust != null">
+        people_adjust,
+      </if>
+      <if test="otherThing != null">
+        other_thing,
+      </if>
+      <if test="taxAdjust != null">
+        tax_adjust,
+      </if>
+      <if test="totalPrice != null">
+        total_price,
+      </if>
+      <if test="predictCloseValue != null">
+        predict_close_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{contractId,jdbcType=VARCHAR},
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderId != null">
+        #{tenderId,jdbcType=VARCHAR},
+      </if>
+      <if test="treatyType != null">
+        #{treatyType,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeType != null">
+        #{undertakeType,jdbcType=VARCHAR},
+      </if>
+      <if test="contractName != null">
+        #{contractName,jdbcType=VARCHAR},
+      </if>
+      <if test="contractNum != null">
+        #{contractNum,jdbcType=VARCHAR},
+      </if>
+      <if test="contractUnit != null">
+        #{contractUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="planDate != null">
+        #{planDate,jdbcType=VARCHAR},
+      </if>
+      <if test="contractClass != null">
+        #{contractClass,jdbcType=VARCHAR},
+      </if>
+      <if test="measureSts != null">
+        #{measureSts,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCost != null">
+        #{targetCost,jdbcType=DOUBLE},
+      </if>
+      <if test="exciseMoney != null">
+        #{exciseMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="taxRatio != null">
+        #{taxRatio,jdbcType=DOUBLE},
+      </if>
+      <if test="taxMoney != null">
+        #{taxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="withTaxMoney != null">
+        #{withTaxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="dynamicRemark != null">
+        #{dynamicRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="uncalibratedPrice != null">
+        #{uncalibratedPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="temporaryAmount != null">
+        #{temporaryAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="alterValue != null">
+        #{alterValue,jdbcType=DOUBLE},
+      </if>
+      <if test="drawingAdjust != null">
+        #{drawingAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="signelAdjust != null">
+        #{signelAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="materialAdjust != null">
+        #{materialAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="peopleAdjust != null">
+        #{peopleAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="otherThing != null">
+        #{otherThing,jdbcType=DOUBLE},
+      </if>
+      <if test="taxAdjust != null">
+        #{taxAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="totalPrice != null">
+        #{totalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="predictCloseValue != null">
+        #{predictCloseValue,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbProContractEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_pro_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_pro_contract
+    <set>
+      <if test="record.contractId != null">
+        contract_id = #{record.contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderId != null">
+        tender_id = #{record.tenderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.treatyType != null">
+        treaty_type = #{record.treatyType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.undertakeType != null">
+        undertake_type = #{record.undertakeType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractName != null">
+        contract_name = #{record.contractName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractNum != null">
+        contract_num = #{record.contractNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractUnit != null">
+        contract_unit = #{record.contractUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.planDate != null">
+        plan_date = #{record.planDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contractClass != null">
+        contract_class = #{record.contractClass,jdbcType=VARCHAR},
+      </if>
+      <if test="record.measureSts != null">
+        measure_sts = #{record.measureSts,jdbcType=VARCHAR},
+      </if>
+      <if test="record.targetCost != null">
+        target_cost = #{record.targetCost,jdbcType=DOUBLE},
+      </if>
+      <if test="record.exciseMoney != null">
+        excise_money = #{record.exciseMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="record.taxRatio != null">
+        tax_ratio = #{record.taxRatio,jdbcType=DOUBLE},
+      </if>
+      <if test="record.taxMoney != null">
+        tax_money = #{record.taxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="record.withTaxMoney != null">
+        with_tax_money = #{record.withTaxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="record.dynamicRemark != null">
+        dynamic_remark = #{record.dynamicRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uncalibratedPrice != null">
+        uncalibrated_price = #{record.uncalibratedPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.temporaryAmount != null">
+        temporary_amount = #{record.temporaryAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.alterValue != null">
+        alter_value = #{record.alterValue,jdbcType=DOUBLE},
+      </if>
+      <if test="record.drawingAdjust != null">
+        drawing_adjust = #{record.drawingAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="record.signelAdjust != null">
+        signel_adjust = #{record.signelAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="record.materialAdjust != null">
+        material_adjust = #{record.materialAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="record.peopleAdjust != null">
+        people_adjust = #{record.peopleAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="record.otherThing != null">
+        other_thing = #{record.otherThing,jdbcType=DOUBLE},
+      </if>
+      <if test="record.taxAdjust != null">
+        tax_adjust = #{record.taxAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="record.totalPrice != null">
+        total_price = #{record.totalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.predictCloseValue != null">
+        predict_close_value = #{record.predictCloseValue,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_pro_contract
+    set contract_id = #{record.contractId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      tender_id = #{record.tenderId,jdbcType=VARCHAR},
+      treaty_type = #{record.treatyType,jdbcType=VARCHAR},
+      undertake_type = #{record.undertakeType,jdbcType=VARCHAR},
+      contract_name = #{record.contractName,jdbcType=VARCHAR},
+      contract_num = #{record.contractNum,jdbcType=VARCHAR},
+      contract_unit = #{record.contractUnit,jdbcType=VARCHAR},
+      plan_date = #{record.planDate,jdbcType=VARCHAR},
+      contract_class = #{record.contractClass,jdbcType=VARCHAR},
+      measure_sts = #{record.measureSts,jdbcType=VARCHAR},
+      target_cost = #{record.targetCost,jdbcType=DOUBLE},
+      excise_money = #{record.exciseMoney,jdbcType=DOUBLE},
+      tax_ratio = #{record.taxRatio,jdbcType=DOUBLE},
+      tax_money = #{record.taxMoney,jdbcType=DOUBLE},
+      with_tax_money = #{record.withTaxMoney,jdbcType=DOUBLE},
+      dynamic_remark = #{record.dynamicRemark,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      uncalibrated_price = #{record.uncalibratedPrice,jdbcType=DOUBLE},
+      temporary_amount = #{record.temporaryAmount,jdbcType=DOUBLE},
+      alter_value = #{record.alterValue,jdbcType=DOUBLE},
+      drawing_adjust = #{record.drawingAdjust,jdbcType=DOUBLE},
+      signel_adjust = #{record.signelAdjust,jdbcType=DOUBLE},
+      material_adjust = #{record.materialAdjust,jdbcType=DOUBLE},
+      people_adjust = #{record.peopleAdjust,jdbcType=DOUBLE},
+      other_thing = #{record.otherThing,jdbcType=DOUBLE},
+      tax_adjust = #{record.taxAdjust,jdbcType=DOUBLE},
+      total_price = #{record.totalPrice,jdbcType=DOUBLE},
+      predict_close_value = #{record.predictCloseValue,jdbcType=DOUBLE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbProContractEntity">
+    update tb_pro_contract
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderId != null">
+        tender_id = #{tenderId,jdbcType=VARCHAR},
+      </if>
+      <if test="treatyType != null">
+        treaty_type = #{treatyType,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeType != null">
+        undertake_type = #{undertakeType,jdbcType=VARCHAR},
+      </if>
+      <if test="contractName != null">
+        contract_name = #{contractName,jdbcType=VARCHAR},
+      </if>
+      <if test="contractNum != null">
+        contract_num = #{contractNum,jdbcType=VARCHAR},
+      </if>
+      <if test="contractUnit != null">
+        contract_unit = #{contractUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="planDate != null">
+        plan_date = #{planDate,jdbcType=VARCHAR},
+      </if>
+      <if test="contractClass != null">
+        contract_class = #{contractClass,jdbcType=VARCHAR},
+      </if>
+      <if test="measureSts != null">
+        measure_sts = #{measureSts,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCost != null">
+        target_cost = #{targetCost,jdbcType=DOUBLE},
+      </if>
+      <if test="exciseMoney != null">
+        excise_money = #{exciseMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="taxRatio != null">
+        tax_ratio = #{taxRatio,jdbcType=DOUBLE},
+      </if>
+      <if test="taxMoney != null">
+        tax_money = #{taxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="withTaxMoney != null">
+        with_tax_money = #{withTaxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="dynamicRemark != null">
+        dynamic_remark = #{dynamicRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+      <if test="uncalibratedPrice != null">
+        uncalibrated_price = #{uncalibratedPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="temporaryAmount != null">
+        temporary_amount = #{temporaryAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="alterValue != null">
+        alter_value = #{alterValue,jdbcType=DOUBLE},
+      </if>
+      <if test="drawingAdjust != null">
+        drawing_adjust = #{drawingAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="signelAdjust != null">
+        signel_adjust = #{signelAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="materialAdjust != null">
+        material_adjust = #{materialAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="peopleAdjust != null">
+        people_adjust = #{peopleAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="otherThing != null">
+        other_thing = #{otherThing,jdbcType=DOUBLE},
+      </if>
+      <if test="taxAdjust != null">
+        tax_adjust = #{taxAdjust,jdbcType=DOUBLE},
+      </if>
+      <if test="totalPrice != null">
+        total_price = #{totalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="predictCloseValue != null">
+        predict_close_value = #{predictCloseValue,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where contract_id = #{contractId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbProContractEntity">
+    update tb_pro_contract
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      tender_id = #{tenderId,jdbcType=VARCHAR},
+      treaty_type = #{treatyType,jdbcType=VARCHAR},
+      undertake_type = #{undertakeType,jdbcType=VARCHAR},
+      contract_name = #{contractName,jdbcType=VARCHAR},
+      contract_num = #{contractNum,jdbcType=VARCHAR},
+      contract_unit = #{contractUnit,jdbcType=VARCHAR},
+      plan_date = #{planDate,jdbcType=VARCHAR},
+      contract_class = #{contractClass,jdbcType=VARCHAR},
+      measure_sts = #{measureSts,jdbcType=VARCHAR},
+      target_cost = #{targetCost,jdbcType=DOUBLE},
+      excise_money = #{exciseMoney,jdbcType=DOUBLE},
+      tax_ratio = #{taxRatio,jdbcType=DOUBLE},
+      tax_money = #{taxMoney,jdbcType=DOUBLE},
+      with_tax_money = #{withTaxMoney,jdbcType=DOUBLE},
+      dynamic_remark = #{dynamicRemark,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      uncalibrated_price = #{uncalibratedPrice,jdbcType=DOUBLE},
+      temporary_amount = #{temporaryAmount,jdbcType=DOUBLE},
+      alter_value = #{alterValue,jdbcType=DOUBLE},
+      drawing_adjust = #{drawingAdjust,jdbcType=DOUBLE},
+      signel_adjust = #{signelAdjust,jdbcType=DOUBLE},
+      material_adjust = #{materialAdjust,jdbcType=DOUBLE},
+      people_adjust = #{peopleAdjust,jdbcType=DOUBLE},
+      other_thing = #{otherThing,jdbcType=DOUBLE},
+      tax_adjust = #{taxAdjust,jdbcType=DOUBLE},
+      total_price = #{totalPrice,jdbcType=DOUBLE},
+      predict_close_value = #{predictCloseValue,jdbcType=DOUBLE}
+    where contract_id = #{contractId,jdbcType=VARCHAR}
+  </update>
+</mapper>

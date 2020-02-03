@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTReportFormDao">
+
+    <!--绩效报表列表信息查询-->
+    <select id="excSearchUserAchievementsReportForm"
+            resultType="com.hd.manager.dao.bean.HTAchievementReportFormBean">
+        select
+        temp.*
+        from
+        (<include refid="searchUserAchievementsReportFormSql" />) temp
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber},#{pageSize}
+        </if>
+    </select>
+
+    <!--绩效报表总条数查询-->
+    <select id="excSearchUserAchievementsReportFormCount"
+            resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchUserAchievementsReportFormSql" />) temp
+    </select>
+
+
+
+    <!--绩效报表列表信息查询SQL-->
+    <sql id="searchUserAchievementsReportFormSql">
+        SELECT
+            baseTable.userId,
+            tu.user_name AS userName,
+            (
+                SELECT
+                IFNULL(SUM( tuqrr.question_num * tdq.grade ),0)
+                FROM
+                tb_user_question_record_relation tuqrr
+                LEFT JOIN tb_dict_question tdq ON tdq.question_id = tuqrr.question_id
+                WHERE
+                tuqrr.is_del_flg = '0'
+                AND tdq.is_del_flg = '0'
+                AND tuqrr.user_id = baseTable.userId
+                <if test="searchDate !=null and searchDate!= ''">
+                    AND date_format(tuqrr.create_date,'%Y-%m') = #{searchDate}
+                </if>
+            ) AS sumNum,
+            IFNULL(contractTable.contractCountNum,0) AS contractCountNum,
+            IFNULL(taskTable.taskCountNum,0) AS taskCountNum,
+            IFNULL(requestMenuTable.requestMenuCountNum,0) AS requestMenuCountNum,
+            tu.sign_path AS signPath
+        FROM
+            (
+                SELECT
+                    user_id AS userId
+                FROM
+                    tb_user_question_record_relation tuqrr
+                WHERE
+                    tuqrr.is_del_flg = '0'
+                <if test="searchDate !=null and searchDate!= ''">
+                    AND date_format(tuqrr.create_date,'%Y-%m') = #{searchDate}
+                </if>
+                GROUP BY
+                    user_id
+            ) baseTable
+            LEFT JOIN (
+        SELECT
+            user_id AS userId,
+            COUNT(DISTINCT tuqrr.business_id ) contractCountNum
+        FROM
+            tb_user_question_record_relation tuqrr
+        WHERE
+            tuqrr.is_del_flg = '0'
+            AND tuqrr.source_type = '0'
+        <if test="searchDate !=null and searchDate!= ''">
+            AND date_format(create_date,'%Y-%m') = #{searchDate}
+        </if>
+        GROUP BY
+            user_id
+            ) contractTable ON baseTable.userId = contractTable.userId
+            LEFT JOIN (
+        SELECT
+            user_id AS userId,
+            COUNT(DISTINCT tuqrr.business_id ) taskCountNum
+        FROM
+            tb_user_question_record_relation tuqrr
+        WHERE
+            tuqrr.is_del_flg = '0'
+            AND tuqrr.source_type IN ( '1', '2' )
+        <if test="searchDate !=null and searchDate!= ''">
+            AND date_format(create_date,'%Y-%m') = #{searchDate}
+        </if>
+        GROUP BY
+            user_id
+            ) taskTable ON taskTable.userId = baseTable.userId
+            LEFT JOIN (
+        SELECT
+            user_id AS userId,
+            COUNT(DISTINCT tuqrr.business_id ) requestMenuCountNum
+        FROM
+            tb_user_question_record_relation tuqrr
+        WHERE
+            tuqrr.is_del_flg = '0'
+            AND tuqrr.source_type = '4'
+        <if test="searchDate !=null and searchDate!= ''">
+            AND date_format(create_date,'%Y-%m') = #{searchDate}
+        </if>
+
+
+        GROUP BY
+            user_id
+            ) requestMenuTable ON requestMenuTable.userId = baseTable.userId
+            LEFT JOIN tb_user tu ON tu.user_id = baseTable.userId
+        <if test="userId !=null and userId!= ''">
+        WHERE
+        baseTable.userId=#{userId}
+        </if>
+        ORDER BY
+          sumNum desc
+    </sql>
+
+
+
+    <!--成员扣分记录列表信息查询-->
+    <select id="excSearchHTUserQuestionRecordRelationList"
+            resultType="com.hd.manager.dao.bean.HTUserQuestionRecordRelationBean">
+        select
+        temp.*
+        from
+        (<include refid="searchUserQuestionHisListSql" />) temp
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber},#{pageSize}
+        </if>
+    </select>
+
+    <!--成员扣分记录总数查询-->
+    <select id="excSearchHTUserQuestionRecordRelationCount"
+            resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchUserQuestionHisListSql" />) temp
+    </select>
+    <!--成员扣分记录列表信息查询SQL-->
+    <sql id="searchUserQuestionHisListSql">
+        SELECT
+          form_list.*, TU.sign_path as signPath
+        FROM
+            (
+	    -- 投标任务
+        SELECT
+            tuqrr2.relationId,
+            tuqrr2.businessId,
+            tuqrr2.sourceType,
+            tuqrr2.approveTime,
+            tuqrr2.approveUserId,
+            tuqrr2.approveUserName,
+            tuqrr2.questionId,
+            tuqrr2.questionName,
+            tuqrr2.questionNum,
+            tuqrr2.userId,
+            tuqrr2.userName,
+            tuqrr2.createDate,
+            tuqrr2.grade,
+            '-' AS businessNum,
+            CONCAT('投标任务: ',ttt.tender_task_name) AS businessName
+        FROM
+            (
+        SELECT
+            tuqrr.relation_id AS relationId,
+            tuqrr.business_id AS businessId,
+            tuqrr.source_type AS sourceType,
+            tthti.approve_time AS approveTime,
+            tthti.approve_user_id AS approveUserId,
+            atu.user_name AS approveUserName,
+            tdq.question_id AS questionId,
+            tdq.question_name AS questionName,
+            tuqrr.question_num AS questionNum,
+            tuqrr.user_id AS userId,
+            tu.user_name AS userName,
+            tuqrr.create_date AS createDate,
+            tdq.grade AS grade
+        FROM
+            tb_user_question_record_relation tuqrr
+            LEFT JOIN tb_tender_task_his_task_inst tthti ON tuqrr.record_id = tthti.history_id
+            LEFT JOIN tb_dict_question tdq ON tuqrr.question_id = tdq.question_id
+            LEFT JOIN tb_user atu ON tthti.approve_user_id = atu.user_id
+            LEFT JOIN tb_user tu ON tuqrr.user_id = tu.user_id
+            ) tuqrr2
+            LEFT JOIN tb_tender_task ttt ON tuqrr2.businessId = ttt.tender_task_id
+        WHERE
+            tuqrr2.sourceType = '2' UNION
+	    -- 合同
+        SELECT
+            tuqrr2.relationId,
+            tuqrr2.businessId,
+            tuqrr2.sourceType,
+            tuqrr2.approveTime,
+            tuqrr2.approveUserId,
+            tuqrr2.approveUserName,
+            tuqrr2.questionId,
+            tuqrr2.questionName,
+            tuqrr2.questionNum,
+            tuqrr2.userId,
+            tuqrr2.userName,
+            tuqrr2.createDate,
+            tuqrr2.grade,
+            tc.contract_num AS businessNum,
+            '合同编撰' AS businessName
+        FROM
+            (
+        SELECT
+            tuqrr.relation_id AS relationId,
+            tuqrr.business_id AS businessId,
+            tuqrr.source_type AS sourceType,
+            tchti.approve_time AS approveTime,
+            tchti.approve_user_id AS approveUserId,
+            atu.user_name AS approveUserName,
+            tdq.question_id AS questionId,
+            tdq.question_name AS questionName,
+            tuqrr.question_num AS questionNum,
+            tuqrr.user_id AS userId,
+            tu.user_name AS userName,
+            tuqrr.create_date AS createDate,
+            tdq.grade AS grade
+        FROM
+            tb_user_question_record_relation tuqrr
+            LEFT JOIN tb_contract_his_task_inst tchti ON tuqrr.record_id = tchti.history_id
+            LEFT JOIN tb_dict_question tdq ON tuqrr.question_id = tdq.question_id
+            LEFT JOIN tb_user atu ON tchti.approve_user_id = atu.user_id
+            LEFT JOIN tb_user tu ON tuqrr.user_id = tu.user_id
+            ) tuqrr2
+            LEFT JOIN tb_contract tc ON tuqrr2.businessId = tc.contract_id
+        WHERE
+            tuqrr2.sourceType = '0' UNION
+	    -- 普通任务
+        SELECT
+            tuqrr2.relationId,
+            tuqrr2.businessId,
+            tuqrr2.sourceType,
+            tuqrr2.approveTime,
+            tuqrr2.approveUserId,
+            tuqrr2.approveUserName,
+            tuqrr2.questionId,
+            tuqrr2.questionName,
+            tuqrr2.questionNum,
+            tuqrr2.userId,
+            tuqrr2.userName,
+            tuqrr2.createDate,
+            tuqrr2.grade,
+            tc.contract_num AS businessNum,
+            CONCAT('执行任务: ',tt.task_name) AS businessName
+        FROM
+            (
+        SELECT
+            tuqrr.relation_id AS relationId,
+            tuqrr.business_id AS businessId,
+            tuqrr.source_type AS sourceType,
+            ttphti.approve_time AS approveTime,
+            ttphti.approve_user_id AS approveUserId,
+            atu.user_name AS approveUserName,
+            tdq.question_id AS questionId,
+            tdq.question_name AS questionName,
+            tuqrr.question_num AS questionNum,
+            tuqrr.user_id AS userId,
+            tu.user_name AS userName,
+            tuqrr.create_date AS createDate,
+            tdq.grade AS grade
+        FROM
+            tb_user_question_record_relation tuqrr
+            LEFT JOIN tb_task_period_his_task_inst ttphti ON tuqrr.record_id = ttphti.history_id
+            LEFT JOIN tb_dict_question tdq ON tuqrr.question_id = tdq.question_id
+            LEFT JOIN tb_user atu ON ttphti.approve_user_id = atu.user_id
+            LEFT JOIN tb_user tu ON tuqrr.user_id = tu.user_id
+            ) tuqrr2
+            LEFT JOIN tb_task tt ON tuqrr2.businessId = tt.task_id
+            LEFT JOIN tb_contract tc ON tt.contract_id = tc.contract_id
+        WHERE
+            tuqrr2.sourceType = '1' UNION
+	    -- 请款单
+        SELECT
+            tuqrr2.relationId,
+            tuqrr2.businessId,
+            tuqrr2.sourceType,
+            tuqrr2.approveTime,
+            tuqrr2.approveUserId,
+            tuqrr2.approveUserName,
+            tuqrr2.questionId,
+            tuqrr2.questionName,
+            tuqrr2.questionNum,
+            tuqrr2.userId,
+            tuqrr2.userName,
+            tuqrr2.createDate,
+            tuqrr2.grade,
+            tc.contract_num AS businessNum,
+            CONCAT('请款单: ',trm.request_menu_name) AS businessName
+        FROM
+            (
+        SELECT
+            tuqrr.relation_id AS relationId,
+            tuqrr.business_id AS businessId,
+            tuqrr.source_type AS sourceType,
+            trmhti.approve_time AS approveTime,
+            trmhti.approve_user_id AS approveUserId,
+            atu.user_name AS approveUserName,
+            tdq.question_id AS questionId,
+            tdq.question_name AS questionName,
+            tuqrr.question_num AS questionNum,
+            tuqrr.user_id AS userId,
+            tu.user_name AS userName,
+            tuqrr.create_date AS createDate,
+            tdq.grade AS grade
+        FROM
+            tb_user_question_record_relation tuqrr
+            LEFT JOIN tb_request_menu_his_task_inst trmhti ON tuqrr.record_id = trmhti.history_id
+            LEFT JOIN tb_dict_question tdq ON tuqrr.question_id = tdq.question_id
+            LEFT JOIN tb_user atu ON trmhti.approve_user_id = atu.user_id
+            LEFT JOIN tb_user tu ON tuqrr.user_id = tu.user_id
+            ) tuqrr2
+            LEFT JOIN tb_request_menu trm ON tuqrr2.businessId = trm.request_menu_id
+            LEFT JOIN tb_contract tc ON trm.contract_id = tc.contract_id
+        WHERE
+            tuqrr2.sourceType = '4'
+            ) AS form_list
+            LEFT JOIN tb_user TU ON form_list.userId = TU.user_id
+            WHERE
+            form_list.userId = #{userId}
+        <if test="searchDate !=null and searchDate!= ''">
+            AND date_format(form_list.createDate, '%Y-%m') = #{searchDate}
+        </if>
+            ORDER BY
+            form_list.createDate desc
+    </sql>
+
+
+
+
+    <!--综合统计记录列表信息-->
+    <select id="excSearchSyntheticalReportFormList" resultType="com.hd.manager.dao.bean.HTSyntheticalReportFormBean">
+        select
+        temp.*
+        from
+        (<include refid="searchSyntheticalReportFormSql" />) temp
+    </select>
+
+    <!--综合统计记录列表信息SQL-->
+    <sql id="searchSyntheticalReportFormSql">
+        SELECT
+            report_data.groupMonths AS groupMonths,
+            IFNULL( report_data.addContractCount, 0 ) AS addContractCount,
+            IFNULL( report_data.doneContractCount, 0 ) AS doneContractCount,
+            IFNULL( report_data.requestTotalAmount, 0 ) AS requestTotalAmount,
+            IFNULL( report_data.paymentTotalAmount, 0 ) AS paymentTotalAmount,
+            CAST( IFNULL( report_data.requestTotalAmount, 0 ) AS SIGNED INTEGER ) - CAST( IFNULL( report_data.paymentTotalAmount, 0 ) AS SIGNED INTEGER ) AS differenceValue
+        FROM
+            (
+        SELECT
+            DATE_FORMAT( ( STR_TO_DATE( months.groupMonth, '%Y-%m-%d' ) ), '%Y-%m' ) AS groupMonths,
+            report_form_list.addContractCount AS addContractCount,
+            done_count_List.doneContractCount AS doneContractCount,
+            request_amount_List.requestTotalAmount,
+            payment_amount_List.paymentTotalAmount
+        FROM
+            (
+        SELECT
+            STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 1 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 2 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 3 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 4 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 5 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 6 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 7 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 8 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 9 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 10 MONTH ) AS `groupMonth` UNION
+        SELECT
+            ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) - INTERVAL 11 MONTH ) AS `groupMonth`
+            ) months
+        -- 新增合同数量start
+            LEFT JOIN (
+        SELECT
+            DATE_FORMAT( report_form_list.startDate, '%Y-%m' ) groupMonths,
+            COUNT( report_form_list.contractId ) addContractCount
+        FROM
+            (
+        SELECT
+            DISTINCT tc.cooperate_contract AS contractId,
+            tc.start_date AS startDate
+        FROM
+            tb_contract tc
+        WHERE
+            tc.is_del_flg = '0'
+        and
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        <if test="departmentId !=null and departmentId!= ''">
+            AND tc.department_id = #{departmentId}
+        </if>
+            AND date_format( tc.start_date, '%Y' ) = DATE_FORMAT( ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) ), '%Y' )
+            ) report_form_list
+        GROUP BY
+            groupMonths
+            ) report_form_list ON DATE_FORMAT( ( STR_TO_DATE( months.groupMonth, '%Y-%m-%d' ) ), '%Y-%m' ) = report_form_list.groupMonths
+        -- 新增合同数量end
+        -- 已完成合同数量start
+            LEFT JOIN (
+        SELECT
+            COUNT( done_count_data.contractId ) doneContractCount,
+            DATE_FORMAT( done_count_data.endDate, '%Y-%m' ) doneContractCountMonths
+        FROM
+            (
+        SELECT
+            tc.contract_id AS contractId,
+            tp.project_id AS projectId,
+            tp.end_date AS endDate
+        FROM
+            tb_contract tc
+            LEFT JOIN tb_project tp ON tp.project_id = tc.project_id
+        WHERE
+          1=1
+        <if test="departmentId !=null and departmentId!= ''">
+            AND tc.department_id = #{departmentId}
+        </if>
+            AND date_format( tp.end_date, '%Y' ) = DATE_FORMAT( ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) ), '%Y' )
+            ) done_count_data
+        GROUP BY
+            doneContractCountMonths
+            ) done_count_List ON DATE_FORMAT( ( STR_TO_DATE( months.groupMonth, '%Y-%m-%d' ) ), '%Y-%m' ) = done_count_List.doneContractCountMonths -- 已完成合同数量end
+        -- 请款总金额start
+            LEFT JOIN (
+        SELECT
+            DATE_FORMAT( request_amount_data.applyTime, '%Y-%m' ) applyGroupMonths,
+            SUM( CAST( IFNULL( request_amount_data.requestAmount, 0 ) AS SIGNED INTEGER ) ) AS requestTotalAmount
+        FROM
+            (
+        SELECT
+            trm.request_amount AS requestAmount,
+            trm.apply_time AS applyTime
+        FROM
+            tb_request_menu trm
+        left join
+            tb_contract tc
+        on tc.contract_id = trm.contract_id
+        WHERE
+            trm.is_del_flg = '0'
+        and
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        <if test="departmentId !=null and departmentId!= ''">
+            AND trm.department_id = #{departmentId}
+        </if>
+            AND DATE_FORMAT( trm.apply_time, '%Y' ) = DATE_FORMAT( ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) ), '%Y' )
+            ) request_amount_data
+        GROUP BY
+            applyGroupMonths
+            ) request_amount_List ON DATE_FORMAT( ( STR_TO_DATE( months.groupMonth, '%Y-%m-%d' ) ), '%Y-%m' ) = request_amount_List.applyGroupMonths -- 请款总金额end
+        -- 到款总金额start
+            LEFT JOIN (
+        SELECT
+            DATE_FORMAT( payment_amount_data.approveTime, '%Y-%m' ) approveGroupMonths,
+            SUM( CAST( IFNULL( payment_amount_data.paymentAmount, 0 ) AS SIGNED INTEGER ) ) AS paymentTotalAmount
+        FROM
+            (
+        SELECT
+            trm.payment_amount AS paymentAmount,
+            trm.approve_time AS approveTime
+        FROM
+            tb_request_menu trm
+        left join
+        tb_contract tc
+        on tc.contract_id = trm.contract_id
+        WHERE
+            trm.is_del_flg = '0'
+        and
+        (tc.is_invalid_flag = '0' OR tc.is_invalid_flag is null)
+        <if test="departmentId !=null and departmentId!= ''">
+            AND trm.department_id = #{departmentId}
+        </if>
+            AND trm.delegate_task_key = 'EndEvent'
+            AND DATE_FORMAT( trm.approve_time, '%Y' ) = DATE_FORMAT( ( STR_TO_DATE( #{searchDate}, '%Y-%m-%d' ) ), '%Y' )
+            ) payment_amount_data
+        GROUP BY
+            approveGroupMonths
+            ) payment_amount_List ON DATE_FORMAT( ( STR_TO_DATE( months.groupMonth, '%Y-%m-%d' ) ), '%Y-%m' ) = payment_amount_List.approveGroupMonths -- 到款总金额end
+
+            ) report_data
+        WHERE
+            LEFT ( #{searchDate}, 4 ) = LEFT ( report_data.groupMonths, 4 )
+        ORDER BY
+        report_data.groupMonths ASC
+    </sql>
+</mapper>

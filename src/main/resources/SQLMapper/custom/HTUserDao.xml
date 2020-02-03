@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTUserDao">
+
+    <resultMap id="userDetailInfoMap" type="com.hd.manager.dao.bean.HTUserBean">
+        <id column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="user_account" jdbcType="VARCHAR" property="userAccount" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <!--<result column="telephone" jdbcType="VARCHAR" property="telephone" />-->
+        <!--<result column="email" jdbcType="VARCHAR" property="email" />-->
+        <result column="entry_date" jdbcType="TIMESTAMP" property="entryDate" />
+        <result column="is_incumbent" jdbcType="VARCHAR" property="isIncumbent" />
+        <result column="sign_path" jdbcType="VARCHAR" property="signPath" />
+        <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+        <association property="educationEntity" javaType="com.hd.common.entity.TbEducationEntity">
+            <id column="education_id" jdbcType="VARCHAR" property="educationId" />
+            <result column="education_name" jdbcType="VARCHAR" property="educationName" />
+        </association>
+        <association property="companyEntity" javaType="com.hd.common.entity.TbCompanyEntity">
+            <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+            <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+            <result column="condense" jdbcType="VARCHAR" property="condense" />
+            <result column="company_address" jdbcType="VARCHAR" property="companyAddress" />
+            <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+            <result column="bank_account" jdbcType="VARCHAR" property="bankAccount" />
+            <result column="phone_num" jdbcType="VARCHAR" property="phoneNum" />
+            <result column="fax_num" jdbcType="VARCHAR" property="faxNum" />
+            <result column="postcode" jdbcType="VARCHAR" property="postcode" />
+            <result column="company_email" jdbcType="VARCHAR" property="email" />
+            <result column="charge_people" jdbcType="VARCHAR" property="chargePeople" />
+            <result column="serial_num" jdbcType="VARCHAR" property="serialNum" />
+            <result column="is_cooperate_company" jdbcType="VARCHAR" property="isCooperateCompany" />
+        </association>
+<!--        <association property="departmentEntity" javaType="com.hd.common.entity.TbDepartmentEntity">
+            <id column="department_id" jdbcType="VARCHAR" property="departmentId" />
+            <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+            <result column="department_level" jdbcType="VARCHAR" property="departmentLevel" />
+            <result column="bussiness_type" jdbcType="VARCHAR" property="bussinessType" />
+            <result column="parent_department_id" jdbcType="VARCHAR" property="parentDepartmentId" />
+        </association>-->
+<!--        <association property="jobEntity" javaType="com.hd.common.entity.TbDictJobEntity">
+            <id column="job_dict_id" jdbcType="VARCHAR" property="jobDictId" />
+            <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+            <result column="job_leve" jdbcType="VARCHAR" property="jobLeve" />
+        </association>-->
+    </resultMap>
+
+    <!--查询token-->
+    <select id="excSearchAccessToken" resultType="com.hd.manager.dao.bean.HTUserBean">
+        select
+            tu2.access_token           as accessToken,
+            tu2.save_access_token_date as saveAccessTokenDate
+        from
+            tb_user tu2
+        where tu2.save_access_token_date in (
+            select
+                max(tu.save_access_token_date)
+            from
+                tb_user tu
+        )
+    </select>
+
+    <!--批量插入用户和专业的关联-->
+    <insert id="batchInsertUserProfessional">
+        INSERT INTO tb_user_professional(
+          user_id,
+          professional_id,
+          is_del_flg,
+          create_user_id,
+          create_date,
+          update_user_id,
+          update_date
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+              #{item.userId},
+              #{item.professionalId},
+              #{item.isDelFlg},
+              #{item.createUserId},
+              #{item.createDate},
+              #{item.updateUserId},
+              #{item.updateDate}
+            )
+        </foreach>
+    </insert>
+
+    <!--插入用户和角色的关联-->
+    <insert id="insertUserRoleInfo">
+        INSERT INTO tb_user_role(
+          user_id,
+          role_id,
+          is_del_flg,
+          create_user_id,
+          create_date,
+          update_user_id,
+          update_date
+        )VALUE(
+          #{userId},
+          #{roleId},
+          #{isDelFlg},
+          #{createUserId},
+          #{createDate},
+          #{createUserId},
+          #{createDate}
+        )
+    </insert>
+
+    <!--插入用户和资质文件的关联-->
+    <insert id="batchInsertUserResourceFiles">
+
+        INSERT INTO tb_user_resource_relation(
+          relation_id,
+          user_id,
+          resource_file_path,
+          is_del_flg,
+          create_user_id,
+          create_date,
+          update_user_id,
+          update_date
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+              #{item.relationId},
+              #{item.userId},
+              #{item.resourceFilePath},
+              #{item.isDelFlg},
+              #{item.createUserId},
+              #{item.createDate},
+              #{item.updateUserId},
+              #{item.updateDate}
+            )
+        </foreach>
+
+    </insert>
+    <!--批量插入用户和职位关联-->
+    <insert id="insertUserJobRelations">
+
+        INSERT INTO tb_user_job_relation(
+        user_id,
+        job_id
+        )VALUES
+        <foreach collection="jobIds" item="item" separator=",">
+            (
+                #{userId},
+                #{item}
+            )
+        </foreach>
+    </insert>
+    <!--删除用户和角色的关联信息-->
+    <delete id="deleteUserRoleInfo">
+        DELETE FROM tb_user_role WHERE user_id = #{userId}
+    </delete>
+
+    <!--删除用户和专业的关联信息-->
+    <delete id="deleteUserProfessionalInfo">
+        DELETE FROM tb_user_professional WHERE user_id = #{userId}
+    </delete>
+
+    <!--查询公司和合作公司的信息下拉列表-->
+    <select id="excSearchCompanyList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          company_id AS companyId
+          ,company_name AS companyName
+          ,is_cooperate_company AS isCooperateCompany
+        FROM
+          tb_company
+        WHERE
+          is_del_flg = 0
+    </select>
+
+    <!--查询角色权限下拉列表-->
+    <select id="excSearchRoleList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          role_id AS roleId
+          ,role_name AS roleName
+        FROM
+          tb_role
+        WHERE
+          is_del_flg = 0
+    </select>
+
+    <!--查询专业信息下拉列表-->
+    <select id="excSearchProfessionalList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          professional_id AS professionalId
+          ,professional_name AS professionalName
+        FROM
+          tb_professional
+        WHERE
+          is_del_flg = 0
+        ORDER BY professionalId
+    </select>
+
+    <!--查询文化程度信息下拉列表-->
+    <select id="excSearchEducationList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          education_id AS educationId
+          ,education_name AS educationName
+        FROM
+          tb_education
+        WHERE
+          is_del_flg = 0
+        ORDER BY education_id
+    </select>
+
+    <!--查询部门树信息下拉列表-->
+    <select id="excSearchDeptList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          department_id             AS deptId
+          ,department_name          AS deptName
+        FROM
+          tb_dict_department
+        ORDER BY
+          department_id
+    </select>
+
+    <!--查询职务信息下拉列表-->
+    <select id="excSearchJobList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          job_id    AS jobId,
+          job_name  AS jobName
+        FROM
+          tb_job
+        WHERE
+          is_del_flg = 0
+        AND
+          involved_department = #{deptId}
+        ORDER BY sort
+    </select>
+
+    <!--查询用户列表信息-->
+    <select id="excSearchUserList" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+            user_info.user_id AS userId
+            ,user_info.user_name AS userName
+            ,user_info.user_account AS userAccount
+            ,education_info.education_name AS educationName
+            ,user_info.entry_date AS entryDate
+            ,user_info.is_incumbent AS isIncumbent
+            ,company_info.is_cooperate_company AS isCooperateCompany
+            ,GROUP_CONCAT(dept_info.department_name) AS deptName
+            ,user_info.sign_path AS signPathFile
+        FROM
+        (
+              SELECT
+                  user_id
+                  ,user_name
+                  ,user_account
+                  ,education
+                  ,company_id
+                  ,entry_date
+                  ,is_incumbent
+                  ,create_date
+                  ,sign_path
+              FROM
+                  tb_user
+              WHERE
+                  is_del_flg = 0
+              <if test='null != userName and "" != userName'>
+                  AND user_name LIKE concat('%', #{userName}, '%')
+              </if>
+              <if test='null != isIncumbent and "" != isIncumbent '>
+                  AND is_incumbent = #{isIncumbent}
+              </if>
+        )user_info
+        LEFT JOIN
+        (
+            SELECT
+                education_id
+                ,education_name
+            FROM
+                tb_education
+        )education_info
+        ON
+          user_info.education = education_info.education_id
+        LEFT JOIN
+        (
+            SELECT
+                company_id,
+                is_cooperate_company
+            FROM
+                tb_company
+            WHERE
+                is_del_flg = 0
+        )company_info
+        ON
+          company_info.company_id = user_info.company_id
+        LEFT JOIN
+        (
+          SELECT
+            user_job_info.user_id
+            ,department_info.department_name
+            ,department_info.department_id
+          FROM
+            tb_user_job_relation user_job_info
+          LEFT JOIN
+            tb_job job_info
+          ON
+            job_info.job_id = user_job_info.job_id
+          LEFT JOIN
+            tb_dict_department department_info
+          ON
+            department_info.department_id = job_info.involved_department
+          GROUP BY user_job_info.user_id,department_info.department_name,department_info.department_id
+        )dept_info
+        ON
+          dept_info.user_id = user_info.user_id
+        WHERE
+          1=1
+        <if test=' null != deptId and "" != deptId' >
+            AND dept_info.department_id = #{deptId}
+        </if>
+
+        GROUP BY user_info.user_id
+        ORDER BY user_info.create_date DESC
+        LIMIT ${pageNumber},${pageSize}
+
+    </select>
+
+    <!--查询用户列表的总条数-->
+    <select id="getUserCount" resultType="java.lang.Integer">
+        SELECT
+          count(1) total
+        FROM
+        (
+            SELECT
+              user_info.user_id
+            FROM
+              tb_user user_info
+            LEFT JOIN
+              tb_user_job_relation user_job_info
+            ON
+              user_info.user_id = user_job_info.user_id
+            LEFT JOIN
+              tb_job job_info
+            ON
+              job_info.job_id = user_job_info.job_id
+            WHERE 1=1
+            <if test='null != userName and "" != userName'>
+                AND user_info.user_name LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test='null != isIncumbent and "" != isIncumbent '>
+                AND user_info.is_incumbent = #{isIncumbent}
+            </if>
+            <if test=' null != deptId and "" != deptId '>
+                AND job_info.involved_department=#{deptId}
+            </if>
+            GROUP BY user_info.user_id
+        )userinfo
+
+    </select>
+
+    <!--校验登陆账号是否重复-->
+    <select id="getUserByUserAccount" resultType="java.lang.Integer">
+        SELECT
+          count(user_id) AS total
+        FROM
+          tb_user
+        WHERE
+          is_del_flg = 0
+        AND
+          user_account = #{userAccount}
+        <if test=' null != userId and "" != userId '>
+            AND
+              user_id != #{userId}
+        </if>
+    </select>
+
+    <!--查询用户详细信息-->
+    <select id="getUserInfo" resultType="com.hd.manager.dao.bean.HTUserBean">
+        SELECT
+          user_info.user_name AS userName
+          ,user_info.user_account AS userAccount
+          ,user_info.password
+          ,user_info.company_id AS companyId
+		  ,tc.company_name AS companyName
+          ,user_info.education AS educationId
+          ,education_info.education_name AS educationName
+          ,user_info.entry_date AS entryDate
+          ,user_info.email AS email
+          ,user_info.is_incumbent AS isIncumbent
+          ,user_info.sign_path AS signPathFile
+          ,user_role_info.role_id AS roleId
+          ,user_info.update_date AS updateDate
+          ,user_info.professional_name AS professionalName
+        FROM
+          tb_user user_info
+        LEFT JOIN
+          tb_education education_info
+        ON
+          education_info.education_id = user_info.education
+        LEFT JOIN
+          tb_user_role user_role_info
+        ON
+          user_info.user_id = user_role_info.user_id
+        LEFT JOIN
+            tb_company tc
+        ON
+            user_info.company_id = tc.company_id
+        WHERE
+          user_role_info.user_id = #{userId}
+    </select>
+
+    <!--查询用户专业Id List-->
+    <select id="searchProfessionalIdList" resultType="java.lang.String">
+        SELECT
+          professional_id AS professionalId
+        FROM
+          tb_user_professional
+        WHERE
+          user_id = #{userId}
+    </select>
+
+    <!--查询用户关联职位-->
+    <select id="searchUserJobList" resultType="com.hd.manager.dao.bean.HTJobBean">
+       SELECT
+            tujr.job_id AS jobId,
+            CONCAT( tdd.department_name, '-', tj.job_name ) AS departmentJobName
+        FROM
+            tb_user_job_relation tujr
+            LEFT JOIN tb_job tj ON tujr.job_id = tj.job_id
+            LEFT JOIN tb_dict_department tdd ON tj.involved_department = tdd.department_id
+        WHERE
+            tj.is_del_flg = 0
+            AND tujr.user_id = #{item}
+    </select>
+    <!--删除用户关联职位信息-->
+    <delete id="deleteUserJobRelation" >
+        delete  from tb_user_job_relation  where user_id = #{item}
+    </delete>
+
+    <!--查询用户资质文件 List-->
+    <select id="searchResourceRelationList" resultType="com.hd.manager.dao.bean.HTUserFileRelationBean">
+        SELECT
+          relation_id AS fileRelationId,
+          resource_file_path AS fileUrl
+        FROM
+          tb_user_resource_relation
+        WHERE
+          user_id = #{userId}
+    </select>
+
+    <!--查询所需删除文件的真实路径-->
+    <select id="searchDeleteFilePath" resultType="java.lang.String">
+        select
+          resource_file_path AS deleteFilePath
+        from
+          tb_user_resource_relation
+        where
+          relation_id in
+        (<foreach collection="list" item="item" separator=",">
+
+            #{item}
+
+        </foreach>)
+    </select>
+    <!--删除文件信息-->
+    <delete id="deleteFileData" >
+        delete from
+            tb_user_resource_relation
+        where
+            relation_id
+        in
+        (<foreach collection="list" item="item" separator=",">
+
+            #{item}
+
+        </foreach>)
+    </delete>
+
+    <!--检索是否更新同一条信息-->
+    <select id="getUserDataCountByUpdateDate" resultType="java.lang.Integer">
+        SELECT
+          count(1) total
+        FROM
+          tb_user
+        WHERE
+          user_id = #{userId}
+        AND
+          date_format(update_date,'%Y-%m-%d %H-%i-%s')= date_format(#{updateDate},'%Y-%m-%d %H-%i-%s')
+    </select>
+
+    <!--根据部门查人员列表-->
+    <select id="excSearchUserListByDepartmentId" resultType="com.hd.manager.dao.bean.HTUserBean">
+        select
+            distinct tu.user_id as userId,
+            tu.user_name        as userName,
+            tu.open_id          as openId
+        from
+            tb_user tu
+        left join
+            tb_user_job_relation tujr
+        on
+            tu.user_id = tujr.user_id
+        left join
+            tb_job tj
+        on
+            tujr.job_id = tj.job_id
+        where
+            tu.is_del_flg = 0
+        and
+            tj.is_del_flg = 0
+        and
+            tu.is_incumbent = 1
+        <if test=' null != departmentId and "" != departmentId '>
+            and
+            tj.involved_department = #{departmentId}
+        </if>
+
+    </select>
+    <!--查询是否有人员离职-->
+    <select id="excSearchQuitUserByIds" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM tb_user tu WHERE is_del_flg = 0 AND tu.is_incumbent = '0' AND tu.user_id IN (
+          <foreach collection="list" item="item" separator=" ,">
+              #{item}
+          </foreach>
+        )
+
+    </select>
+
+    <!-- 查询用户缓存信息 -->
+    <select id="excQueryUserCache" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT DISTINCT
+        T.user_id,
+        T3.user_name,
+        T1.involved_department,
+        T2.department_id,
+        T2.department_name
+        FROM
+        tb_user_job_relation T
+        JOIN tb_job T1 ON T.job_id = T1.job_id
+        JOIN tb_dict_department T2 ON T1.involved_department = T2.department_id
+        JOIN tb_user T3 ON T.user_id = T3.user_id
+        WHERE 1 = 1
+        <if test=' null != userId and "" != userId '>
+            AND T.user_id =  #{userId}
+        </if>
+        ORDER BY
+        T.user_id,
+        T2.department_id
+    </select>
+
+</mapper>

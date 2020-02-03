@@ -1,0 +1,42 @@
+{
+  "form": {
+    "projectName": "项目名称1",
+    "counselBusinessType": "0",
+    "counselTypePeriod": "1",
+    "projectAddress": "项目地点1",
+    "investedAmount": "6",
+    "isProvisional": "1",
+    "projectNatureList": ["0"],
+    "trusterName": "委托人1",
+    "trusterTypeList": ["0"],
+    "trusterDutyUser": "委托方负责人1",
+    "trusterDutyPhone": "委托方负责人电话1",
+    "consultUser": "咨询人1",
+    "thirdParty": "第三方（合作单位）1",
+    "titlePageConsultant": "扉页咨询人1",
+    "dutyPeople": "拟定合同负责人1",
+    "planner": "拟定人1",
+    "contractNatureList": ["0"],
+    "determinateMethodList": ["0"],
+    "contractAmount": "7",
+    "isValueProvisional": "1",
+    "contractDate": "2019-09-19",
+    "otherThings": "其他情况1",
+    "contractType": "0",
+    "signPathFile": "undefined",
+    "characteristic": [{
+      "startDate": "2019-09-20",
+      "receivedAmount": "8.0",
+      "isProvisional": "1"
+    }],
+    "projectTypeList": ["0"],
+    "residential": {
+      "landArea": "1",
+      "floorArea": "2",
+      "eavesHeight": "3",
+      "buildingControlHeight": "4",
+      "volumeRatio": "5",
+      "homeType": "0"
+    }
+  }
+}

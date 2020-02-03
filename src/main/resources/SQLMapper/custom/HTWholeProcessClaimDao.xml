@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessClaimDao">
+
+
+
+
+    <resultMap id="exportList" type="com.hd.manager.dao.bean.HTWholeProcessClaimBean">
+        <id column="treatyType" property="treatyType" />
+        <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessClaimBean">
+            <id column="undertakeType" property="undertakeType" />
+            <id column="tempTreatyType" property="treatyType" />
+            <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessClaimBean">
+                <id column="childClaimId" property="claimId"></id>
+                <result column="childContractNum" property="contractNum"></result>
+                <result column="childContractName" property="contractName"></result>
+                <result column="childContractClass" property="contractClass"></result>
+                <result column="childWithTaxMoney" property="withTaxMoney"></result>
+                <result column="childDeclareAmount" property="declareAmount"></result>
+                <result column="childHanttenAmount" property="hanttenAmount"></result>
+                <result column="childConfirmAmount" property="confirmAmount"></result>
+                <result column="childEstimatedAmount" property="estimatedAmount"></result>
+                <result column="childRemark" property="remark"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!--查询项目索赔台账阶段列表-->
+    <select id="excSearchProClaimPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessClaimBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProClaimPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目索赔台账阶段的总条数-->
+    <select id="excSearchProClaimPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProClaimPeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目索赔台账阶段列表-->
+    <sql id="excSearchProClaimPeriodListSql">
+        SELECT
+		tc.contract_num      AS contractNum,
+		tc.treaty_type       AS treatyType,
+		tc.undertake_type    AS undertakeType,
+		tc.contract_name     AS contractName,
+		tc.contract_class    AS contractClass,
+		tc.with_tax_money    AS withTaxMoney,
+		tpc.claim_id         AS claimId,
+		tpc.project_id       AS projectId,
+		tpc.contract_id      AS contractId,
+		tpc.declare_amount   AS declareAmount,
+		tpc.hantten_amount   AS hanttenAmount,
+		tpc.confirm_amount   AS confirmAmount,
+		tpc.estimated_amount AS estimatedAmount,
+		tpc.remark           AS remark
+        FROM
+            tb_pro_claim	tpc
+        LEFT JOIN
+            tb_pro_contract  tc
+        ON
+            tpc.contract_id = tc.contract_id
+        WHERE
+            tpc.is_del_flg = '0'
+        AND
+            tpc.project_id = #{projectId}
+        ORDER BY
+            tc.treaty_type ASC,
+            tc.undertake_type ASC,
+            tc.contract_name ASC,
+            tpc.create_date DESC
+    </sql>
+
+    <!--查询项目索赔台账信息详情-->
+    <select id="excSearchProClaimPeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessClaimBean">
+        SELECT
+            tc.contract_num      AS contractNum,
+            tc.treaty_type       AS treatyType,
+            tc.undertake_type    AS undertakeType,
+            tc.contract_name     AS contractName,
+            tc.contract_class    AS contractClass,
+            tc.with_tax_money    AS withTaxMoney,
+            tpc.claim_id         AS claimId,
+            tpc.project_id       AS projectId,
+            tpc.contract_id      AS contractId,
+            tpc.declare_amount   AS declareAmount,
+            tpc.hantten_amount   AS hanttenAmount,
+            tpc.confirm_amount   AS confirmAmount,
+            tpc.estimated_amount AS estimatedAmount,
+            tpc.remark           AS remark
+        FROM
+            tb_pro_claim tpc
+        LEFT JOIN
+            tb_pro_contract  tc
+        ON
+            tpc.contract_id = tc.contract_id
+        WHERE
+            tpc.is_del_flg = '0'
+        AND
+            tpc.claim_id = #{claimId}
+
+    </select>
+
+
+    <!--查询项目索赔台账阶段列表-->
+    <select id="excSearchProClaimPeriodListForExport"  resultMap="exportList">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProClaimPeriodListSqlForExport" />) temp
+
+    </select>
+
+
+    <!--查询项目索赔台账阶段列表-->
+    <sql id="excSearchProClaimPeriodListSqlForExport">
+        SELECT
+		tc.contract_num      AS childContractNum,
+		tc.treaty_type       AS treatyType,
+		tc.undertake_type    AS undertakeType,
+		tc.contract_name     AS childContractName,
+		tc.contract_class    AS childContractClass,
+		tc.with_tax_money    AS childWithTaxMoney,
+		tpc.claim_id         AS childClaimId,
+		tpc.project_id       AS childProjectId,
+		tpc.contract_id      AS childContractId,
+		tpc.declare_amount   AS childDeclareAmount,
+		tpc.hantten_amount   AS childHanttenAmount,
+		tpc.confirm_amount   AS childConfirmAmount,
+		tpc.estimated_amount AS childEstimatedAmount,
+		tpc.remark           AS childRemark
+        FROM
+            tb_pro_claim	tpc
+        LEFT JOIN
+            tb_pro_contract  tc
+        ON
+            tpc.contract_id = tc.contract_id
+        WHERE
+            tpc.is_del_flg = '0'
+        AND
+            tpc.project_id = #{projectId}
+        ORDER BY
+            tc.treaty_type ASC,
+            tc.undertake_type ASC,
+            tc.contract_name ASC,
+            tpc.create_date DESC
+    </sql>
+</mapper>

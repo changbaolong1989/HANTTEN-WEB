@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessEstimateDao">
+
+    <!--查询项目概算阶段列表-->
+    <select id="excSearchProEstimatePeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessEstimateBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProEstimatePeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目概算阶段的总条数-->
+    <select id="excSearchProEstimatePeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProEstimatePeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目概算阶段列表-->
+    <sql id="excSearchProEstimatePeriodListSql">
+        SELECT
+            tpe.estimate_id  			AS	estimateId,
+            tpe.project_id				AS	projectId,
+            tpe.compile_date		    AS	compileDate,
+            tpe.estimate_name			AS	estimateName,
+            tpe.floor_space				AS	floorSpace,
+            tpe.estimated_cost			AS	estimatedCost,
+            tpe.estimation_ex_parte		AS	estimationExParte,
+            tpe.cost_range				AS	costRange,
+            tpe.remark					AS	remark,
+            tpe.estimate_file_path		AS	estimateFilePath,
+            tpe.estimate_file_name		AS	estimateFileName,
+            tpe.create_date				AS	createDate,
+            tpe.create_user_id		    AS	createUserId,
+            tpe.update_date				AS	updateDate,
+            tpe.update_user_id			AS	updateUserId,
+            tpe.is_del_flg				AS	isDelFlg
+        FROM
+	        tb_pro_estimate tpe
+        WHERE
+            tpe.is_del_flg = '0'
+        AND
+            tpe.project_id = #{projectId}
+        ORDER BY
+            tpe.compile_date DESC
+    </sql>
+
+    <!--查询项目概算信息详情-->
+    <select id="excSearchProEstimatePeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessEstimateBean">
+        SELECT
+            tpe.estimate_id  			AS	estimateId,
+            tpe.project_id				AS	projectId,
+            tpe.compile_date		    AS	compileDate,
+            tpe.estimate_name			AS	estimateName,
+            tpe.floor_space				AS	floorSpace,
+            tpe.estimated_cost			AS	estimatedCost,
+            tpe.estimation_ex_parte		AS	estimationExParte,
+            tpe.cost_range				AS	costRange,
+            tpe.remark					AS	remark,
+            tpe.estimate_file_path		AS	estimateFilePath,
+            tpe.estimate_file_name		AS	estimateFileName,
+            tpe.create_date				AS	createDate,
+            tpe.create_user_id		    AS	createUserId,
+            tpe.update_date				AS	updateDate,
+            tpe.update_user_id			AS	updateUserId,
+            tpe.is_del_flg				AS	isDelFlg
+        FROM
+	        tb_pro_estimate tpe
+        WHERE
+            tpe.is_del_flg = '0'
+        AND
+            tpe.estimate_id = #{estimateId}
+
+    </select>
+
+    <select id="excSearchProEstimatePeriodListForExport"
+            resultType="com.hd.manager.dao.bean.HTWholeProcessEstimateBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProEstimatePeriodListSql" />) temp
+    </select>
+</mapper>

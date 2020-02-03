@@ -1,0 +1,138 @@
+#---------------------------------------------------------ReadMe------------------------------------------------------#
+#--------------------------------------------------SpringBoot配置文件-------------------------------------------------#
+#----------------------------------------        《虚拟机测试环境》          -----------------------------------#
+#---------------------------------------------------------ReadMe------------------------------------------------------#
+server:
+  port: 18866
+#  2019.9.6 版
+#  port: 8086
+  tomcat:
+    uri-encoding: UTF-8
+
+  servlet:
+    session:
+      timeout: 60m
+      cookie:
+        name: HANTTENSESSIONID
+
+#file根路径
+file:
+  request:
+    rootpath: /data/hantten/static
+  openOffice:
+    convertPath: /data/hantten/temporary/
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 数据库连接驱动
+    driver-class-name: com.mysql.jdbc.Driver
+    # 数据源初始失败则不继续 TODO
+    continue-on-error: false
+    # 连接url
+    url: jdbc:mysql://192.168.1.124:3306/hantten?useSSL=false&allowMultiQueries=true&autoReconnect=true&characterEncoding=UTF-8&useTimezone=false
+    # 数据库用户名
+    username: hantten_test
+    # 数据库密码 如果不希望密码直接写在配置文件中，可以使用ConfigFilter。
+    password: xmkj2019
+    druid:
+      # 初始化连接数
+      initial-size: 3
+      # 最小连接数
+      min-idle: 3
+      # 最大连接数
+      max-active: 30
+      # 最大等待时间 单位：毫秒
+      max-wait: 9000
+      # 配置间隔多久进行一次对需要关闭的空闲连接的检测，单位：毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位：毫秒
+      min-evictable-idle-time-millis: 300000
+      # 检测连接有效性的SQL文
+      validation-query: SELECT 1
+      # 建议配置为true，不影响性能，并且保证安全性。
+      # 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，
+      # 执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      # 申请连接时执行validationQuery检测连接是否有效，
+      # 做了这个配置会降低性能。
+      test-on-borrow: false
+      # 归还连接时执行validationQuery检测连接是否有效，
+      # 做了这个配置会降低性能
+      test-on-return: false
+      # 是否缓存preparedStatement，也就是PSCache。
+      # PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。
+      pool-prepared-statements: true
+      # 要启用PSCache，必须配置大于0，
+      # 当大于0时，poolPreparedStatements自动触发修改为true。
+      # 在Druid中，不会存在Oracle下PSCache占用内存过多的问题，
+      # 可以把这个数值配置大一些，比如说100
+      max-pool-prepared-statement-per-connection-size: 30
+  mvc:
+    favicon:
+      enabled: false
+    servlet:
+      path: /
+    view:
+      #prefix:
+      suffix: .html
+    access-interceptor:
+      login-expire-seconds: 7200
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${file.request.rootpath}
+  messages:
+    basename: messages
+    encoding: utf-8
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  activiti:
+    database-schema-update: true
+    processDefinitionLocationPrefix: classpath*:/processes
+    history-level: audit
+    async-executor-activate: false
+  # 设置文件大小
+  servlet:
+    multipart:
+      maxFileSize: 30MB
+      maxRequestSize: 30MB
+
+
+mybatis:
+  mapper-locations: classpath*:SQLMapper/**/*.xml
+  type-aliases-package: com.hd.common.entity,com.hd.manager.dao.bean
+
+onlyOffice:
+  # 给 onlyOffice 请求我们 Web 服务的 IP 地址
+  web-ip: 192.168.1.37
+  # 我们Web 服务 请求 onlyOffice 服务的 IP 地址
+  doc-server-ip: 192.168.1.24
+  # 我们Web 服务 请求 onlyOffice 服务的 端口号
+  doc-server-port: 9001
+
+jodconverter:
+  local:
+    enabled: true
+    max-tasks-per-process: 10
+    task-execution-timeout: 300000
+    task-queue-timeout: 600000
+
+system-param:
+  preview:
+    is-deploy: true
+    max-size: 104857600 #100M
+    txt-charset: UTF-8
+    server-domain: http://test-beta.hantten.com/
+    officeapps-url: https://view.officeapps.live.com/op/view.aspx?src=
+    # build时不用改，跨域dev时将这个值改成：http://本机IP地址:后台端口/preview/fileViewer?filePath=
+    picture-preview-url: /preview/fileViewer?filePath=
+    prefix-viewer: ../../../../../../PC/preview/pdf/web/viewer.html?file=
+    openOffice-server-ip: http://192.168.133.128:18866/preview/fileViewer?filePath=
+    openOffice-server-ip-stream: http://192.168.133.128:18866/preview/fileInputStreamViewer
+
+  # 导出
+  export:
+    watermark-path: /data/hantten/watermarkPath/watermark.png

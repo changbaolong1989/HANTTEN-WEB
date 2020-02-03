@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTbTaskSpotPersonRelationDao">
+
+    <!--查询列表-->
+    <select id="searchList" resultType="com.hd.manager.dao.bean.TbTaskSpotPersonRelationBean">
+        select
+        temp.*
+        from
+        (<include refid="searchSpotPersonSql" />) temp
+        order by temp.startDate desc
+        limit #{pageNumber},#{pageSize}
+    </select>
+
+    <!--查询列表数据的总条数-->
+    <select id="searchCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchSpotPersonSql" />) temp
+    </select>
+
+    <sql id="searchSpotPersonSql">
+        SELECT
+            tm.relation_id       AS relationId,
+            tm.user_name  AS userName,
+            tm.start_date   AS startDate,
+            tm.end_date   AS endDate,
+            tm.work_content  AS workContent
+        FROM
+            tb_task_spot_person_relation tm
+        WHERE
+            tm.is_del_flg = 0
+        AND
+            tm.task_id = #{taskId}
+    </sql>
+
+</mapper>

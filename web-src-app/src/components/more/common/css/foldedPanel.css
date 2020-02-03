@@ -1,0 +1,218 @@
+@charset "UTF-8";
+.more-sublevel {
+  /* 折叠面板 */
+}
+.more-sublevel textarea {
+  resize: none;
+  border: 1px solid #d7d7d7 !important;
+  border-radius: 5px;
+  padding: 5px;
+}
+.more-sublevel input::-webkit-input-placeholder, .more-sublevel textarea::-webkit-input-placeholder {
+  font-size: 12px !important;
+}
+.more-sublevel .el-collapse {
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  border-bottom: 1px solid #ebeef5;
+  /* 隐藏上传按钮,有的地方只需要文件列表,添加该class可以隐藏上传按钮 */
+  /* 徽章 */
+  /* 标题 */
+  /* 内容 */
+  /* 一级折叠面板 */
+  /* 二级折叠面板 */
+}
+.more-sublevel .el-collapse .hide-upload-container .el-upload--text {
+  display: none;
+}
+.more-sublevel .el-collapse .badge {
+  height: 12px;
+  border-radius: 6px;
+  color: white;
+  line-height: 10px;
+  text-align: center;
+  padding: 2px 5px;
+  display: inline-block;
+}
+.more-sublevel .el-collapse .el-collapse-item__header {
+  display: block;
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 80px 0 20px;
+  border-bottom: 1px solid #ebeef5;
+  color: #333333;
+  position: relative;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 5px;
+  /* 上传文件图标(按钮) */
+  /* 箭头 */
+  /* 徽章 */
+}
+.more-sublevel .el-collapse .el-collapse-item__header.is-active {
+  box-shadow: 0 5px 5px rgba(201, 211, 218, 0.3);
+}
+.more-sublevel .el-collapse .el-collapse-item__header > .el-icon-plus {
+  color: white;
+  padding: 2px 6px;
+  border-radius: 5px;
+  position: absolute;
+  right: 40px;
+  top: 12px;
+}
+.more-sublevel .el-collapse .el-collapse-item__header .el-collapse-item__arrow {
+  position: absolute;
+  right: 10px;
+  top: 14px;
+}
+.more-sublevel .el-collapse .el-collapse-item__header > .badge.error {
+  margin-left: 5px !important;
+  background-color: #F15A24 !important;
+}
+.more-sublevel .el-collapse .el-collapse-item__content {
+  padding: 30px;
+  /* 徽章 */
+}
+.more-sublevel .el-collapse .el-collapse-item__content .badge.error {
+  background-color: #ffaebc;
+  margin-left: 0;
+  margin-right: 5px;
+}
+.more-sublevel .el-collapse.level1 {
+  /* 折叠面板项 */
+}
+.more-sublevel .el-collapse.level1 > .el-collapse-item {
+  /* 标题包装 */
+  /* 内容包装 */
+}
+.more-sublevel .el-collapse.level1 > .el-collapse-item > div[role='tab'] {
+  border-bottom: 1px solid #ebeef5;
+}
+.more-sublevel .el-collapse.level1 > .el-collapse-item > [role='tabpanel'] {
+  /* 内容 */
+}
+.more-sublevel .el-collapse.level1 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content {
+  position: relative;
+  background-color: #f1f5f8;
+  padding: 10px 0;
+  background: #fff;
+  box-shadow: 0 0 5px #efeff2 inset;
+}
+.more-sublevel .el-collapse.level2 {
+  border: none;
+  /* 折叠面板项 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item {
+  /* 激活面板项 */
+  /* 标题包装 */
+  /* 第一个面板项 */
+  /* 内容包装 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item.is-active {
+  /* 标题包装 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item.is-active > div[role='tab'] {
+  /* 标题 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item.is-active > div[role='tab'] > .el-collapse-item__header {
+  box-shadow: 0 0 5px #c9d3da;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] {
+  position: relative;
+  z-index: 99;
+  /* 标题 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header {
+  padding: 0 20px;
+  margin: 5px auto 0px;
+  border-radius: 5px;
+  background-color: #e8f4f9;
+  position: relative;
+  text-align: center;
+  /* 名称 */
+  /* 时间 */
+  /* 通过未通过 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 66px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .time {
+  position: absolute;
+  top: 0;
+  right: 30px;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .pass {
+  margin-left: 10px;
+  vertical-align: middle;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > div[role='tab'] > .el-collapse-item__header > .badge {
+  position: absolute;
+  top: 13px;
+  left: 66px;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item:first-child > div[role='tab'] {
+  /* 标题 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item:first-child > div[role='tab'] > .el-collapse-item__header {
+  margin-top: 0;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] {
+  border-bottom: 0;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content {
+  padding: 0;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content {
+  padding: 0 20px 0 20px;
+  margin: -3px auto 3px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #808080;
+  /* 意见 */
+  /* 装饰 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .opinion {
+  padding: 10px 20px;
+  background-color: #E8ECEF;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .decoration {
+  background-color: #f2f3f4;
+  margin: 0 -20px;
+  padding: 0 20px;
+  /* 装饰线 */
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content .decoration .line {
+  border: 1px solid #E7E8E8;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul {
+  border-radius: 0 0 5px 5px;
+  background-color: #f2f3f4;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 10px 20px;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul li {
+  color: #666666;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul li:first-child .name {
+  color: #333333;
+}
+.more-sublevel .el-collapse.level2 > .el-collapse-item > [role='tabpanel'] > .el-collapse-item__content > .content ul li i.point {
+  display: inline-block;
+  transform: scale(0.2);
+  vertical-align: middle;
+}
+
+/*# sourceMappingURL=foldedPanel.css.map */

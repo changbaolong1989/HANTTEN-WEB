@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessCostDao">
+
+    <resultMap id="BaseResultMap" type="com.hd.manager.dao.bean.HTWholeProcessContractBean">
+        <id column="contract_id" jdbcType="VARCHAR" property="contractId"/>
+        <result column="serial_number" jdbcType="VARCHAR" property="serialNumber"/>
+        <result column="project_id" jdbcType="VARCHAR" property="projectId"/>
+        <result column="tender_id" jdbcType="VARCHAR" property="tenderId"/>
+        <result column="treaty_type" jdbcType="VARCHAR" property="treatyType"/>
+        <result column="undertake_type" jdbcType="VARCHAR" property="undertakeType"/>
+        <result column="contract_name" jdbcType="VARCHAR" property="contractName"/>
+        <result column="contract_num" jdbcType="VARCHAR" property="contractNum"/>
+        <result column="contract_unit" jdbcType="VARCHAR" property="contractUnit"/>
+        <result column="plan_date" jdbcType="VARCHAR" property="planDate"/>
+        <result column="contract_class" jdbcType="VARCHAR" property="contractClass"/>
+        <result column="measure_sts" jdbcType="VARCHAR" property="measureSts"/>
+        <result column="target_cost" jdbcType="DOUBLE" property="targetCost"/>
+        <result column="excise_money" jdbcType="DOUBLE" property="exciseMoney"/>
+        <result column="tax_ratio" jdbcType="DOUBLE" property="taxRatio"/>
+        <result column="tax_money" jdbcType="DOUBLE" property="taxMoney"/>
+        <result column="with_tax_money" jdbcType="DOUBLE" property="withTaxMoney"/>
+        <result column="dynamic_remark" jdbcType="VARCHAR" property="dynamicRemark"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
+        <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg"/>
+        <result column="uncalibrated_price" jdbcType="DOUBLE" property="uncalibratedPrice"/>
+        <result column="temporary_amount" jdbcType="DOUBLE" property="temporaryAmount"/>
+        <result column="alter_value" jdbcType="DOUBLE" property="alterValue"/>
+        <result column="drawing_adjust" jdbcType="DOUBLE" property="drawingAdjust"/>
+        <result column="signel_adjust" jdbcType="DOUBLE" property="signelAdjust"/>
+        <result column="material_adjust" jdbcType="DOUBLE" property="materialAdjust"/>
+        <result column="people_adjust" jdbcType="DOUBLE" property="peopleAdjust"/>
+        <result column="other_thing" jdbcType="DOUBLE" property="otherThing"/>
+        <result column="tax_adjust" jdbcType="DOUBLE" property="taxAdjust"/>
+        <result column="total_price" jdbcType="DOUBLE" property="totalPrice"/>
+        <result column="predict_close_value" jdbcType="DOUBLE" property="predictCloseValue"/>
+    </resultMap>
+
+    <select id="searchCostList" resultMap="BaseResultMap">
+        SELECT
+        ( @num := @num + 1 ) serial_number,
+        T.contract_id,
+        T.project_id,
+        T.tender_id,
+        T.treaty_type,
+        T.undertake_type,
+        T.contract_name,
+        T.contract_num,
+        T.contract_name,
+        T.contract_unit,
+        T.plan_date,
+        T.contract_class,
+        T.measure_sts,
+        T.target_cost,
+        T.excise_money,
+        T.tax_ratio,
+        T.tax_money,
+        T.with_tax_money,
+        T.dynamic_remark,
+        T.uncalibrated_price,
+        ( IFNULL(T.with_tax_money,0) + IFNULL(T.uncalibrated_price,0) ) AS total_price,
+        T.temporary_amount,
+        T1.alter_value,
+        T.drawing_adjust,
+        T.signel_adjust,
+        T.material_adjust,
+        T.people_adjust,
+        T.other_thing,
+        T.tax_adjust,
+        (
+        IFNULL( T.with_tax_money, 0 ) + IFNULL( T.uncalibrated_price, 0 ) + IFNULL(T.temporary_amount,0) +
+        IFNULL(T.alter_value,0) + IFNULL(T.drawing_adjust,0) +
+        IFNULL(T.signel_adjust,0) + IFNULL(T.material_adjust,0) + IFNULL(T.people_adjust,0) + IFNULL(T.other_thing,0) +
+        IFNULL(T.tax_adjust,0)
+        ) AS predict_close_value
+        FROM
+        tb_pro_contract T
+        LEFT JOIN ( SELECT T.contract_id, SUM( T.hantten_amount ) AS alter_value FROM tb_pro_alter_detail T GROUP BY
+        T.contract_id ) T1 ON T.contract_id = T1.contract_id,
+        ( SELECT @num := 0 ) AS ST
+        WHERE 1=1
+        AND T.is_del_flg = 0
+        AND T.project_id = #{projectId}
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber} , #{pageSize}
+        </if>
+    </select>
+
+    <select id="searchExportData" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT
+            T.contract_num,
+        CASE
+                WHEN T.treaty_type = 1 THEN
+                '工程类合同'
+                WHEN T.treaty_type = 2 THEN
+                '采购类合同'
+                WHEN T.treaty_type = 3 THEN
+                '服务类合同'
+                WHEN T.treaty_type = 4 THEN
+                '土地类合同'
+                WHEN T.treaty_type = 5 THEN
+                '其他类合同' ELSE '-'
+            END AS treaty_type,
+        CASE
+                WHEN T.undertake_type = 1 THEN
+                '施工总承包'
+                WHEN T.undertake_type = 2 THEN
+                '发包人发包专业合同'
+                WHEN T.undertake_type = 3 THEN
+                '发包人自行发包专业' ELSE '-'
+            END AS undertake_type,
+            T.contract_name,
+            T.contract_unit,
+            T.plan_date,
+            CONCAT(T.target_cost) AS target_cost,
+            CONCAT(T.with_tax_money) AS with_tax_money,
+            CONCAT(T.uncalibrated_price) AS uncalibrated_price,
+            CONCAT(( IFNULL( T.with_tax_money, 0 ) + IFNULL( T.uncalibrated_price, 0 ) )) AS total_price,
+            CONCAT(T.temporary_amount) AS temporary_amount,
+            CONCAT(T1.alter_value) AS alter_value,
+            CONCAT(T.drawing_adjust) AS drawing_adjust,
+            CONCAT(T.signel_adjust) AS signel_adjust,
+            CONCAT(T.material_adjust) AS material_adjust,
+            CONCAT(T.people_adjust) AS people_adjust,
+            CONCAT(T.other_thing) AS other_thing,
+            CONCAT(T.tax_adjust) AS tax_adjust,
+            CONCAT((
+                IFNULL( T.with_tax_money, 0 ) + IFNULL( T.uncalibrated_price, 0 ) + IFNULL( T.temporary_amount, 0 ) + IFNULL( T.alter_value, 0 ) + IFNULL( T.drawing_adjust, 0 ) + IFNULL( T.signel_adjust, 0 ) + IFNULL( T.material_adjust, 0 ) + IFNULL( T.people_adjust, 0 ) + IFNULL( T.other_thing, 0 ) + IFNULL( T.tax_adjust, 0 )
+            )) AS predict_close_value,
+            T.dynamic_remark
+        FROM
+            tb_pro_contract T
+            LEFT JOIN ( SELECT T.contract_id, SUM( T.hantten_amount ) AS alter_value FROM tb_pro_alter_detail T GROUP BY T.contract_id ) T1 ON T.contract_id = T1.contract_id
+        WHERE
+            1 = 1
+            AND T.project_id = #{projectId}
+        ORDER BY
+            T.treaty_type,
+            T.undertake_type
+    </select>
+
+</mapper>

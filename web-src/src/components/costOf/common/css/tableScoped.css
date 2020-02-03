@@ -1,0 +1,36 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+table.align-center .cell {
+  text-align: center;
+}
+table tr {
+  background-color: #fff;
+}
+table tr td, table tr th {
+  border: 1px solid #ebeef5;
+  padding: 12px 0;
+  min-width: 0;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  position: relative;
+}
+table tr td .cell, table tr th .cell {
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+  line-height: 23px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-width: 100px;
+  font-weight: normal;
+  font-size: 12px;
+  color: #424242;
+}
+
+/*# sourceMappingURL=tableScoped.css.map */

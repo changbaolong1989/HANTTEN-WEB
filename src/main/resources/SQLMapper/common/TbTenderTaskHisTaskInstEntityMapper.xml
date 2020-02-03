@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbTenderTaskHisTaskInstEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbTenderTaskHisTaskInstEntity">
+    <id column="history_id" jdbcType="VARCHAR" property="historyId" />
+    <result column="tender_task_id" jdbcType="VARCHAR" property="tenderTaskId" />
+    <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId" />
+    <result column="task_key" jdbcType="VARCHAR" property="taskKey" />
+    <result column="is_pass" jdbcType="VARCHAR" property="isPass" />
+    <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason" />
+    <result column="approve_user_id" jdbcType="VARCHAR" property="approveUserId" />
+    <result column="approve_time" jdbcType="TIMESTAMP" property="approveTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    history_id, tender_task_id, process_inst_id, task_key, is_pass, reject_reason, approve_user_id, 
+    approve_time
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_tender_task_his_task_inst
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_tender_task_his_task_inst
+    where history_id = #{historyId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_tender_task_his_task_inst
+    where history_id = #{historyId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntityExample">
+    delete from tb_tender_task_his_task_inst
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntity">
+    insert into tb_tender_task_his_task_inst (history_id, tender_task_id, process_inst_id, 
+      task_key, is_pass, reject_reason, 
+      approve_user_id, approve_time)
+    values (#{historyId,jdbcType=VARCHAR}, #{tenderTaskId,jdbcType=VARCHAR}, #{processInstId,jdbcType=VARCHAR}, 
+      #{taskKey,jdbcType=VARCHAR}, #{isPass,jdbcType=VARCHAR}, #{rejectReason,jdbcType=VARCHAR}, 
+      #{approveUserId,jdbcType=VARCHAR}, #{approveTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntity">
+    insert into tb_tender_task_his_task_inst
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="historyId != null">
+        history_id,
+      </if>
+      <if test="tenderTaskId != null">
+        tender_task_id,
+      </if>
+      <if test="processInstId != null">
+        process_inst_id,
+      </if>
+      <if test="taskKey != null">
+        task_key,
+      </if>
+      <if test="isPass != null">
+        is_pass,
+      </if>
+      <if test="rejectReason != null">
+        reject_reason,
+      </if>
+      <if test="approveUserId != null">
+        approve_user_id,
+      </if>
+      <if test="approveTime != null">
+        approve_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="historyId != null">
+        #{historyId,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTaskId != null">
+        #{tenderTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstId != null">
+        #{processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskKey != null">
+        #{taskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        #{isPass,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectReason != null">
+        #{rejectReason,jdbcType=VARCHAR},
+      </if>
+      <if test="approveUserId != null">
+        #{approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null">
+        #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_tender_task_his_task_inst
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_tender_task_his_task_inst
+    <set>
+      <if test="record.historyId != null">
+        history_id = #{record.historyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderTaskId != null">
+        tender_task_id = #{record.tenderTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.processInstId != null">
+        process_inst_id = #{record.processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskKey != null">
+        task_key = #{record.taskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isPass != null">
+        is_pass = #{record.isPass,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rejectReason != null">
+        reject_reason = #{record.rejectReason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveUserId != null">
+        approve_user_id = #{record.approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveTime != null">
+        approve_time = #{record.approveTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_tender_task_his_task_inst
+    set history_id = #{record.historyId,jdbcType=VARCHAR},
+      tender_task_id = #{record.tenderTaskId,jdbcType=VARCHAR},
+      process_inst_id = #{record.processInstId,jdbcType=VARCHAR},
+      task_key = #{record.taskKey,jdbcType=VARCHAR},
+      is_pass = #{record.isPass,jdbcType=VARCHAR},
+      reject_reason = #{record.rejectReason,jdbcType=VARCHAR},
+      approve_user_id = #{record.approveUserId,jdbcType=VARCHAR},
+      approve_time = #{record.approveTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntity">
+    update tb_tender_task_his_task_inst
+    <set>
+      <if test="tenderTaskId != null">
+        tender_task_id = #{tenderTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstId != null">
+        process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskKey != null">
+        task_key = #{taskKey,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        is_pass = #{isPass,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectReason != null">
+        reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      </if>
+      <if test="approveUserId != null">
+        approve_user_id = #{approveUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null">
+        approve_time = #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where history_id = #{historyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbTenderTaskHisTaskInstEntity">
+    update tb_tender_task_his_task_inst
+    set tender_task_id = #{tenderTaskId,jdbcType=VARCHAR},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      task_key = #{taskKey,jdbcType=VARCHAR},
+      is_pass = #{isPass,jdbcType=VARCHAR},
+      reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      approve_user_id = #{approveUserId,jdbcType=VARCHAR},
+      approve_time = #{approveTime,jdbcType=TIMESTAMP}
+    where history_id = #{historyId,jdbcType=VARCHAR}
+  </update>
+</mapper>

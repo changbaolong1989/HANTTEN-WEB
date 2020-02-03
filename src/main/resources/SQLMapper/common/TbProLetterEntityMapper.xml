@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.common.dao.TbProLetterEntityMapper">
+  <resultMap id="BaseResultMap" type="com.hd.common.entity.TbProLetterEntity">
+    <id column="letter_id" jdbcType="VARCHAR" property="letterId" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="edit_date" jdbcType="TIMESTAMP" property="editDate" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_number" jdbcType="VARCHAR" property="fileNumber" />
+    <result column="send_type" jdbcType="VARCHAR" property="sendType" />
+    <result column="receive_unit" jdbcType="VARCHAR" property="receiveUnit" />
+    <result column="receive_people" jdbcType="VARCHAR" property="receivePeople" />
+    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
+    <result column="copy_num" jdbcType="VARCHAR" property="copyNum" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="letter_file_path" jdbcType="VARCHAR" property="letterFilePath" />
+    <result column="letter_file_name" jdbcType="VARCHAR" property="letterFileName" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    letter_id, project_id, edit_date, file_name, file_number, send_type, receive_unit, 
+    receive_people, file_type, copy_num, remark, letter_file_path, letter_file_name, 
+    create_date, create_user_id, update_date, update_user_id, is_del_flg
+  </sql>
+  <select id="selectByExample" parameterType="com.hd.common.entity.TbProLetterEntityExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_pro_letter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_pro_letter
+    where letter_id = #{letterId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_pro_letter
+    where letter_id = #{letterId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hd.common.entity.TbProLetterEntityExample">
+    delete from tb_pro_letter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hd.common.entity.TbProLetterEntity">
+    <selectKey keyProperty="letterId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_letter (letter_id, project_id, edit_date, 
+      file_name, file_number, send_type, 
+      receive_unit, receive_people, file_type, 
+      copy_num, remark, letter_file_path, 
+      letter_file_name, create_date, create_user_id, 
+      update_date, update_user_id, is_del_flg
+      )
+    values (#{letterId,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, #{editDate,jdbcType=TIMESTAMP}, 
+      #{fileName,jdbcType=VARCHAR}, #{fileNumber,jdbcType=VARCHAR}, #{sendType,jdbcType=VARCHAR}, 
+      #{receiveUnit,jdbcType=VARCHAR}, #{receivePeople,jdbcType=VARCHAR}, #{fileType,jdbcType=VARCHAR}, 
+      #{copyNum,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{letterFilePath,jdbcType=VARCHAR}, 
+      #{letterFileName,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, #{isDelFlg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hd.common.entity.TbProLetterEntity">
+    <selectKey keyProperty="letterId" order="BEFORE" resultType="java.lang.String">
+      SELECT uuid()
+    </selectKey>
+    insert into tb_pro_letter
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      letter_id,
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="editDate != null">
+        edit_date,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="fileNumber != null">
+        file_number,
+      </if>
+      <if test="sendType != null">
+        send_type,
+      </if>
+      <if test="receiveUnit != null">
+        receive_unit,
+      </if>
+      <if test="receivePeople != null">
+        receive_people,
+      </if>
+      <if test="fileType != null">
+        file_type,
+      </if>
+      <if test="copyNum != null">
+        copy_num,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="letterFilePath != null">
+        letter_file_path,
+      </if>
+      <if test="letterFileName != null">
+        letter_file_name,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{letterId,jdbcType=VARCHAR},
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null">
+        #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileNumber != null">
+        #{fileNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="sendType != null">
+        #{sendType,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveUnit != null">
+        #{receiveUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="receivePeople != null">
+        #{receivePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null">
+        #{fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="copyNum != null">
+        #{copyNum,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="letterFilePath != null">
+        #{letterFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="letterFileName != null">
+        #{letterFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hd.common.entity.TbProLetterEntityExample" resultType="java.lang.Long">
+    select count(*) from tb_pro_letter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_pro_letter
+    <set>
+      <if test="record.letterId != null">
+        letter_id = #{record.letterId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectId != null">
+        project_id = #{record.projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.editDate != null">
+        edit_date = #{record.editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.fileName != null">
+        file_name = #{record.fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileNumber != null">
+        file_number = #{record.fileNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sendType != null">
+        send_type = #{record.sendType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiveUnit != null">
+        receive_unit = #{record.receiveUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receivePeople != null">
+        receive_people = #{record.receivePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileType != null">
+        file_type = #{record.fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyNum != null">
+        copy_num = #{record.copyNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.letterFilePath != null">
+        letter_file_path = #{record.letterFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.letterFileName != null">
+        letter_file_name = #{record.letterFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createUserId != null">
+        create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateDate != null">
+        update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUserId != null">
+        update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDelFlg != null">
+        is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_pro_letter
+    set letter_id = #{record.letterId,jdbcType=VARCHAR},
+      project_id = #{record.projectId,jdbcType=VARCHAR},
+      edit_date = #{record.editDate,jdbcType=TIMESTAMP},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      file_number = #{record.fileNumber,jdbcType=VARCHAR},
+      send_type = #{record.sendType,jdbcType=VARCHAR},
+      receive_unit = #{record.receiveUnit,jdbcType=VARCHAR},
+      receive_people = #{record.receivePeople,jdbcType=VARCHAR},
+      file_type = #{record.fileType,jdbcType=VARCHAR},
+      copy_num = #{record.copyNum,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      letter_file_path = #{record.letterFilePath,jdbcType=VARCHAR},
+      letter_file_name = #{record.letterFileName,jdbcType=VARCHAR},
+      create_date = #{record.createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{record.createUserId,jdbcType=VARCHAR},
+      update_date = #{record.updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{record.updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{record.isDelFlg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hd.common.entity.TbProLetterEntity">
+    update tb_pro_letter
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null">
+        edit_date = #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fileName != null">
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileNumber != null">
+        file_number = #{fileNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="sendType != null">
+        send_type = #{sendType,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveUnit != null">
+        receive_unit = #{receiveUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="receivePeople != null">
+        receive_people = #{receivePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null">
+        file_type = #{fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="copyNum != null">
+        copy_num = #{copyNum,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="letterFilePath != null">
+        letter_file_path = #{letterFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="letterFileName != null">
+        letter_file_name = #{letterFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelFlg != null">
+        is_del_flg = #{isDelFlg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where letter_id = #{letterId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hd.common.entity.TbProLetterEntity">
+    update tb_pro_letter
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      edit_date = #{editDate,jdbcType=TIMESTAMP},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      file_number = #{fileNumber,jdbcType=VARCHAR},
+      send_type = #{sendType,jdbcType=VARCHAR},
+      receive_unit = #{receiveUnit,jdbcType=VARCHAR},
+      receive_people = #{receivePeople,jdbcType=VARCHAR},
+      file_type = #{fileType,jdbcType=VARCHAR},
+      copy_num = #{copyNum,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      letter_file_path = #{letterFilePath,jdbcType=VARCHAR},
+      letter_file_name = #{letterFileName,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      is_del_flg = #{isDelFlg,jdbcType=VARCHAR}
+    where letter_id = #{letterId,jdbcType=VARCHAR}
+  </update>
+</mapper>

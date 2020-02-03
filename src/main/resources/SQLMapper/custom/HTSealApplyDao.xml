@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTSealApplyDao">
+
+    <insert id="saveOrUpdateRecord" parameterType="com.hd.common.entity.TbApplySealRecordEntity">
+        insert into tb_apply_seal_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">
+                record_id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="delegateTaskKey != null">
+                delegate_task_key,
+            </if>
+            <if test="delegateTaskId != null">
+                delegate_task_id,
+            </if>
+            <if test="applyUserId != null">
+                apply_user_id,
+            </if>
+            <if test="applyReason != null">
+                apply_reason,
+            </if>
+            <if test="applyTime != null">
+                apply_time,
+            </if>
+            <if test="applyUserName != null">
+                apply_user_name,
+            </if>
+            <if test="sealTypeId != null">
+                seal__type_id,
+            </if>
+            <if test="isPagingSeal != null">
+                is_paging_seal,
+            </if>
+            <if test="attachmentName != null">
+                attachment_name,
+            </if>
+            <if test="attachmentPath != null">
+                attachment_path,
+            </if>
+            <if test="approveTime != null">
+                approve_time,
+            </if>
+            <if test="completeTime != null">
+                complete_time,
+            </if>
+            <if test="verifyState != null">
+                verify_state,
+            </if>
+            <if test="rejectReason != null">
+                reject_reason,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="isDelFlg != null">
+                is_del_flg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">
+                #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="delegateTaskKey != null">
+                #{delegateTaskKey,jdbcType=VARCHAR},
+            </if>
+            <if test="delegateTaskId != null">
+                #{delegateTaskId,jdbcType=VARCHAR},
+            </if>
+            <if test="applyUserId != null">
+                #{applyUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="applyReason != null">
+                #{applyReason,jdbcType=VARCHAR},
+            </if>
+            <if test="applyTime != null">
+                #{applyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyUserName != null">
+                #{applyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="sealTypeId != null">
+                #{sealTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="isPagingSeal != null">
+                #{isPagingSeal,jdbcType=INTEGER},
+            </if>
+            <if test="attachmentName != null">
+                #{attachmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="attachmentPath != null">
+                #{attachmentPath,jdbcType=VARCHAR},
+            </if>
+            <if test="approveTime != null">
+                #{approveTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="completeTime != null">
+                #{completeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="verifyState != null">
+                #{verifyState,jdbcType=VARCHAR},
+            </if>
+            <if test="rejectReason != null">
+                #{rejectReason,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelFlg != null">
+                #{isDelFlg,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        ON DUPLICATE KEY
+        update
+        delegate_task_key = #{delegateTaskKey,jdbcType=VARCHAR},delegate_task_id = #{delegateTaskId,jdbcType=VARCHAR}
+        <if test="approveTime != null">
+            ,approve_time = #{approveTime,jdbcType=TIMESTAMP}
+        </if>
+    </insert>
+
+    <select id="queryAssignUsers" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT
+            tu.user_id as userId,
+            tu.user_name as userName
+        FROM
+            tb_job_processnode_relation tjpr,
+            tb_user_job_relation tujr,
+            tb_user tu
+        WHERE
+            tjpr.job_id = tujr.job_id
+            AND tu.user_id = tujr.user_id
+            AND tjpr.node_id = #{nodeId, jdbcType=VARCHAR}
+            AND tjpr.process_dict_id = #{processNodeId, jdbcType=VARCHAR}
+            AND tjpr.department_id = #{departmentId, jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="querySealApplyRecord" resultType="java.util.HashMap">
+        SELECT
+            T.apply_time,
+            T.apply_reason,
+            T1.seal_type_text,
+        CASE
+                WHEN T.is_paging_seal = 0 THEN
+                '否'
+                WHEN T.is_paging_seal = 1 THEN
+                '是' ELSE '-'
+            END AS is_paging_seal ,
+            T.apply_user_name,
+            T.approve_time,
+            T.approve_user_name
+        FROM
+            tb_apply_seal_record T
+            LEFT JOIN tb_dict_seal T1 ON T.seal__type_id = T1.seal__type_id
+        WHERE
+            1 = 1
+            AND T.verify_state = 1
+        ORDER BY
+            T.is_signatured,
+            T.apply_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,81 @@
+@charset "UTF-8";
+/* 待办已办经手 */
+.work__table-backlog,
+.work__table-finished,
+.work__table-handle,
+.work__table-please-record-chapter,
+.work__table-recorded-chapter,
+.work__table-chapter-review {
+  /* 待办已办经手__类表格列表 */
+  /* 内容列表 */
+}
+.work__table-backlog *,
+.work__table-finished *,
+.work__table-handle *,
+.work__table-please-record-chapter *,
+.work__table-recorded-chapter *,
+.work__table-chapter-review * {
+  box-sizing: border-box;
+}
+.work__table-backlog .contentlist,
+.work__table-finished .contentlist,
+.work__table-handle .contentlist,
+.work__table-please-record-chapter .contentlist,
+.work__table-recorded-chapter .contentlist,
+.work__table-chapter-review .contentlist {
+  margin: 15px auto;
+}
+.work__table-backlog .contentlist .contentlist-li,
+.work__table-finished .contentlist .contentlist-li,
+.work__table-handle .contentlist .contentlist-li,
+.work__table-please-record-chapter .contentlist .contentlist-li,
+.work__table-recorded-chapter .contentlist .contentlist-li,
+.work__table-chapter-review .contentlist .contentlist-li {
+  /* 可点击的 */
+}
+.work__table-backlog .contentlist .contentlist-li .contentlist-li--clickable,
+.work__table-finished .contentlist .contentlist-li .contentlist-li--clickable,
+.work__table-handle .contentlist .contentlist-li .contentlist-li--clickable,
+.work__table-please-record-chapter .contentlist .contentlist-li .contentlist-li--clickable,
+.work__table-recorded-chapter .contentlist .contentlist-li .contentlist-li--clickable,
+.work__table-chapter-review .contentlist .contentlist-li .contentlist-li--clickable {
+  color: #06a1ee !important;
+}
+.work__table-backlog .contentlist .contentlist-li .contentlist-li--clickable--refuse,
+.work__table-finished .contentlist .contentlist-li .contentlist-li--clickable--refuse,
+.work__table-handle .contentlist .contentlist-li .contentlist-li--clickable--refuse,
+.work__table-please-record-chapter .contentlist .contentlist-li .contentlist-li--clickable--refuse,
+.work__table-recorded-chapter .contentlist .contentlist-li .contentlist-li--clickable--refuse,
+.work__table-chapter-review .contentlist .contentlist-li .contentlist-li--clickable--refuse {
+  color: red !important;
+}
+.work__table-backlog .contentlist .contentlist-li > span,
+.work__table-finished .contentlist .contentlist-li > span,
+.work__table-handle .contentlist .contentlist-li > span,
+.work__table-please-record-chapter .contentlist .contentlist-li > span,
+.work__table-recorded-chapter .contentlist .contentlist-li > span,
+.work__table-chapter-review .contentlist .contentlist-li > span {
+  max-width: 50%;
+}
+.work__table-backlog .contentlist .contentlist-li > span + span,
+.work__table-finished .contentlist .contentlist-li > span + span,
+.work__table-handle .contentlist .contentlist-li > span + span,
+.work__table-please-record-chapter .contentlist .contentlist-li > span + span,
+.work__table-recorded-chapter .contentlist .contentlist-li > span + span,
+.work__table-chapter-review .contentlist .contentlist-li > span + span {
+  text-align: right;
+}
+.work__table-backlog .contentlist .contentlist-li > span:first-child,
+.work__table-finished .contentlist .contentlist-li > span:first-child,
+.work__table-handle .contentlist .contentlist-li > span:first-child,
+.work__table-please-record-chapter .contentlist .contentlist-li > span:first-child,
+.work__table-recorded-chapter .contentlist .contentlist-li > span:first-child,
+.work__table-chapter-review .contentlist .contentlist-li > span:first-child {
+  min-width: 100px;
+}
+
+.mint-toast {
+  z-index: 999999;
+}
+
+/*# sourceMappingURL=work-common.css.map */

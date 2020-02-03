@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTRequestMenuHisTaskInstDao">
+
+
+    <resultMap id="selectList" type="com.hd.manager.dao.bean.HTRequestMenuHisTaskInstBean">
+        <id column="parentTaskKey" property="taskKey" />
+        <collection property="htRequestMenuHisTaskInstList" ofType="com.hd.manager.dao.bean.HTRequestMenuHisTaskInstBean">
+            <id column="historyId" property="historyId" />
+            <result column="processInstId" property="processInstId" />
+            <result column="requestMenuId" property="requestMenuId" />
+            <result column="taskKey" property="taskKey" />
+            <result column="isPass" property="isPass" />
+            <result column="rejectReason" property="rejectReason" />
+            <result column="approveUserId" property="approveUserId" />
+            <result column="approveUserName" property="approveUserName" />
+            <result column="signPath" property="signPath" />
+            <result column="approveTime" property="approveTime" />
+            <collection property="htUserQuestionRecordRelationBeanList" ofType="com.hd.manager.dao.bean.HTUserQuestionRecordRelationBean">
+                <id column="childRelationId" property="relationId"></id>
+                <result column="childRecordId" property="recordId"></result>
+                <result column="childUserId" property="userId"></result>
+                <result column="childUserName" property="userName"></result>
+                <result column="childQuestionId" property="questionId"></result>
+                <result column="childQuestionName" property="questionName"></result>
+                <result column="childQuestionNum" property="questionNum"></result>
+                <result column="childSourceType" property="sourceType"></result>
+            </collection>
+        </collection>
+    </resultMap>
+    <!--查询请款单历史流程(审核记录)-->
+    <select id="excSearchHTRequestMenuHisTaskInstInfoList" resultMap="selectList">
+        SELECT
+            trmht.task_key           AS  parentTaskKey,
+            trmht.history_id         AS  historyId,
+            trmht.request_menu_id    AS  requestMenuId,
+            trmht.task_key           AS  taskKey,
+            trmht.is_pass            AS  isPass,
+            trmht.reject_reason      AS  rejectReason,
+            trmht.approve_user_id    AS  approveUserId,
+            ptu.user_name            AS  approveUserName,
+            ptu.sign_path            AS  signPath,
+            trmht.approve_time       AS  approveTime,
+            tuqrr.relation_id		 AS  childRelationId,
+            tuqrr.record_id			 AS  childRecordId,
+            tuqrr.user_id			 AS  childUserId,
+            tu.user_name			 AS  childUserName,
+            tuqrr.question_id		 AS  childQuestionId,
+            tdq.question_name		 AS  childQuestionName,
+            tuqrr.question_num	     AS  childQuestionNum,
+            tuqrr.source_type		 AS  childSourceType
+
+        FROM
+            tb_request_menu_his_task_inst trmht
+        LEFT JOIN
+            (SELECT * FROM tb_user_question_record_relation WHERE source_type = '4') tuqrr
+        ON
+            tuqrr.record_id = trmht.history_id
+        LEFT JOIN
+            tb_user tu
+        ON
+            tu.user_id = tuqrr.user_id
+        LEFT JOIN
+            tb_user ptu
+        ON
+            ptu.user_id = trmht.approve_user_id
+        LEFT JOIN
+            tb_dict_question tdq
+        ON
+            tdq.question_id = tuqrr.question_id
+        WHERE
+            trmht.request_menu_id = #{requestMenuId}
+        order by
+            trmht.approve_time asc
+    </select>
+
+
+</mapper>

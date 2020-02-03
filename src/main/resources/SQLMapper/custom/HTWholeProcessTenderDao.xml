@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessTenderDao">
+
+
+
+
+    <resultMap id="exportList" type="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+        <id column="treatyType" property="treatyType" />
+        <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+            <id column="undertakeType" property="undertakeType" />
+            <id column="tempTreatyType" property="treatyType" />
+            <collection property="childList" ofType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+                <id column="childTenderId" property="tenderId"></id>
+                <result column="childTenderNum" property="tenderNum"></result>
+                <result column="childTenderName" property="tenderName"></result>
+                <result column="childPlanStartTime" property="planStartTime"></result>
+                <result column="childPlanEndTime" property="planEndTime"></result>
+                <result column="childContractType" property="contractType"></result>
+                <result column="childPurchaserWay" property="purchaserWay"></result>
+                <result column="childTargetCost" property="targetCost"></result>
+                <result column="childFileType" property="fileType"></result>
+                <result column="childExciseMoney" property="exciseMoney"></result>
+                <result column="childTaxRatio" property="taxRatio"></result>
+                <result column="childTaxMoney" property="taxMoney"></result>
+                <result column="childWithTaxMoney" property="withTaxMoney"></result>
+                <result column="childRemark" property="remark"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!--查询项目招标阶段列表-->
+    <sql id="excSearchProTenderPeriodListSqlForExport">
+        SELECT
+            tpt.tender_id        AS childTenderId,
+            tpt.tender_num       AS childTenderNum,
+            tpt.treaty_type      AS treatyType,
+            tpt.undertake_type   AS undertakeType,
+            tpt.treaty_type      AS tempTreatyType,
+            tpt.tender_name      AS childTenderName,
+            tpt.plan_start_time  AS childPlanStartTime,
+            tpt.plan_end_time    AS childPlanEndTime,
+            tpt.contract_type    AS childContractType,
+            tpt.purchaser_way    AS childPurchaserWay,
+            tpt.target_cost      AS childTargetCost,
+            tpt.file_type        AS childFileType,
+            tpt.excise_money     AS childExciseMoney,
+            tpt.tax_ratio        AS childTaxRatio,
+            tpt.tax_money        AS childTaxMoney,
+            tpt.with_tax_money   AS childWithTaxMoney,
+            tpt.remark           AS childRemark,
+            tpt.create_date      AS createDate,
+            tpt.create_user_id   AS createUserId,
+            tpt.update_date      AS updateDate,
+            tpt.update_user_id   AS updateUserId,
+            tpt.is_del_flg       AS isDelFlg
+        FROM
+            tb_pro_tender tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.project_id = #{projectId}
+        ORDER BY
+            tpt.treaty_type ASC,
+            tpt.undertake_type ASC,
+            tpt.tender_name ASC,
+            tpt.create_date DESC
+    </sql>
+
+    <!--清标信息修改-->
+    <update id="updateWholeProcessCleanTender">
+        update tb_pro_tender
+        <set>
+            accept_file_time = #{acceptFileTime,jdbcType=TIMESTAMP},
+            send_report_time = #{sendReportTime,jdbcType=TIMESTAMP},
+            <if test="reportPath != null">
+                report_path = #{reportPath,jdbcType=VARCHAR},
+            </if>
+            <if test="reportName != null">
+                report_name = #{reportName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where tender_id = #{tenderId,jdbcType=VARCHAR}
+    </update>
+
+    <!--查询项目招标阶段列表-->
+    <select id="excSearchProTenderPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProTenderPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询项目招标阶段总数-->
+    <select id="excSearchProTenderPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProTenderPeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目招标阶段列表-->
+    <sql id="excSearchProTenderPeriodListSql">
+        SELECT
+            tpt.tender_id        AS tenderId,
+            tpt.project_id       AS projectId,
+            tpt.tender_num       AS tenderNum,
+            tpt.treaty_type      AS treatyType,
+            tpt.undertake_type   AS undertakeType,
+            tpt.tender_name      AS tenderName,
+            tpt.plan_start_time  AS planStartTime,
+            tpt.plan_end_time    AS planEndTime,
+            tpt.contract_type    AS contractType,
+            tpt.purchaser_way    AS purchaserWay,
+            tpt.target_cost      AS targetCost,
+            tpt.file_type        AS fileType,
+            tpt.excise_money     AS exciseMoney,
+            tpt.tax_ratio        AS taxRatio,
+            tpt.tax_money        AS taxMoney,
+            tpt.with_tax_money   AS withTaxMoney,
+            tpt.remark           AS remark,
+            tpt.tender_file_path AS tenderFilePath,
+            tpt.tender_file_name AS tenderFileName,
+            tpt.accept_file_time AS acceptFileTime,
+            tpt.send_report_time AS sendReportTime,
+            tpt.report_path      AS reportPath,
+            tpt.report_name      AS reportName,
+            tpt.create_date      AS createDate,
+            tpt.create_user_id   AS createUserId,
+            tpt.update_date      AS updateDate,
+            tpt.update_user_id   AS updateUserId,
+            tpt.is_del_flg       AS isDelFlg
+
+        FROM
+            tb_pro_tender tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.project_id = #{projectId}
+        ORDER BY
+            tpt.treaty_type ASC,
+            tpt.undertake_type ASC,
+            tpt.tender_name ASC,
+            tpt.create_date DESC
+    </sql>
+
+
+    <!--查询项目清标阶段列表-->
+    <select id="excSearchProCleanTenderPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProCleanTenderPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+
+    <!--查询项目清标阶段总数-->
+    <select id="excSearchProCleanTenderPeriodListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="excSearchProCleanTenderPeriodListSql" />) temp
+    </select>
+
+
+    <!--查询项目清标阶段列表-->
+    <sql id="excSearchProCleanTenderPeriodListSql">
+        SELECT
+            tpt.tender_id        AS tenderId,
+            tpt.project_id       AS projectId,
+            tpt.tender_num       AS tenderNum,
+            tpt.treaty_type      AS treatyType,
+            tpt.undertake_type   AS undertakeType,
+            tpt.tender_name      AS tenderName,
+            tpt.plan_start_time  AS planStartTime,
+            tpt.plan_end_time    AS planEndTime,
+            tpt.contract_type    AS contractType,
+            tpt.purchaser_way    AS purchaserWay,
+            tpt.target_cost      AS targetCost,
+            tpt.file_type        AS fileType,
+            tpt.excise_money     AS exciseMoney,
+            tpt.tax_ratio        AS taxRatio,
+            tpt.tax_money        AS taxMoney,
+            tpt.with_tax_money   AS withTaxMoney,
+            tpt.remark           AS remark,
+            tpt.tender_file_path AS tenderFilePath,
+            tpt.tender_file_name AS tenderFileName,
+            tpt.accept_file_time AS acceptFileTime,
+            tpt.send_report_time AS sendReportTime,
+            tpt.report_path      AS reportPath,
+            tpt.report_name      AS reportName,
+            tpt.create_date      AS createDate,
+            tpt.create_user_id   AS createUserId,
+            tpt.update_date      AS updateDate,
+            tpt.update_user_id   AS updateUserId,
+            tpt.is_del_flg       AS isDelFlg
+
+        FROM
+            tb_pro_tender tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.project_id = #{projectId}
+        ORDER BY
+            ISNULL(tpt.send_report_time) DESC,
+            tpt.send_report_time DESC
+    </sql>
+
+
+
+    <!--查询项目招标/清标阶段信息详情-->
+    <select id="excSearchProTenderPeriodInfoByPrimaryKey"  resultType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+        SELECT
+            tpt.tender_id        AS tenderId,
+            tpt.project_id       AS projectId,
+            tpt.tender_num       AS tenderNum,
+            tpt.treaty_type      AS treatyType,
+            tpt.undertake_type   AS undertakeType,
+            tpt.tender_name      AS tenderName,
+            tpt.plan_start_time  AS planStartTime,
+            tpt.plan_end_time    AS planEndTime,
+            tpt.contract_type    AS contractType,
+            tpt.purchaser_way    AS purchaserWay,
+            tpt.target_cost      AS targetCost,
+            tpt.file_type        AS fileType,
+            tpt.excise_money     AS exciseMoney,
+            tpt.tax_ratio        AS taxRatio,
+            tpt.tax_money        AS taxMoney,
+            tpt.with_tax_money   AS withTaxMoney,
+            tpt.remark           AS remark,
+            tpt.tender_file_path AS tenderFilePath,
+            tpt.tender_file_name AS tenderFileName,
+            tpt.accept_file_time AS acceptFileTime,
+            tpt.send_report_time AS sendReportTime,
+            tpt.report_path      AS reportPath,
+            tpt.report_name      AS reportName,
+            tpt.create_date      AS createDate,
+            tpt.create_user_id   AS createUserId,
+            tpt.update_date      AS updateDate,
+            tpt.update_user_id   AS updateUserId,
+            tpt.is_del_flg       AS isDelFlg
+
+        FROM
+            tb_pro_tender tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        AND
+            tpt.tender_id = #{tenderId}
+
+    </select>
+    <select id="excCheckProTenderCountByProperty" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+
+        FROM
+            tb_pro_tender tpt
+        WHERE
+            tpt.is_del_flg = '0'
+        <if test="tenderId != null and tenderId != ''">
+            AND
+            tpt.tender_id != #{tenderId}
+        </if>
+        <if test="tenderNum != null and tenderNum != ''">
+            AND
+            tpt.tender_num = #{tenderNum}
+        </if>
+        <if test="tenderName != null and tenderName != ''">
+            AND
+            tpt.tender_name = #{tenderName}
+        </if>
+        <if test="projectId != null and projectId != ''">
+            AND
+            tpt.project_id = #{projectId}
+        </if>
+
+    </select>
+
+
+    <!--查询项目招标阶段列表-->
+    <select id="excSearchProTenderPeriodListForExport"  resultMap="exportList">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProTenderPeriodListSqlForExport" />) temp
+
+    </select>
+
+    <!--查询项目清标阶段列表-->
+    <select id="excSearchProjectCleanTenderPeriodListForExport"  resultType="com.hd.manager.dao.bean.HTWholeProcessTenderBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchProCleanTenderPeriodListSql" />) temp
+
+    </select>
+
+</mapper>

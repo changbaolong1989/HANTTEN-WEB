@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTTenderTaskDao">
+    <update id="excUpdateTenderTaskPeriodMaterialInfoIsReviewType">
+        UPDATE tb_tender_task_period_material SET is_review = "1" WHERE relation_id in
+        (<foreach collection="list" item="item" index="index" separator=",">
+            #{item}
+        </foreach>)
+    </update>
+
+    <!--查询消息信息列表数据-->
+    <select id="excSearchTenderTaskList"  resultType="com.hd.manager.dao.bean.HTTenderTaskBean">
+        select
+        temp.*
+        from
+        (<include refid="TenderTaskListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询消息信息列表数据的总条数-->
+    <select id="excSearchTenderTaskListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="TenderTaskListSql" />) temp
+    </select>
+
+    <!--批量插入投标任务和阶段关联信息-->
+    <insert id="excInsertHTTenderTaskPeriods">
+        INSERT INTO
+            tb_tender_task_period(
+                relation_id,tender_task_id,period_id,create_date,create_user_id,update_date,update_user_id,is_del_flg
+            )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.relationId},#{item.tenderTaskId},#{item.periodId},#{item.createDate},#{item.createUserId},#{item.updateDate},#{item.updateUserId},#{item.isDelFlg}
+        )
+        </foreach>
+    </insert>
+    <select id="excGetMaxSortNum" resultType="java.lang.Integer">
+        select
+          IFNULL(max(ttt.sort_num),0)
+        from
+          tb_tender_task ttt
+    </select>
+    <!--批量插入投标计划与成员关联-->
+    <insert id="excInsertTenderTaskUsers">
+        INSERT INTO
+        tb_tender_task_user(
+        relation_id,tender_task_id,user_id,is_main_duty,create_date,create_user_id,update_date,update_user_id,is_del_flg
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.relationId},#{item.tenderTaskId},#{item.userId},#{item.isMainDuty},#{item.createDate},#{item.createUserId},#{item.updateDate},#{item.updateUserId},#{item.isDelFlg}
+            )
+        </foreach>
+    </insert>
+
+    <!--删除投标任务和阶段关联-->
+    <delete id="excDeleteHTTenderTaskPeriodsByTenderTaskId">
+        DELETE
+        FROM
+            tb_tender_task_period
+        WHERE
+            tender_task_id = #{item}
+    </delete>
+
+    <!--删除投标任务和成员关联-->
+    <delete id="excDeleteHTTenderTaskUsersByTenderTaskId">
+        DELETE
+        FROM
+            tb_tender_task_user
+        WHERE
+            tender_task_id = #{item}
+    </delete>
+
+    <!--查询同名数据个数-->
+    <select id="excSearchTenderTaskCountByName" resultType="java.lang.Integer">
+        SELECT
+          COUNT(tender_task_id)
+        FROM
+          tb_tender_task ttt
+        where
+          1=1
+        AND
+          ttt.tender_task_name = #{tenderTaskName}
+        <if test="tenderTaskId !=null and tenderTaskId!= ''">
+            AND
+            ttt.tender_task_id != #{tenderTaskId}
+        </if>
+    </select>
+    <!--投标列表查询-->
+    <sql id="TenderTaskListSql">
+        SELECT
+            ttt.tender_task_id        AS tenderTaskId,
+            ttt.tender_task_name      AS tenderTaskName,
+            ttt.tender_task_content   AS tenderTaskContent,
+            ttt.sort_num              AS sortNum,
+            ttt.start_date            AS startDate,
+            ttt.tender_task_sts       AS tenderTaskSts,
+            ttt.department_id         AS departmentId,
+            tttu.user_id              AS userId,
+            tttu.is_main_duty         AS mainDuty,
+            tu.user_name              AS userName,
+            ttt.tender_task_id        AS businessId
+        FROM
+            tb_tender_task ttt
+            LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+            LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+        WHERE
+            ttt.is_del_flg = 0
+        AND
+            tttu.is_del_flg = 0
+        AND
+            tu.is_del_flg = 0
+        AND
+            tttu.is_main_duty = 1
+        <if test="userName !=null and userName!= ''">
+            AND
+                tu.user_name like concat(concat('%',#{userName}),'%')
+        </if>
+        <if test="tenderTaskName !=null and tenderTaskName!= ''">
+            AND
+                ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        ORDER BY
+            ttt.sort_num desc
+    </sql>
+
+    <!--查询阶段列表-->
+    <select id="excSearchTaskPeriodByTenderTaskId" resultType="com.hd.manager.dao.bean.HTTenderTaskPeriodBean">
+        SELECT
+            tttp.relation_id  AS relationId,
+            tttp.period_id   AS periodId,
+            tttp.tender_task_id  AS tenderTaskId,
+            ttp.period_name  AS  periodName,
+            ttp.period_desc AS periodDesc,
+            ttp.period_type AS periodType
+        FROM
+            tb_tender_task_period tttp
+        LEFT JOIN
+            tb_task_period ttp
+        ON 	tttp.period_id = ttp.period_id
+        where
+                tttp.is_del_flg = 0
+        AND
+                ttp.is_del_flg = 0
+        AND
+                tttp.tender_task_id = #{item}
+        ORDER BY
+                ttp.sort ASC
+    </select>
+
+    <!--查询投标任务详情-->
+    <select id="excSearchTenderTaskInfoById" resultType="com.hd.manager.dao.bean.HTTenderTaskBean">
+        SELECT
+            ttt.tender_task_id        AS tenderTaskId,
+            ttt.process_inst_id       AS processInstId,
+            ttt.department_id         AS departmentId,
+            ttt.apply_user_id         AS applyUserId,
+            ttt.apply_user_name       AS applyUserName,
+            ttt.apply_time            AS applyTime,
+            ttt.approve_user_id       AS approveUserId,
+            ttt.approve_user_name     AS approveUserName,
+            ttt.approve_time          AS approveTime,
+            ttt.complete_time         AS completeTime,
+            ttt.create_task_date      AS createTaskDate,
+            ttt.create_task_user_id   AS createTaskUserId,
+            ttt.tender_task_name      AS tenderTaskName,
+            ttt.tender_task_content   AS tenderTaskContent,
+            ttt.sort_num              AS sortNum,
+            ttt.start_date            AS startDate,
+            ttt.tender_task_sts       AS tenderTaskSts,
+            ttt.current_state         AS currentState,
+            ttt.verify_state          AS verifyState,
+            ttt.is_can_recall         AS isCanRecall,
+            ttt.delegate_task_id      AS delegateTaskId,
+            ttt.delegate_task_key     AS delegateTaskKey,
+            ttt.submit_node           AS submitNode,
+            ttt.department_id         AS departmentId,
+            ttt.create_user_id        AS createUserId,
+            tu.open_id                AS openId
+        FROM
+            tb_tender_task ttt
+        LEFT JOIN tb_user tu ON tu.user_id = ttt.apply_user_id
+        WHERE
+            ttt.is_del_flg = 0
+        AND
+            ttt.tender_task_id =#{item}
+    </select>
+
+    <!--查询投标任务关联成员-->
+    <select id="excSearchTenderTaskUserListByTenderTaskId" resultType="com.hd.manager.dao.bean.HTTenderTaskUserBean">
+        SELECT
+            tttu.user_id AS userId,
+            tttu.is_main_duty AS isMainDuty,
+            tu.user_name AS userName
+        FROM
+            tb_tender_task_user tttu
+        LEFT JOIN
+            tb_user tu
+        ON
+            tu.user_id = tttu.user_id
+        WHERE
+            tttu.is_del_flg = 0
+        AND
+            tttu.tender_task_id =#{item}
+    </select>
+
+    <!--查询文件类别列表-->
+    <select id="excSearchMaterialTypeList" resultType="com.hd.manager.dao.bean.HTDictFileTypeBean">
+        SELECT
+            tdft.file_type_id   AS fileTypeId,
+            tdft.file_type_name AS fileTypeName
+        FROM
+            tb_dict_file_type tdft
+        WHERE
+            tdft.is_del_flg = 0
+        <if test="departmentId !=null and departmentId!= ''">
+            AND
+            tdft.department_id = #{departmentId}
+        </if>
+        <if test="counselTypeId !=null and counselTypeId!= ''">
+            AND
+            tdft.counsel_type_id = #{counselTypeId}
+        </if>
+    </select>
+
+
+    <!--查询阶段关联文件信息-->
+    <select id="excSearchTenderTaskPeriodMaterialListByProperty"  resultType="com.hd.manager.dao.bean.HTTenderTaskPeriodMaterialBean">
+        SELECT
+        tttpm.relation_id             AS relationId,
+        tttpm.is_review               AS isReview,
+        tttpm.tender_task_period_id   AS tenderTaskPeriodId,
+        tttpm.file_type_id            AS fileTypeId,
+        tttpm.material_name           AS materialName,
+        tttpm.material_path           AS materialPath,
+        tu.user_name                  AS userName,
+        tttpm.create_user_id          AS createUserId
+        FROM
+        tb_tender_task_period_material tttpm
+        LEFT JOIN tb_tender_task_period tttp ON tttpm.tender_task_period_id = tttp.relation_id
+        LEFT JOIN tb_task_period ttp on ttp.period_id = tttp.period_id
+        LEFT JOIN tb_user tu ON tttpm.create_user_id = tu.user_id
+        WHERE
+        tttpm.is_del_flg = '0'
+        AND tttp.is_del_flg = '0'
+        <if test="tenderTaskId !=null and tenderTaskId!= ''">
+            AND tttp.tender_task_id = #{tenderTaskId}
+            AND ttp.period_type not in ('2','3')
+        </if>
+        <if test="tenderTaskPeriodId !=null and tenderTaskPeriodId!= ''">
+            AND tttpm.tender_task_period_id = #{tenderTaskPeriodId}
+        </if>
+        <if test="isReview !=null and isReview!= ''">
+            AND tttpm.is_review = #{isReview}
+        </if>
+    </select>
+
+    <!--普通和执行人待办列表-->
+    <select id="excSearchTenderTaskPendingList" resultType="com.hd.manager.dao.bean.HTTenderTaskBean">
+        SELECT
+        t.*
+        FROM
+        (
+        SELECT
+        ttt.tender_task_id AS tenderTaskId,
+        ttt.tender_task_name AS tenderTaskName,
+        ttt.tender_task_content AS tenderTaskContent,
+        ttt.sort_num AS sortNum,
+        ttt.start_date AS startDate,
+        ttt.tender_task_sts AS tenderTaskSts,
+        ttt.verify_state AS verifyState,
+        tu.user_name AS userName,
+        ttt.is_can_recall AS isCanRecall,
+        ttt.delegate_task_id AS delegateTaskId,
+        ttt.submit_node AS submitNode,
+        ttt.create_date AS createDate
+        FROM
+        tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.delegate_task_key = #{delegateTaskKey}
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND tttu.is_main_duty = '1'
+        AND ttt.tender_task_id IN (
+        SELECT
+        tender_task_id
+        FROM
+        tb_tender_task_user tttu
+        WHERE
+        tttu.is_del_flg = '0'
+        AND ttt.verify_state != '1'
+        AND tttu.is_main_duty = '0'
+        AND tttu.user_id = #{userId})
+        <if test="null != tenderTaskIds and tenderTaskIds.size()>0">
+        UNION
+        SELECT
+        ttt.tender_task_id AS tenderTaskId,
+        ttt.tender_task_name AS tenderTaskName,
+        ttt.tender_task_content AS tenderTaskContent,
+        ttt.sort_num AS sortNum,
+        ttt.start_date AS startDate,
+        ttt.tender_task_sts AS tenderTaskSts,
+        ttt.verify_state AS verifyState,
+        tu.user_name AS userName,
+        ttt.is_can_recall AS isCanRecall,
+        ttt.delegate_task_id AS delegateTaskId,
+        ttt.submit_node AS submitNode,
+        ttt.create_date AS createDate
+        FROM
+        tb_tender_task ttt
+        LEFT JOIN tb_tender_task_user tttu ON ttt.tender_task_id = tttu.tender_task_id
+        LEFT JOIN tb_user tu ON tttu.user_id = tu.user_id
+        WHERE
+        ttt.is_del_flg = '0'
+        AND ttt.verify_state != '1'
+        AND tttu.is_main_duty = '1'
+        <if test = "tenderTaskName !=null and tenderTaskName!= ''" >
+            AND ttt.tender_task_name LIKE concat(concat('%',#{tenderTaskName}),'%')
+        </if>
+        AND ttt.tender_task_id IN (
+            <foreach collection = "tenderTaskIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+        )
+
+        </if>
+        ) t
+        ORDER BY
+        t.createDate DESC
+    </select>
+
+
+
+    <!--查询当前人业务线相关部门-->
+    <select id="excSearchAllDepartmentList" resultType="com.hd.manager.dao.bean.HTDepartmentBean">
+        SELECT
+            department_id AS departmentId,
+            department_name AS departmentName
+        FROM
+            tb_dict_department
+        WHERE
+            department_id IN ( SELECT tj.involved_department FROM tb_job tj WHERE tj.job_id IN ( SELECT tujr.job_id FROM tb_user_job_relation tujr WHERE tujr.user_id = #{userId}) )
+        <if test=' null != departmentId and "" != departmentId '>
+            AND
+              department_id != #{departmentId}
+        </if>
+    </select>
+    <select id="excSearchTenderStageMaterialByTenderTaskId"
+            resultType="com.hd.manager.dao.bean.HTTenderTaskPeriodMaterialBean">
+        SELECT
+            tttpm.relation_id             AS relationId,
+            tttpm.is_review               AS isReview,
+            tttpm.tender_task_period_id   AS tenderTaskPeriodId,
+            tttpm.file_type_id            AS fileTypeId,
+            tttpm.material_name           AS materialName,
+            tttpm.material_path           AS materialPath,
+            tttpm.create_user_id          AS createUserId,
+            tttp.tender_task_id           AS tenderTaskId,
+            ttp.period_type               AS periodType
+        FROM
+            tb_tender_task_period_material tttpm
+            LEFT JOIN tb_tender_task_period tttp ON tttpm.tender_task_period_id = tttp.relation_id
+            LEFT JOIN tb_task_period ttp ON tttp.period_id = ttp.period_id
+        WHERE
+            tttpm.is_del_flg = '0'
+            AND ttp.period_type = #{periodType}
+            AND tttp.tender_task_id = #{tenderTaskId}
+    </select>
+    <!--重置提审文件状态-->
+    <update id="excCleanTenderTaskPeriodMaterialInfoIsReviewType">
+        UPDATE tb_tender_task_period_material SET is_review = "0" WHERE tender_task_period_id in
+        (SELECT tttp.relation_id FROM tb_tender_task_period tttp where tttp.tender_task_id = #{item})
+    </update>
+
+</mapper>

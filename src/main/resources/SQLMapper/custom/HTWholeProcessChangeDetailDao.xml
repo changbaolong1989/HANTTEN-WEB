@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessChangeDetailDao">
+
+    <resultMap id="BaseResultMap" type="com.hd.manager.dao.bean.HTProAlterDetaiBean">
+        <id column="alter_id" jdbcType="VARCHAR" property="alterId"/>
+        <result column="project_id" jdbcType="VARCHAR" property="projectId"/>
+        <result column="contract_id" jdbcType="VARCHAR" property="contractId"/>
+        <result column="contract_num" jdbcType="VARCHAR" property="contractNum"/>
+        <result column="contract_name" jdbcType="VARCHAR" property="contractName"/>
+        <result column="alter_name" jdbcType="VARCHAR" property="alterName"/>
+        <result column="professional_id" jdbcType="VARCHAR" property="professionalId"/>
+        <result column="content_summary" jdbcType="VARCHAR" property="contentSummary"/>
+        <result column="talk_date" jdbcType="TIMESTAMP" property="talkDate"/>
+        <result column="receive_date" jdbcType="TIMESTAMP" property="receiveDate"/>
+        <result column="sts" jdbcType="VARCHAR" property="sts"/>
+        <result column="declare_amount" jdbcType="DOUBLE" property="declareAmount"/>
+        <result column="audit_amount" jdbcType="DOUBLE" property="auditAmount"/>
+        <result column="hantten_amount" jdbcType="DOUBLE" property="hanttenAmount"/>
+        <result column="owner_amount" jdbcType="DOUBLE" property="ownerAmount"/>
+        <result column="symbol" jdbcType="VARCHAR" property="symbol"/>
+        <result column="alter_analyse" jdbcType="VARCHAR" property="alterAnalyse"/>
+        <result column="singel" jdbcType="VARCHAR" property="singel"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
+        <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg"/>
+    </resultMap>
+
+    <select id="searchChangeDetailList" resultMap="BaseResultMap">
+        SELECT
+        T.*,
+        CASE
+        WHEN T.owner_amount IS NULL THEN
+        T.hantten_amount - T.declare_amount ELSE T.owner_amount - T.declare_amount
+        END AS 'addSubAmount',
+        T1.contract_num,
+        T1.contract_name
+        FROM
+        tb_pro_alter_detail T
+        LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+        WHERE 1=1
+        AND T.project_id = #{projectId}
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="pageNumber != null and pageNumber>=0 and pageSize != null and pageSize >0 ">
+            limit #{pageNumber} , #{pageSize}
+        </if>
+    </select>
+
+    <select id="searchExportData" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT
+        CASE
+            WHEN
+                T.professional_id = 1 THEN
+                    '图纸会审'
+                    WHEN T.professional_id = 2 THEN
+                    '设计变更'
+                    WHEN T.professional_id = 3 THEN
+                    '变更洽商'
+                    WHEN T.professional_id = 4 THEN
+                    '现场签证' ELSE '-'
+                END AS professional_name,
+                T.alter_name,
+                T.content_summary,
+                T.talk_date,
+                T.receive_date,
+                T.sts,
+                T.declare_amount,
+                T.audit_amount,
+                T.hantten_amount,
+                T.owner_amount,
+            CASE
+                    WHEN T.owner_amount IS NULL THEN
+                    T.hantten_amount - T.declare_amount ELSE T.owner_amount - T.declare_amount
+                END AS 'add_sub_amount',
+                T.symbol,
+                T.remark,
+                T.alter_analyse
+            FROM
+                tb_pro_alter_detail T
+                LEFT JOIN tb_pro_contract T1 ON T.contract_id = T1.contract_id
+            WHERE
+                1 = 1
+                AND T.project_id = #{projectId}
+            ORDER BY
+            T.professional_id,
+            T.sts
+    </select>
+
+</mapper>

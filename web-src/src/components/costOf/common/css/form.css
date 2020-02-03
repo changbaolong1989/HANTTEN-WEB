@@ -1,0 +1,64 @@
+@charset "UTF-8";
+.costOf {
+  /* 表单样式 */
+}
+.costOf .form-block {
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px 20px 20px 10px;
+}
+.costOf .form-block:first-child {
+  margin-top: 0;
+}
+.costOf .form-block .el-form-item .el-form-item__label {
+  text-align: left;
+  line-height: 30px;
+  width: 100% !important;
+  font-size: 12px;
+}
+.costOf .form-block .el-form-item .el-form-item__content {
+  line-height: 30px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.costOf .form-block .el-form-item .el-form-item__content * {
+  pointer-events: auto;
+}
+.costOf .form-block .el-input-group--append .el-input__inner {
+  border-radius: 5px 0 0 5px !important;
+}
+.costOf .form-block .el-input, .costOf .form-block .el-select {
+  width: 100%;
+}
+.costOf .form-block [class*=" el-icon-"], .costOf .form-block [class^=el-icon-] {
+  vertical-align: middle;
+}
+.costOf .form-block .btn-upload {
+  height: 30px !important;
+}
+.costOf .form-block .el-row {
+  max-width: 860px;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-bottom: 5px;
+}
+.costOf .form-block .el-row .el-col {
+  padding-right: 0 !important;
+}
+.costOf .el-dialog .el-form .el-form-item {
+  margin-bottom: 10px;
+}
+.costOf .el-dialog .el-form .el-form-item .el-form-item__label {
+  text-align: left;
+  line-height: 30px;
+}
+.costOf .el-dialog .el-form .el-form-item .el-form-item__content {
+  margin-left: 0 !important;
+  line-height: 30px;
+}
+.costOf .el-dialog .el-form .el-form-item .el-form-item__content .el-input, .costOf .el-dialog .el-form .el-form-item .el-form-item__content .el-textarea, .costOf .el-dialog .el-form .el-form-item .el-form-item__content .el-date-editor, .costOf .el-dialog .el-form .el-form-item .el-form-item__content .el-select {
+  width: 100%;
+}
+
+/*# sourceMappingURL=form.css.map */

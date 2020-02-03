@@ -1,0 +1,96 @@
+.search {
+  width: 100%;
+  background-color: #fff;
+  padding: 25px 0 15px;
+  position: relative; }
+  .search span {
+    position: absolute;
+    top: 43px;
+    left: 70px;
+    font-size: 28px;
+    color: #b1b1b1; }
+  .search .input {
+    display: block;
+    width: 86%;
+    margin: 0 auto;
+    border: 2px solid #c9c9c9;
+    border-radius: 10px;
+    background-color: #f8f9fb;
+    height: 60px;
+    line-height: 60px;
+    padding-left: 65px;
+    font-size: 28px; }
+
+.Atitle {
+  padding: 20px 20px 0;
+  font-size: 28px;
+  color: #333; }
+
+.tabList {
+  width: 90%;
+  margin: 0px auto 50px; }
+  .tabList li {
+    background-color: #fff;
+    border-radius: 10px;
+    margin: 30px 0; }
+    .tabList li div {
+      padding: 28px 32px;
+      font-size: 28px;
+      line-height: 36px;
+      display: flex; }
+      .tabList li div .overflow {
+        max-width: 70%;
+        display: inline-block; }
+      .tabList li div .state {
+        color: #06a1ee; }
+    .tabList li .top {
+      justify-content: space-between; }
+    .tabList li .top,
+    .tabList li .middle {
+      border-bottom: 2px solid #e5e5e5;
+      color: #333333; }
+    .tabList li .bottom {
+      justify-content: space-between;
+      color: #808080; }
+
+.contentlist {
+  background-color: #fff;
+  width: 94%;
+  margin: 30px auto;
+  border-radius: 10px;
+  overflow: hidden; }
+  .contentlist li {
+    margin: 30px;
+    display: flex;
+    justify-content: space-between; }
+    .contentlist li span {
+      font-size: 28px; }
+      .contentlist li span:first-child {
+        color: #808080; }
+      .contentlist li span:last-child {
+        color: #666666; }
+  .contentlist .router {
+    border-top: 2px solid #e5e5e5; }
+    .contentlist .router > span {
+      margin: 30px 0 0; }
+    .contentlist .router div {
+      margin: 30px 0 0; }
+      .contentlist .router div span {
+        color: #06a1ee !important; }
+
+.worklist {
+  background-color: #fff;
+  width: 94%;
+  margin: 30px auto;
+  border-radius: 10px;
+  overflow: hidden; }
+  .worklist li {
+    margin: 30px; }
+    .worklist li span {
+      display: block;
+      line-height: 40px;
+      font-size: 28px; }
+      .worklist li span:first-child {
+        color: #808080; }
+      .worklist li span:last-child {
+        color: #666666; }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessContractDao">
+
+
+    <select id="searchExportData" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT
+            T.contract_num,
+        CASE
+
+                WHEN T.treaty_type = 1 THEN
+                '工程类合同'
+                WHEN T.treaty_type = 2 THEN
+                '采购类合同'
+                WHEN T.treaty_type = 3 THEN
+                '服务类合同'
+                WHEN T.treaty_type = 4 THEN
+                '土地类合同'
+                WHEN T.treaty_type = 5 THEN
+                '其他类合同' ELSE '-'
+            END AS treaty_type,
+        CASE
+
+                WHEN T.undertake_type = 1 THEN
+                '施工总承包'
+                WHEN T.undertake_type = 2 THEN
+                '发包人发包专业合同'
+                WHEN T.undertake_type = 3 THEN
+                '发包人自行发包专业' ELSE '-'
+            END AS undertake_type,
+            T.contract_name,
+            T.contract_unit,
+            T.plan_date,
+            T.contract_class,
+            T.measure_sts,
+	        CONCAT(T.target_cost)	AS target_cost,
+	        CONCAT(T.excise_money) AS excise_money,
+	        CONCAT(T.tax_ratio)	AS tax_ratio,
+	        CONCAT(T.tax_money)	AS tax_money,
+	        CONCAT(T.with_tax_money)	AS with_tax_money,
+            T.remark
+        FROM
+            tb_pro_contract T
+        WHERE
+            T.project_id = #{projectId}
+        ORDER BY
+            T.treaty_type,
+            T.undertake_type
+    </select>
+
+</mapper>

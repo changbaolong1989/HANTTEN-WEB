@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTDepartmentDao">
+    <resultMap id="BaseResultMap" type="com.hd.manager.dao.bean.HTDepartmentBean">
+        <id column="department_id" jdbcType="VARCHAR" property="departmentId"/>
+        <result column="department_name" jdbcType="VARCHAR" property="departmentName"/>
+        <result column="department_level" jdbcType="VARCHAR" property="departmentLevel"/>
+        <result column="bussiness_type" jdbcType="VARCHAR" property="bussinessType"/>
+        <result column="parent_department_id" jdbcType="VARCHAR" property="parentDepartmentId"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
+        <result column="is_del_flg" jdbcType="VARCHAR" property="isDelFlg"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    department_id, department_name, department_level, bussiness_type, parent_department_id,
+    create_date, create_user_id, update_date, update_user_id, is_del_flg
+  </sql>
+
+    <select id="querySuperDept" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_department
+        where FIND_IN_SET(department_id,querySuperDept(#{departmentId,jdbcType=VARCHAR}))
+    </select>
+
+    <select id="querySubLevelDept" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_department
+        where FIND_IN_SET(department_id,querySubLevelDept(#{departmentId,jdbcType=VARCHAR}))
+    </select>
+    <!--查询部门列表-->
+    <select id="findDepartmentList" resultType="com.hd.manager.dao.bean.HTDepartmentBean">
+        select
+        temp.*
+        from
+        (<include refid="searchDepartmentListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--修改部门信息-->
+    <update id="updateDepartmentInfo">
+        UPDATE
+            tb_department
+        SET
+            department_name = #{departmentName},
+            update_date = #{updateDate},
+            update_user_id = #{updateUserId}
+        WHERE
+            department_id = #{departmentId}
+    </update>
+
+    <select id="searchDepartmentInfo" resultType="com.hd.manager.dao.bean.HTDepartmentBean">
+        SELECT
+          td.department_name  AS departmentName,
+          td.department_id    AS departmentId
+        FROM
+          tb_department td
+        WHERE
+          td.department_id = #{departmentId}
+    </select>
+    <!--查询部门列表数据的总条数-->
+    <select id="searchDepartmentListCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        (<include refid="searchDepartmentListSql" />) temp
+    </select>
+
+    <sql id="searchDepartmentListSql">
+        SELECT
+        tt.department_id    AS departmentId,
+        tt.department_name  AS departmentName,
+        pt.department_name  AS parentDepartmentName,
+        (SELECT
+        GROUP_CONCAT(tdj.job_name)
+        FROM
+        tb_department_job tdtj
+        LEFT JOIN
+        tb_dict_job tdj
+        ON
+        tdtj.job_dict_id = tdj.job_dict_id
+        WHERE
+        tdtj.department_id = tt.department_id
+        ORDER BY
+        tdj.sort
+        ASC
+        ) AS departmentJob
+        FROM
+        tb_department tt
+        LEFT JOIN
+        tb_department pt
+        ON
+        pt.department_id = tt.parent_department_id
+        WHERE
+        tt.is_del_flg = 0
+        <if test="departmentName !=null and departmentName!= ''">
+            AND
+            tt.department_name LIKE concat(concat('%',#{departmentName}),'%')
+        </if>
+        ORDER BY
+        tt.create_date desc
+    </sql>
+</mapper>

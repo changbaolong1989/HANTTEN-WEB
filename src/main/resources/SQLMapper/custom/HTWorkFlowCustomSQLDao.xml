@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWorkFlowCustomSQLDao">
+
+    <select id="getTask" resultType="java.util.Map">
+        SELECT
+          T.TASK_ID_,
+          T1.PROC_INST_ID_,
+          T1.PROC_DEF_ID_,
+          T2.BUSINESS_KEY_,
+          T1.TASK_DEF_KEY_
+        FROM
+            ACT_RU_IDENTITYLINK T
+            JOIN ACT_RU_TASK T1 ON T.TASK_ID_ = T1.ID_
+            JOIN ACT_HI_PROCINST T2 ON T1.PROC_INST_ID_ = T2.PROC_INST_ID_
+        WHERE
+            T.USER_ID_ = #{userId}
+            AND T1.SUSPENSION_STATE_ = 1
+    </select>
+
+</mapper>

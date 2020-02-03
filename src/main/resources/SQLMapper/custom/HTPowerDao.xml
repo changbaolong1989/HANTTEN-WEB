@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTPowerDao">
+    <!--查询用户已知所属权限集合-->
+    <select id="excSearchLoginUserPowerList" resultType="com.hd.manager.dao.bean.HTPowerBean">
+        SELECT
+            tup.power_id AS powerId,
+            tup.power_key AS powerKey,
+            tup.power_name AS powerName,
+            tup.power_rule_key AS powerRuleKey,
+            tup.power_rule_name AS powerRuleName,
+            tup.module_belong AS moduleBelong,
+            tup.create_date AS createDate,
+            tup.create_user_id AS createUserId,
+            tup.update_date AS updateDate,
+            tup.update_user_id AS updateUserId
+        FROM
+            tb_job_power_relation tjpr
+            LEFT JOIN tb_user_power tup ON tup.power_id = tjpr.power_id
+        WHERE
+            tjpr.is_del_flg = '0'
+        AND
+            tjpr.job_id IN (
+            <foreach collection = "jobIds" item = "item" separator="," >
+                #{item}
+            </foreach>
+            )
+        ORDER BY
+            tup.create_date DESC
+    </select>
+
+
+    <!--查询用户所属职位集合-->
+    <select id="excSearchUserWorkPowerList" resultType="com.hd.manager.dao.bean.HTPowerBean">
+        SELECT
+        tup.power_id AS powerId,
+        tup.power_key AS powerKey,
+        tup.power_name AS powerName,
+        tup.power_rule_key AS powerRuleKey,
+        tup.power_rule_name AS powerRuleName,
+        tup.module_belong AS moduleBelong,
+        tup.create_date AS createDate,
+        tup.create_user_id AS createUserId,
+        tup.update_date AS updateDate,
+        tup.update_user_id AS updateUserId
+        FROM
+        tb_user_power tup
+        WHERE
+          tup.is_del_flg = '0'
+        AND
+          tup.power_rule_key != 'oneself'
+        AND
+          tup.module_belong = #{moduleBelong}
+        ORDER BY
+        tup.create_date DESC
+    </select>
+
+    <!--根据参数查询职位信息-->
+    <select id="searchJobInfoByProperties" resultType="com.hd.manager.dao.bean.HTJobBean">
+        SELECT
+        tj.job_id AS jobId,
+        tj.job_name AS jobName,
+        tj.involved_department AS involvedDepartment,
+        tj.partent_job_id AS partentJobId,
+        tj.job_level AS jobLevel,
+        tj.parent_ids AS parentIds
+        FROM
+        tb_user_job_relation tujr
+        INNER JOIN
+        tb_job tj
+        ON tujr.job_id = tj.job_id
+        where
+        tj.is_del_flg = '0'
+        and
+        tj.involved_department = #{departmentId}
+        <if test="userId !=null and userId!= ''">
+            and
+            tujr.user_id = #{userId}
+        </if>
+
+        <if test="jobLevel !=null and jobLevel!= ''">
+            and
+            tj.job_level = #{jobLevel}
+        </if>
+    </select>
+</mapper>

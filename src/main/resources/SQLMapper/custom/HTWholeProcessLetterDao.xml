@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hd.manager.dao.HTWholeProcessLetterDao">
+
+    <!--查询列表-->
+    <select id="excSearchLetterPeriodList"  resultType="com.hd.manager.dao.bean.HTWholeProcessLetterBean">
+        SELECT
+          temp.*
+        FROM
+        (<include refid="excSearchLetterPeriodListSql" />) temp
+        limit #{pageNumber},#{pageSize}
+
+    </select>
+
+    <!--查询列表条数-->
+    <select id="excSearchLetterPeriodCount"  resultType="java.lang.Integer">
+        SELECT
+          count(1)
+        FROM
+        (<include refid="excSearchLetterPeriodListSql" />) temp
+    </select>
+
+    <!--查询项目发出信函登记表列表-->
+    <select id="excSearchProLetterPeriodListForExport"
+            resultType="com.hd.manager.dao.bean.HTWholeProcessLetterBean">
+        select
+        temp.*
+        from
+        (<include refid="excSearchLetterPeriodListSql" />) temp
+    </select>
+
+    <sql id="excSearchLetterPeriodListSql">
+        SELECT
+           letter_id         AS letterId
+          ,project_id        AS projectId
+          ,edit_date         AS editDate
+          ,file_name         AS fileName
+          ,file_number       AS fileNumber
+          ,send_type         AS sendType
+          ,receive_unit      AS receiveUnit
+          ,receive_people    AS receivePeople
+          ,file_type         AS fileType
+          ,copy_num          AS copyNum
+          ,remark
+          ,letter_file_path  AS letterFilePath
+          ,letter_file_name  AS letterFileName
+        FROM
+          tb_pro_letter
+        WHERE
+         project_id = #{projectId}
+        AND
+         is_del_flg = 0
+         ORDER BY edit_date DESC
+    </sql>
+
+</mapper>
